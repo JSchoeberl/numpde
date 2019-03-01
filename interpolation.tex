@@ -1,0 +1,276 @@
+% \documentclass[12pt]{article}
+% \usepackage{amsmath,amsthm,amssymb,a4wide}
+% \usepackage[german,english]{babel}
+% \usepackage{epsfig}
+% \usepackage{latexsym}
+% \usepackage{amssymb}
+% % \usepackage{theorem}
+% \usepackage{amsthm}
+% % \usepackage{showkeys}
+
+% \newcommand{\setR}{ {\mathbb R} }
+% \newcommand{\setN}{ {\mathbb N} }
+% \newcommand{\setZ}{ {\mathbb Z} }
+% \newcommand{\eps}{\varepsilon}
+
+% \newcommand{\beq}{\begin{equation}}
+% \newcommand{\eeq}{\end{equation}}
+
+% \newcommand{\opdiv}{\operatorname{div}}
+% \newcommand{\opcurl}{\operatorname{curl}}
+% \newcommand{\opdet}{\operatorname{det}}
+% \newcommand{\optr}{\operatorname{tr}}
+% \newcommand{\optrn}{\operatorname{tr}_n}
+
+% \newcommand{\Zh}{\mathrm{Z}_h}
+% \newcommand{\Ih}{\mathrm{I}_l}
+
+% \newcommand{\leqc}{\preceq} 
+% \newcommand{\geqc}{\succeq} 
+% \newcommand{\eqc}{\simeq} 
+% \newcommand{\ul}{\underline}
+
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{definition}[theorem]{Definition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{remark}[theorem]{Remark}
+% \newtheorem{example}[theorem]{Example}
+
+% %
+% %
+% \setlength{\unitlength}{1cm}
+% \sloppy 
+% %
+
+% \title{A Short Introduction to Interpolation Spaces}
+% \author{Joachim Sch\"oberl}
+
+% \begin{document}
+% \selectlanguage{german}
+\section{Interpolation Spaces}
+% \maketitle 
+
+\subsection{Hilbert space interpolation}
+Let $V_1 \subset V_0$ be two Hilbert spaces with dense embedding. For simplicity we assume that the embedding is compact. Then there exists a system of eigenvalues~$\lambda_k$ and eigenvectors~$z_k$ such that
+$$
+(z_k, v)_1 = \lambda_k^2 \, (z_k, v)_0 \qquad \forall \, v \in V_1.
+$$
+The eigenvectors are orthogonal and are normalized such that
+$$
+(z_k,z_l)_0 = \delta_{k,l} \qquad \text{and} \qquad (z_k,z_l)_1 = \lambda_k^2 \delta_{k,l}.
+$$
+Eigenvalues are ascening, by compactness there holds $\lambda_k \rightarrow \infty$.
+
+
+The set of eigenvectos is a complete system. Thus $u \in V_0$ can be 
+expanded as
+$$
+u = \sum_{k=1}^\infty u_k z_k \qquad \text{with} \; u_k = (u, z_k)_0.
+$$
+There holds
+\begin{eqnarray*}
+\| u \|_0^2 & = & \sum u_k^2 \\
+\| u \|_1^2 & = & \sum \lambda_k^2 u_k^2  \quad < \infty \; \; \text{for } u \in V_1.
+\end{eqnarray*}
+For $s \in (0,1)$ we define the interpolation norm
+\begin{equation}
+\| u \|_{\tilde s} := \Big( \sum_{k=1}^\infty \lambda_k^{2s} u_k^2 \Big)^{1/2}
+\end{equation}
+and the interpolation space
+$$
+V_s := [V_0,V_1]_s := \{ u \in V_0 : \| u \|_{\tilde s} < \infty \}.
+$$
+There holds
+$$
+V_1 \subset V_s \subset V_0.
+$$
+
+{Example:} Let $V_0 = L_2(0,1)$ and $V_1 = H_0^1(0,1)$. Then
+$$
+z_k = \sqrt{2}\sin (k\pi x) \qquad \text{ and } \qquad \lambda_k = k
+$$
+
+\subsection{Banach space interpolation}
+We give an alternative definition of interpolation spaces, which is also applicable for Banach spaces. It is known as Banach space interpolation, K-functional method, real method of interpolation, or Peetre's method. 
+
+Let $V_1 \subset V_0$ be Banach spaces with dense and continuous embedding. We 
+define the $K$-functional $K : \setR^+ \times V_0 \rightarrow \setR$ as
+$$
+K(t,u) := \inf_{v_1 \in V_1}  \sqrt{ \| u - v_1 \|_0^2 + t^2 \| v_1 \|_1^2}.
+$$
+Note that
+\begin{eqnarray*} 
+K(t,u) & \leq & \| u \|_0, \\
+K(t,u) & \leq & t \, \| u \|_1 \qquad \text{ for } u \in V_1.
+\end{eqnarray*}
+The decay in $t$ measures the {\it smoothness} of $u$. For $s \in (0,1)$ we define
+the interpolation norm as
+\begin{equation}
+\| u \|_s := \Big(  \int_0^\infty t^{-2s} K(t,u)^2 dt/t \Big)^{1/2}
+\end{equation}
+and the interpolation spaces $V_s := \{ u \in V_0 : \| u \|_s < \infty \}$.
+
+
+The $K$-functional method is more general. If the spaces are Hilbert, then both
+interpolation methods coincide:
+
+\begin{theorem} Let $V_1 \subset V_0$ be Hilbert spaces with compact embedding.
+Then
+$$
+\| u \|_s = C_s \, \| u \|_{\tilde s},
+$$
+where $C_s^2 = \int_0^\infty \frac{\tau^{1-2s}}{1+\tau^2} \, d\tau$.
+\end{theorem}
+\begin{proof} For $u = \sum u_k z_k$ we calculate the $K$-functional as
+\begin{eqnarray*}
+K(t,u)^2 & = & \inf_{v \in V_1} \; \| u - v \|_0^2 + t^2 \| v \|_1^2 \\
+ & = & \inf_{(v_k) \in \ell_2 \atop (\lambda_k v_k) \in \ell_2}
+  \sum_k (u_k - v_k)^2 + t^2 \lambda_k^2 v_k^2 \\
+ & = & \sum_k \inf_{v_k \in \setR} (u_k - v_k)^2 + t^2 \lambda_k^2 v_k^2.
+\end{eqnarray*} 
+The minimum of each summand is taken for 
+$$
+v_k = \frac{1}{1+t^2\lambda_k^2} u_k
+$$
+and its value is
+$$
+\frac{t^2 \lambda_k^2}{1+t^2 \lambda_k^2} u_k^2.
+$$
+Thus
+$$
+K(t,u)^2 = \sum_{k=1}^\infty \frac{ t^2 \lambda_k^2}{1+t^2 \lambda_k^2} u_k^2
+$$
+and
+\begin{eqnarray*}
+\| u \|_s^2 & = &\int_0^\infty t^{-2s} K(t,u)^2 \, dt / t 
+ = \int_0^\infty \sum_k \frac{ t^2 \lambda_k^2}{1+t^2 \lambda_k^2} u_k^2 \, dt/t \\
+& = & \sum_k \int_0^\infty t^{-2s} \frac{t^2\lambda_k^2}{1+t^2 \lambda_k^2} u_k^2 \, dt/t
+\end{eqnarray*}
+Substitution $\tau = \lambda_k t$ gives
+\begin{eqnarray*}
+\| u \|_s^2 & = & \sum_k \int_0^\infty \Big(\frac{\tau}{\lambda_k}\Big) ^{-2s} \frac{\tau^2}{1+\tau^2} u_k^2 \, d \tau/\tau \\
+& = & \sum_k \lambda_k^{2s} u_k^2 \; \; \int_0^\infty \frac{\tau^{1-2s}}{1+\tau^2} \, d \tau \\
+& = & C_s^2 \, \| u \|_{\tilde s}^2
+\end{eqnarray*}
+\end{proof}
+
+
+\begin{theorem} For $u \in V_1$ there holds 
+$$
+\| u \|_s \leqc \| u \|_0^{1-s} \, \| u \|_1^s
+$$
+\end{theorem}
+Proof: Excercise
+
+\subsection{Operator interpolation}
+Let $V_1 \subset V_0$ and $W_1 \subset W_0$ with dense embedding. 
+
+\begin{theorem}
+Let $T : V_0 \rightarrow W_0$ be a linear operator such that $T V_1 \subset W_1$ 
+with norms
+$$
+\| T \|_{V_0 \rightarrow W_0} \leq c_0 \qquad \text{and} \quad 
+\| T \|_{V_1 \rightarrow W_1} \leq c_1.
+$$
+Then
+$$
+T : [V_0,V_1]_s \rightarrow [W_0,W_1]_s
+$$
+with norm
+$$
+\| T \|_{[V_0,V_1]_s \rightarrow [W_0,W_1]_s} \leq c_0^{1-s} c_1^s
+$$
+\end{theorem} 
+\begin{proof}
+We use the definition of the interpolation norm, $T V_1 \subset W_1$, operator norms and substitution $\tau = c_1 t/c_0$
+\begin{eqnarray*}
+\| T u \|_{[W_0,W_1]_s} & = & \int_0^\infty t^{-2s} K_W(t,Tu)^2 \, dt/t \\
+ & = & \int_0^\infty t^{-2s} \inf_{w_1 \in W_1} \{ \| T u - w_1 \|_{W_0} + t^2 \| w_1 \|_{W_1}^2 \} \, dt/t \\
+ & \leq & \int_0^\infty t^{-2s} \inf_{v_1 \in V_1} \{ \| T u - T v_1 \|_{W_0} + t^2 \| T v_1 \|_{W_1}^2 \} \, dt/t \\
+ & \leq & \int_0^\infty t^{-2s} \inf_{v_1 \in V_1} \{ c_0^2 \, \| u - v_1 \|_{V_0} + t^2 c_1^2 \, \| v_1 \|_{V_1}^2 \} \, dt/t \\
+ & \leq & \int_0^\infty \Big( \frac{c_0 \tau}{c_1} \Big)^{-2s} \inf_{v_1 \in V_1}
+\{ c_0^2 \, \| u - v_1 \|_{V_0}^2 + c_0^2 \tau^2 \, \| v_1 \|_{V_1}^2 \} \, d \tau / \tau \\
+& = & c_0^{2-2s} c_1^{2s}  \int_0^\infty \tau^{-2s} K_V (t, u)^2 \, d \tau / \tau \\
+& = &  c_0^{2-2s} c_1^{2s} \, \| u \|_{[V_0,V_1]_s}^2
+\end{eqnarray*}
+\end{proof}
+
+
+\subsection{Interpolation of Sobolev Spaces}
+
+As an example of interpolation spaces we show the following:
+
+\begin{theorem} Let $\Omega$ be a Lipschitz domain. Then
+$$ 
+[L_2(\Omega), H^2(\Omega)]_{1/2} = H^1(\Omega).
+$$
+\end{theorem}
+\begin{proof} Let $Q$ be a square containing $\Omega$, w.l.o.g. $Q = (0,2\pi)^2$, and $z_{k,l} = e^{ikx} e^{ily}$ be the trigonometric basis for (complex-valued) periodic Sobolev Spaces $H^m_{per}(Q)$. Then
+$$
+\| u \|_{H^m}^2 \eqc \sum_{k,l} (k^2+l^2)^m | u_{k,l} |^2,
+$$
+and thus $H^1_{per}(Q) = [H^0_{per}(Q), H^2_{per}(Q)]_{1/2}$ by Hilbert space interpolation.
+
+Now let $E: L_2(\Omega) \rightarrow L_2(Q)$ be an extension operator such that
+$$
+E : H^m(\Omega) \rightarrow H^m_{per}(Q) 
+$$ 
+is continuous for all $m \in \{0,1,2\}$. Furthermore, let 
+$$
+R : L_2(Q) \rightarrow L_2(\Omega)  : u \mapsto u|_\Omega
+$$
+be the restriction operator. Trivially, $R : H_{per}^m (Q) \rightarrow H^m(\Omega)$ is continuous for $m \in \setN_0$.
+ 
+We show that
+$$
+\| u \|_{H^1(\Omega)} \eqc \| u \|_{[L_2(\Omega), H^2(\Omega)]_{1/2}}.
+$$
+Using operator interpolation we get
+\begin{eqnarray*}
+\| u \|_{H^1(\Omega)} & = &\| R E u \|_{H^1(\Omega)} \leq \| R \| \| E u \|_{H^1(Q)} \\
+& \eqc & \| E u \|_{[L_2(Q),H^2_{per}(Q)]_{1/2}} \\
+& \leq & \| E \|_{L_2(\Omega)\rightarrow L_2(Q)}^{1/2} \| E \|_{H^2(\Omega)\rightarrow H^2_{per}(Q)}^{1/2}  \| u \|_{[L_2(\Omega), H^2(\Omega)]_{1/2}} \\
+& \eqc &  \| u \|_{[L_2(\Omega), H^2(\Omega)]_{1/2}},
+\end{eqnarray*}
+and similarly the other way around.
+\end{proof}
+ 
+
+\begin{theorem} Let $\Omega$ be a Lipschitz domain. Then
+$$ 
+[L_2(\Omega), H_0^2(\Omega)]_{1/2} = H_0^1(\Omega).
+$$
+\end{theorem}
+\begin{proof} Exercise
+\end{proof}
+
+
+% \begin{thebibliography}{10}
+% \bibitem{}
+% J.~Bergh and J.~Lofstrom. 
+% \newblock {\em Interpolation spaces.}
+% \newblock Springer, 1976
+
+% \bibitem{}
+% J.~H.~Bramble. 
+% \newblock {\em Multigrid Methods.} 
+% \newblock Chapman and Hall, 1993
+
+% \end{thebibliography}
+
+\bigskip \noindent 
+{\bf Literature:}
+\begin{enumerate}
+\item 
+ J.~Bergh and J.~Lofstrom.  {\em Interpolation spaces.}  Springer,
+1976 
+\item
+J.~H.~Bramble. 
+ {\em Multigrid Methods.} 
+ Chapman and Hall, 1993
+ \end{enumerate}
+
+
+
+% \end{document}
+

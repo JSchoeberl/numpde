@@ -1,0 +1,1376 @@
+\chapter{Linear Equation Solvers}
+
+The finite element method, or other discretization schemes, lead to
+linear systems of equations
+$$
+A u = f. 
+$$
+
+The matrices are typically
+\begin{itemize}
+\item of large dimension $N$ ($10^4 - 10^8$ unknowns)
+\item and sparse, i.e., there are only a few non-zero elements per row.
+\end{itemize}
+
+A matrix entry $A_{ij}$ is non-zero, if there exists a finite element connected
+with both degrees of freedom $i$ and $j$.
+
+A 1D model problem: Dirichlet problem on the interval. A uniform grid with
+$n$ elements. The matrix is
+$$
+A = \left( \begin{array} {ccccc}
+        2 & -1  \\
+        -1 & 2 & -1 \\
+         & \ddots & \ddots & \ddots \\
+        & & -1 & 2 & -1 \\
+        & & & -1 & 2 
+        \end{array}
+        \right)_{(n-1) \times (n-1)},
+$$
+
+
+A 2D model problem: Dirichlet problem on a unit-square. A uniform grid with $2 n^2$ triangles. The unknowns are enumerated lexicographically:
+\begin{center}
+\includegraphics[width=4cm]{pictures/uniform_grid}
+\end{center}
+
+The FEM - matrix of dimension $N = (n-1)^2$ is
+$$
+A = \left( \begin{array} {ccccc}
+        D & -I  \\
+        -I & D & -I \\
+         & \ddots & \ddots & \ddots \\
+        & & -I & D & -I \\
+        & & & -I & D 
+        \end{array}
+        \right)
+\qquad \mbox{with} \qquad
+D = \left( \begin{array} {ccccc}
+        4 & -1  \\
+        -1 & 4 & -1 \\
+         & \ddots & \ddots & \ddots \\
+        & & -1 & 4 & -1 \\
+        & & & -1 & 4 
+        \end{array}
+        \right)_{(n-1) \times (n-1)},
+$$
+and the $(n-1) \times (n-1)$ identity matrix $I$.
+
+
+\section{Direct linear equation solvers}
+%
+Direct solvers are factorization methods such as $LU$-decomposition,
+or Cholesky factorization. They require in general $O(N^3) = O(n^6)$
+operations, and $O(N^2) = O(n^4)$ memory. A fast machine can perform
+about $10^9$ operations per second\footnote{time of writing was 2003}.  This corresponds to
+%
+\begin{center}
+\begin{tabular}{cccc}
+        n &$~\sim$N & time & memory \\
+        \hline
+        10 & $10^2$ & 1 ms & 80 kB \\
+        100 & $10^4$ & 16 min & 800 MB \\
+        1000 & $10^6$ & 30 years & 8 TB 
+\end{tabular}
+\end{center}
+
+\bigskip
+
+A band-matrix of (one-sided) band-width $b$ is a matrix with
+$$
+A_{ij} = 0 \qquad \mbox{for } |i-j| > b
+$$
+The $LU$-factorization maintains the band-width. $L$ and $U$ are triangular
+factors of band-width $b$. A banded factorization method costs $O(N b^2)$
+operations, and $O(Nb)$ memory. 
+For the 1D example, the band-with is $1$. Time and memory are $O(n)$. For the
+2D example, the band width is $O(n)$. The time complexity is $O(n^4)$, 
+the memory complexity is $O(n^3)$.
+
+This corresponds to
+\begin{center}
+\begin{tabular}{ccc}
+        n & time & memory \\
+        \hline
+        10 & 10 $\mu$s & 8 kB \\
+        100 & 0.1 s & 8 MB \\
+        1000 & 16 min & 8 GB 
+\end{tabular}
+\end{center}
+\bigskip
+
+\subsubsection{Block-elimination methods}
+By splitting the unknowns into two groups, we rewrite the equation $A u = f$ as
+a block system
+$$
+\left( \begin{array}{cc}
+        A_{11} & A_{12} \\
+        A_{21} & A_{22} 
+        \end{array} \right)
+\left( \begin{array}{c}
+        u_1 \\ u_2 
+        \end{array} \right) =
+\left( \begin{array}{c}
+        f_1 \\ f_2 
+        \end{array} \right).
+$$
+First, expressing $u_1$ from the first row gives
+$$
+u_1 = A_{11}^{-1} (f_1 - A_{12} u_2),
+$$
+and the Schur-complement equation to determine $u_2$
+$$
+(\underbrace{A_{22} - A_{21} A_{11}^{-1} A_{12}}_{=: S}) u_2 = f_2 - A_{21} A_{11}^{-1} f_1.
+$$
+This block-factorization is used in sub-structuring algorithms:
+Decompose the domain into $m \times m$ sub-domains, each one containing
+ $2 \frac{n}{m} \times \frac{n}{m}$ triangles. Split the unknowns into interior (I),
+and coupling (C) unknowns. 
+\begin{center}
+\includegraphics[width=4cm]{pictures/substructure}
+\end{center}
+The interior ones corresponding to different sub-domains have no connection in the
+matrix. The block matrix is
+$$
+\left( \begin{array}{cc}
+        A_I & A_{IC} \\
+        A_{CI} & A_C 
+        \end{array} \right) =
+\left( \begin{array}{ccccc}
+        A_{I,1} & & & A_{IC,1} \\
+        & \ddots & & \vdots \\
+        & & A_{I,m^2} & A_{IC,m^2} \\
+        A_{CI,1} & \cdots & A_{CI,m^2} & A_C 
+        \end{array} \right)
+$$
+Factorizing the block-diagonal interior block $A_I$ splits into $m^2$ independent
+factorization problems. If one uses a banded factorization, the costs are
+$$
+m^2 \left( \frac{n}{m} \right)^4 = \frac{n^4}{m^2}
+$$
+Computing the Schur complement
+$$
+S = A_C - A_{CI} A_I^{-1} A_{IC} = A_C - \sum_{i=1}^{m^2} A_{CI,i} A_{I,i}^{-1} A_{IC,i}
+$$
+is of the same cost. The Schur complement is of size $m n$, and has band-width $n$. 
+Thus, the factorization costs $O(m n^3)$. The total costs are of order
+$$
+\frac{n^4}{m^2} + m n^3
+$$
+Equilibrating both terms lead to the optimal number of sub-domains 
+$m = n^{1/3}$, and to the asymptotic costs
+$$
+n^{3.33}
+$$
+If a parallel computer is used, the factorization of $A_I$ and the computation of
+Schur complements can be performed in parallel.
+
+\bigskip
+
+The hierarchical sub-structuring algorithm, known as nested dissection, 
+eliminates interior unknowns hierarchically:
+\begin{center}
+\includegraphics[width=12cm]{pictures/hierarchical}
+\end{center}
+Let $n = 2^L$. On level $l$, with $1 \leq l \leq L$, one has
+$4^{l}$ sub-domains. Each sub-domain has $O(2^{L-l})$ unknowns.
+The factorization of the inner blocks on level $l$ costs
+$$
+4^l \; (2^{L-l})^3 = 2^{3L - l}
+$$
+Forming the Schur-complement is of the same cost. The sum over all levels is
+$$
+\sum_{l=1}^L 2^{3L-l} = 2^{3L} \left( \frac{1}{2} + \frac{1}{4} + \ldots \right) \approx 2^{3L}
+$$
+The factorization costs are $O(n^3)$. Storing the matrices on each level costs
+$$
+4^l \; (2^{L-l})^2 = 2^{2L}.
+$$
+The total memory is $O(L \times 2^{2L}) = O(n^2 \, \log n)$. 
+
+
+This corresponds to
+\begin{center}
+\begin{tabular}{ccc}
+        n & time & memory \\
+        \hline
+        10 & 1 $\mu$s & 3 kB \\
+        100 & 1 ms & 500 kB \\
+        1000 & 1 s & 150 MB 
+\end{tabular}
+\end{center}
+\bigskip
+
+A corresponding sparse factorization algorithm for matrices arising
+from unstructured meshes is based on  minimum degree
+ordering. Successively, the unknowns with the least connections in the
+matrix graph are eliminated.
+
+In 2D, a direct method with optimal ordering is very efficient. In 3D, 
+the situation is  worse for the direct solver. There holds $N = n^3$,
+time complexity = $O(N^2)$, and memory = $O(N^{1.33})$.
+
+\section{Iterative equation solvers}
+
+Iterative equation solvers improve the accuracy of approximative solution by an
+successive process. This requires in general much less memory, and, 
+depending on the problem and on the method, may be (much) faster.
+
+\subsubsection{The Richardson iteration}
+A simple iterative method is the preconditioned Richardson iteration 
+(also known as simple iteration, or Picard iteration):
+
+\begin{quote}
+start with arbitrary $u^0$ \newline
+for $k = 0, 1, \ldots$ convergence \newline
+\hspace*{1cm} $d^k = f - A u^k$ \newline
+\hspace*{1cm} $w^k = C^{-1} d^k$ \newline
+\hspace*{1cm} $u^{k+1} = u^k + \tau w^k$ 
+\end{quote}
+
+Here, $\tau$ is a damping parameter which may be necessary to ensure
+convergence. 
+The matrix $C$ is called a preconditioner. It should fulfill
+\begin{enumerate}
+\item $C$ is a good approximation to $A$
+\item the matrix-vector multiplication $w = C^{-1} d$ should be cheap
+\end{enumerate}
+A simple choice is $C = \operatorname{diag} \, A$, the Jacobi preconditioner. The 
+application 
+of $C^{-1}$ is cheap. The quality of the approximation $C \approx A$
+will be estimated below. The optimal choice for the first criterion would be
+$C = A$. But, of course, $w = C^{-1} d$ is in general not cheap.
+
+
+Combining the steps, the iteration can be written as
+$$
+u^{k+1} = u^k + \tau C^{-1} (f - A u^k)
+$$
+Let $u$ be the solution of the equation $A u = f$. 
+We are interested in the behavior of the error $u^k - u$:
+\begin{eqnarray*}
+u^{k+1} - u & = & u^k - u + \tau C^{-1} (f - A u^k) \\
+        & = & u^k - u + \tau C^{-1} (A u - A u^k) \\
+        & = & (I - \tau C^{-1} A ) (u^k - u)
+\end{eqnarray*}
+We call the matrix 
+$$
+M = I - \tau C^{-1} A
+$$
+the {\it iteration matrix}. The error transition can be 
+estimated by
+$$
+\| u^{k+1} - u \| \leq \| M \| \; \| u^k - u \|.
+$$
+The matrix norm is the associated matrix norm to some vector norm.
+If $\rho := \| M \| < 1$, then the error is reduced. The error
+after $k$ steps is
+$$
+\| u^k - u \| \leq \rho^k \| u^0 - u \|
+$$
+To reduce the error by a factor $\eps$ (e.g., $\eps = 10^{-8}$), one
+needs
+$$
+N_{its} = \frac{\log \eps}{\log \rho}
+$$
+iterations.
+
+We will focus on the symmetric ($A = A^T$) and positive definite ($u^T
+A u > 0$ for $u \neq 0$) case (short: SPD). Then it makes sense to choose
+symmetric and positive definite preconditioners $C = C^T$. Eigenvalue
+decomposition allows a sharp analysis. Pose the generalized eigenvalue
+problem
+%
+$$
+A z = \lambda C z. 
+$$
+Let $(\lambda_i, z_i)$ be the set of eigen-pairs. The spectrum is $\sigma\{C^{-1} A\} = \{ \lambda_i \}$. The eigen-vectors $z_i$ are normalized to 
+$$
+\| z_i \|_C = 1
+$$
+The eigenvalues can are bounded from below and from above by the
+Rayleigh quotient:
+$$
+\min_{v} \frac{v^T A v}{v^T C v} \leq \lambda_i \leq 
+\max_{v} \frac{v^T A v}{v^T C v} 
+$$ 
+
+The ratio of largest to smallest eigen-value is the relative spectral 
+condition number
+$$
+\kappa = \frac{\lambda_N}{\lambda_1}
+$$
+
+We will establish the spectral bounds
+$$
+\gamma_1 \, v^T C v \leq v^T A v \leq \gamma_2 \, v^T C v \qquad \forall \, v \in \setR^N,
+$$
+which allow to bound the eigenvalues
+$$
+\lambda_i \in [ \gamma_1, \gamma_2],
+$$
+and the condition number $\kappa \leq \frac{\gamma_2}{\gamma_1}$.
+
+
+A vector $v$ can be expressed in terms of the eigen-vector basis $z_i$
+as $v = \sum v_i e_i$. There holds
+\begin{eqnarray*}
+\| v \|_C^2 & = & \sum v_i^2 \\
+\| v \|_A^2 & = & \sum \lambda_i v_i^2 
+\end{eqnarray*}
+
+\begin{lemma}
+The iteration matrix $M$ can be bounded in $A$-norm and in $C$-norm:
+$$
+\| M \|_A \leq \sup_{\lambda \in [\gamma1, \gamma_2]} | 1 - \tau \lambda |
+$$
+$$
+\| M \|_C \leq \sup_{\lambda \in [\gamma1, \gamma_2]} | 1 - \tau \lambda |
+$$
+\end{lemma}
+{\em Proof:} Express $v = \sum v_i z_i$. Then
+$$
+M v = (I - \tau C^{-1} A) v = \sum v_i (I - \tau C^{-1} A) z_i
+        = \sum v_i (1 - \tau \lambda_i) z_i
+$$
+The norm is
+\begin{eqnarray*}
+\| M v \|_A^2 & = & \sum \lambda_i v_i^2 (1-\tau \lambda_i)^2 \\
+        & \leq & \sup_{i} (1-\tau \lambda_i)^2 \; \sum \lambda_i v_i^2 \\
+        & \leq & \sup_{\lambda \in [\gamma_1, \gamma_2]} (1-\tau \lambda)^2 \; \| v \|_A^2
+\end{eqnarray*}
+and thus
+$$
+\| M \|_A = \sup_{v \in \setR^n} \frac{ \| M v \|_A } { \| v \|_A } 
+        \leq \sup_{\lambda \in [\gamma_1, \gamma_2]} | 1 - \tau \lambda|.
+$$ 
+The proof is equivalent for $\|M\|_C$.
+\hfill $\Box$
+
+
+\bigskip
+
+
+\begin{center}
+\includegraphics[height=3cm]{pictures/opttau}
+\end{center}
+The optimal choice of the relaxation parameter $\tau$ is such that
+$$
+1 - \tau \gamma_1  =  - (1-\tau \gamma_2), 
+$$
+i.e., 
+$$
+\tau = \frac{2}{\gamma_1 + \gamma_2}
+$$
+The convergence factor is
+$$
+1 - \tau \gamma_1 = \frac{\gamma_2 - \gamma_1}{\gamma_2 + \gamma_1}.
+$$
+Assume we knew sharp spectral bounds $\gamma_1 = \lambda_1$ and
+$\gamma_2 = \lambda_N$. Then the convergence factor is
+$$
+\| M \| = \frac{\kappa-1}{\kappa+1} \approx 1 - \frac{2}{\kappa}
+$$
+
+The number of iterations to reduce the error by a factor $\eps$ is
+$$
+N_{its} = \frac{\log \eps}{\log \rho} \approx \frac {\log \eps}{-2/\kappa}
+        = \log \eps^{-1} \, \frac{\kappa}{2}
+$$
+
+
+
+Take the 1D stiffness matrix of dimension $N \times N$:
+$$
+A = \left( \begin{array}{ccccc}
+        2 & -1  \\
+        -1 & 2 & -1 \\
+        & \ddots & \ddots & \ddots \\
+        & & -1 & 2 & -1 \\
+        & & & -1 & 2 
+        \end{array}
+        \right),
+$$
+and the trivial preconditioner $C = I$. The eigen-vectors $z_i$ and 
+eigen-values $\lambda_i$ are
+\begin{eqnarray*}
+z_{i} & = & \left(\sin \frac{i j \pi}{N+1} \right)_{j=1, \ldots N} \\
+\lambda_i & = & 2 - 2 \cos (\frac{i \pi}{N+1})
+\end{eqnarray*}
+The extremal eigenvalues are
+\begin{eqnarray*}
+\lambda_1 & = & 2 - 2 \cos ( \frac{\pi}{N+1}) \approx \frac{\pi^2}{N^2} \\
+\lambda_N & = & 2 - 2 \cos ( \frac{N \pi}{N+1} \approx 4 - \frac{\pi^2}{N^2}.
+\end{eqnarray*}
+The optimal damping is
+$$
+\tau = \frac{2}{\lambda_1+\lambda_N} = \frac{1}{2},
+$$
+and the convergence factor is
+$$
+\| M \| \approx 1 - \frac{2 \lambda_1}{\lambda_N} \approx 1 - \frac{2 \pi^2}{N^2}
+$$
+
+The number of iterations is
+$$
+N_{its} \eqc \log \eps^{-1} N^2
+$$
+
+\bigskip
+
+For the 2D model problem with $N = (n-1)^2$, the condition number behaves like
+$$
+\kappa \eqc n^2.
+$$
+
+The costs to achieve a relative accuracy $\eps$ are
+$$
+N_{its} \times \mbox{Costs-per-iteration} 
+\eqc \log \eps^{-1} n^2 N \eqc \log \eps^{-1} n^4
+$$
+The costs per digit are comparable to the band-factorization. The memory 
+requirement is optimal $O(N)$.
+
+\subsubsection{The gradient method}
+
+It is not always feasible to find the optimal relaxation parameter $\tau$
+a priori. The gradient method is a modification to the Richardson method
+to find automatically the optimal relaxation parameter $\tau$:
+
+The first steps are identic:
+$$
+d^k = f - A u^k \qquad w^k = C^{-1} d^k
+$$
+Now, perform the update
+$$
+u^{k+1} = u^k + \tau w^k
+$$
+such that the error is minimal in energy norm:
+$$
+\mbox{Find } \tau \mbox{ such that } \| u - u^{k+1} \|_A = \min !
+$$
+Although the error cannot be computed, this minimization is possible:
+
+\begin{eqnarray*}
+\| u - u^{k+1} \|_A^2 & = & \| u - u^k - \tau w^k \|_A^2 \\
+        & = & (u-u^k)^T A (u-u_k) - 2 \tau (u-u^k)^T A w^k + \tau^2 (w^k)^T A w^k
+\end{eqnarray*}
+This is a convex function in $\tau$. It takes its minimum at
+$$
+0 = 2 (u-u^k)^T A w^k + 2 \tau_{opt}  (w^k)^T A w^k,
+$$
+i.e., 
+$$
+\tau_{opt} = \frac{ w^k A (u-u^k) } { (w^k)^T A w^k } = \frac{w^k d^k}{(w^k)^T A w^k}
+$$
+
+Since the gradient method gives optimal error reduction in energy norm, its
+convergence rate can be estimated by the Richardson iteration with optimal
+choice of the relaxation parameter:
+$$
+\| u - u^{k+1} \|_A \leq \frac{\kappa-1}{\kappa+1} \| u - u^k \|_A
+$$
+
+\subsubsection{The Chebyshev method}
+We have found the optimal choice of the relaxation parameter for one
+step of the iteration. If we perform $m$ iterations, the overall rate of convergence
+can be improved by choosing variable relaxation parameters $\tau_1, \ldots \tau_m$.
+
+The $m$-step iteration matrix is 
+$$
+M = M_m \ldots M_2 M_1 = (I - \tau_m C^{-1} A) \ldots (I - \tau_1 C^{-1} A).
+$$
+By diagonalization, the $A$-norm and $C$-norm are bounded by
+$$
+\| M \| \leq
+ \max_{\lambda \in [\gamma_1, \gamma_N]} | (1-\tau_1 \lambda) \ldots (1-\tau_m \lambda) |
+$$
+The goal is to optimize $\tau_1, \ldots \tau_m$:
+$$
+\min_{\tau_1, \ldots \tau_m}
+ \max_{\lambda \in [\gamma_1, \gamma_N]} | (1-\tau_1 \lambda) \ldots (1-\tau_m \lambda) |
+$$
+This is a polynomial in $\lambda$, of order $m$, and $p(0) = 1$:
+\begin{equation}
+\label{equ_polopt}
+\min_{p \in P^m \atop p(0) = 1}
+ \max_{\lambda \in [\gamma_1, \gamma_N]} | p(\lambda) |.
+\end{equation}
+This optimization problem can be solved explicitely by means of Chebyshev
+polynomials. These are the polynomials defined by
+$$
+T_m(x) = \left\{ \begin{array}{cl}
+         \cos (m \, \arccos (x))  & \; | x | \leq 1 \\
+        \cosh (m \, \operatorname{arccosh} (x)) & \; | x | > 1 
+        \end{array}
+        \right.
+$$
+The $T_m$ fulfill the recurrence relation
+\begin{eqnarray*}
+T_0(x) & = & 1 \\
+T_1(x) & = & x \\
+T_{m+1}(x) & = & 2 x T_m(x) - T_{m-1}(x)
+\end{eqnarray*}
+The $T_m$ fulfill also
+$$
+T_m(x) = \frac{1}{2} \Big[ (x + \sqrt{x^2-1})^m + (x+\sqrt{x^2-1})^{-m} \Big]
+$$
+
+
+The optimum of (\ref{equ_polopt}) is 
+$$
+p(x) = \frac{T_m \left( \frac{2x-\gamma_1-\gamma_2}{\gamma_2-\gamma_1} \right)}
+        {T_m \left( \frac{-\gamma_1-\gamma_2}{\gamma_2-\gamma_1} \right)}
+        = C_m \; T_m \left( \frac{2x-\gamma_1-\gamma_2}{\gamma_2-\gamma_1} \right)
+$$
+
+The numerator is bounded by $1$ for the range $\gamma_1 \leq x \leq \gamma_2$.
+The factor $C_m$ can be computed as
+$$
+C_m
+        = \frac{2 c^m}{1+c^{2m}}
+\qquad \mbox{with} \qquad
+        c = \frac{\sqrt{\gamma_2} - \sqrt{\gamma_1}}{\sqrt{\gamma_2} + \sqrt{\gamma_1}}
+$$
+Using the condition number we have
+$$
+c \approx 1 - \frac{2}{\sqrt \kappa},
+$$
+and
+$$
+C_m \approx
+( 1 - \frac{2}{\sqrt \kappa})^m
+$$
+Now, an error reduction by a factor of $\eps$ can be achieved in
+$$
+N_{its} \approx \log \eps^{-1} \sqrt{\kappa}
+$$
+steps. The original method by choosing $m$ different relaxation parameters 
+$\tau_k$ is not a good choice, since
+\begin{itemize}
+\item it is not numerically stable
+\item one has to know a priori the number of iterations 
+\end{itemize}
+The recurrence relation for the Chebyshev polynomials leads to a practicable
+iterative method called Chebyshev iteration. 
+
+\subsubsection{The conjugate gradient method}
+
+The conjugate gradient algorithm automatically finds the optimal 
+relaxation parameters for the best $k$-step approximation.
+
+
+
+Let $p_0, p_1, \ldots$ be a finite sequence of $A$-orthogonal vectos, and set 
+$$
+V_k = \mbox{span} \{ p_0, \ldots p_{k-1} \}
+$$
+
+We want to approximate the solution $u$ in the linear manifold $u_0+ V_k$:
+$$
+\min_{v \in u_0 + V_k} \| u - v \|_A 
+$$
+
+We represent $u_k$ as
+$$
+u_k = u_0 + \sum_{l=0}^{k-1} \alpha_l p_l
+$$
+The optimality criteria are
+$$
+0 = (u-u_k, p_j)_A = (u - u_0 - \sum_{l=0}^{k-1} \alpha_l p_l, p_j)_A 
+ \qquad   0 \leq j < k.
+$$
+The coefficients $\alpha_l$ follow from the $A$-orthogonality:
+$$
+\alpha_l = \frac{(u-u_0)^T A p_l}{p_l^T A p_l} = \frac{(f-A u_0)^T p_l}{p_l^T A p_l} 
+$$
+The $\alpha_l$ are computable, since the $A$-inner product was chosen.
+The best approximations can be computed recursively:
+$$
+u_{k+1} = u_k + \alpha_k p_k
+$$
+Since $u_k - u_0 \in V_k$, and $p_k \bot_A V_k$, there holds
+$$
+\alpha_k = \frac{(f-A u_k)^T p_k}{p_k^T A p_k}.
+$$
+
+
+\bigskip
+
+Any $k$-step simple iteration approximates the solution $u_k$ in the
+manifold
+$$
+u_0 + {\cal K}_k(d_0)
+$$
+with the {\em Krylov space}
+$$
+{\cal K}_k(d_0) = \{ C^{-1} d_0, C^{-1} A C^{-1} d_0, \ldots , C^{-1} (A C^{-1})^{k-1} d_0 \}.
+$$
+
+Here, $d_0 = f - A u_0$ is the initial residual.
+The conjugate gradient method computes an $A$-orthogonal basis of the
+Krylov-space. The term {\em conjugate} is equivalent to $A$-orthogonal.
+
+\begin{quote}
+{\bf Conjugate Gradient Algorithm:} \newline
+Choose $u_0$, compute $d_0 = f - A u_0$, set $p_0 = C^{-1} d_0$. \newline
+for $k = 0, 1, 2, \ldots$ compute
+\begin{eqnarray*}
+\alpha_k & = & \frac{d_k^T p_k}{p_k^T A p_k} \\
+u_{k+1} & = & u_k + \alpha_k \, p_k \\
+d_{k+1} & = & d_k - \alpha_k \, A p_k \\
+\beta_k & = & -\frac{d_{k+1}^T C^{-1} A p_k}{p_k^T A p_k} \\
+p_{k+1} & = & C^{-1} d_{k+1} + \beta_k p_k
+\end{eqnarray*}
+\end{quote}
+
+\begin{remark} In exact arithmetic, the conjugate gradient algorithm 
+terminates at a finite number of steps $\overline{k} \leq N$.
+\end{remark}
+
+
+
+\begin{theorem} The conjugate gradient algorithm fulfills for $k \leq \overline{k}$
+\begin{enumerate}
+\item
+The sequence $p_k$ is $A$-orthogonal. It spans the Krylov-space ${\cal K}_k(d_0)$
+\item
+The $u_k$ minimizes
+$$
+\min_{v \in u_0 + {\cal K}_k(d_0)} \| u - v \|_A
+$$
+\item
+There holds the orthogonality
+$$
+d_k^T p_l = 0 \qquad \forall \, l < k
+$$
+\end{enumerate}
+\end{theorem}
+\noindent
+{\em Proof:} Per induction in $k$. We assume 
+\begin{eqnarray*}
+p_k^T A p_l & = & 0 \qquad \forall \; l < k \\
+d_k^T p_l & = & 0 \qquad \forall \; l < k 
+\end{eqnarray*}
+This is obvious for $k = 0$. We prove the property for $k+1$:
+For $l < k$ there holds
+$$
+d_{k+1}^T p_l = (d_k - \alpha_k A p_k)^T p_l = 
+        d_k^T p_l - \alpha_k p_k^T A p_l = 0
+$$
+per induction. For $l = k$ there is
+$$
+d_{k+1}^T p_k = (d_k-\alpha_k A p_k)^T p_k = d_k^T p_k - \frac{d_k^T p_k}{p_k^T A p_k}\; p_k^T A p_k = 0.
+$$ 
+Next, prove the $A$-orthogonality of the $p_k$. For $l < k$ we have
+\begin{eqnarray*}
+(p_{k+1}, p_l)_A & = & (C^{-1} d_{k+1} + \beta_k p_k, p_l)_A \\
+        & = & d_{k+1}^T C^{-1} A p_l
+\end{eqnarray*}
+There is
+$$
+C^{-1} A p_l \in \mbox{span} \{ p_0, \ldots p_k \}, 
+$$
+and $d_{k+1}^T p_j = 0$ for $j \leq k$. For $l = k$ there is
+\begin{eqnarray*}
+(p_{k+1}, p_k)_A & = & (C^{-1} d_{k+1} + \beta_k p_k, p_k)_A \\
+        & = & (C^{-1} d_{k+1}, p_k)_A   
+                -\frac{d_{k+1}^T C^{-1} A p_k}{p_k^T A p_k} \; p_k^T A p_k  = 0
+\end{eqnarray*}
+\hfill $\Box$
+
+The coefficients $\alpha_k$ and $\beta_k$ should be computed by the equivalent,
+and numerically more stable expressions
+$$
+\alpha_k = \frac{d_k^T C^{-1} d_k}{p_k^T A p_k} \qquad
+\beta_k = \frac{d_{k+1}^T C^{-1} d_{k+1}}{d_k^T C^{-1} d_k}.
+$$
+
+\begin{theorem} The conjugate gradient iteration converges with the rate
+$$
+\| u - u_k \|_A \leq  \left( \frac{\sqrt{\kappa} - 1}{\sqrt{\kappa}+1} \right)^k
+$$
+\end{theorem}
+{\em Proof:} The conjugate gradient gives the best approximation in the
+Krylov space. Thus, it can be bounded by the Chebyshev method leading to that rate.
+
+
+\bigskip
+
+The conjugate gradient iteration is stopped as soon as a convergence 
+criterion is fulfilled. Ideally, on wants to reduce the error in the energy
+norm by a factor $\eps$:
+$$
+\| u - u_k \|_A \leq \eps \, \| u - u_0 \|_A
+$$
+But, the energy error cannot be computed. We rewrite
+$$
+\| u - u_k \|_A^2 = \| A^{-1} (f - A u_k) \|_A^2 = \| A^{-1} d_k \|_A^2
+= d_k^T A^{-1} d_k
+$$
+If $C$ is a good approxiamtion to $A$, then also $C^{-1}$ is one to $A^{-1}$. 
+The error can be approximated by 
+$$
+d_k^T C^{-1} d_k.
+$$
+This scalar is needed in the conjugate gradient iteration, nevertheless.
+
+\bigskip
+
+For solving the 2D model problem with $C = I$, the time complexity is
+$$
+\log \eps^{-1} \, N \sqrt{\kappa} = \log \eps^{-1} \, n^3
+$$
+The costs for one digit are comparable to the recursive sub-structuring algorithm. In 3D, the conjugate gradient method has better time complexity. 
+
+
+\section{Preconditioning}
+
+In the following, let the symmetric and positive definite matrix
+$A$ arise from the finite element discretization of the $H^1$-elliptic 
+and continuous bilinear-form $A(.,.)$.
+We construct preconditioners $C$ such that the preconditioning action
+$$
+w = C^{-1} \times d
+$$
+is efficiently computable, and estimate the spectral bounds
+$$
+\gamma_1 \, u^T C u \leq u^T A u \leq \gamma_2 \, u^T C u \qquad
+\forall \, u \in \setR^N
+$$
+
+
+The analysis of the preconditioner is performed in the finite element
+framework. For this, define the Galerkin isomorphism
+$$
+G : \setR^N \rightarrow V_h : \underline u \rightarrow u = \sum u_i \varphi_i,
+$$
+where $\varphi_i$ are the fe besis functions. Its dual is 
+$$
+G^\ast : V_h^\ast \rightarrow \setR^N : d(\cdot) \rightarrow (d(\varphi_i))_{i=1,\ldots, N}.
+$$
+To distinguish vectors and the  corresponding finite element functions,
+we write vectors $\underline u \in \setR^N$ with underlines (when necessary).
+
+The evaluation of the quadratic form is
+$$
+\ul u^T A \ul u = A(G \ul u, G \ul u) \eqc \| G \ul u \|_{H^1}^2
+$$
+
+\subsubsection{The Jacobi Preconditioner}
+
+The Jacobi preconditioner $C$ is
+$$
+C = \mbox{diag} \, A.
+$$
+The preconditioning action is written as
+$$
+C^{-1} \times \underline d = 
+\sum_{i=1}^N e_i (e_i^T A e_i)^{-1} e_i^T \; \underline d
+$$
+Here, $e_i$ is the $i^{th}$ unit-vector. Thus, $e_i^T A e_i$ gives the
+$i^{th}$ diagonal element $A_{ii}$ of the matrix, which is
+$$
+A_{ii} = A(\varphi_i, \varphi_i) \eqc \| \varphi_i \|_{H^1}^2.
+$$
+%
+The quadratic form generated by the preconditioner is
+$$
+\ul {u} ^T C \ul u = \sum_{i=1}^N u_i^2 \| \varphi_i \|_A^2
+ \eqc \sum_{i=1}^N u_i^2 \| \varphi_i \|_{H^1}^2
+$$
+
+\begin{theorem} \label{theo_jacobi} 
+Let $h$ be the minimal mesh-size of a shape-regular
+triangulation. Then there holds
+\begin{equation}\label{equ_jacobi}
+h^2 \; \ul u^T C \ul u \leqc u^T A u \leqc \, u^T C u
+\end{equation}
+\end{theorem}
+{\em Proof:} We start to prove the right inequality
+$$
+\ul u^T A \ul u = \| \sum_{i} u_i \varphi_i \|_A^2 \leqc 
+\ul u^T C \ul u = \sum_i u_i^2 \| \varphi_i \|_A^2.
+$$
+We define the interaction matrix $O$ with entries
+$$
+O_{ij} = \left\{ \begin{array} {cl}
+        1 & A(\varphi_i, \varphi_j) \neq 0 \\
+        0 & \mbox{else} 
+        \end{array} \right.
+$$
+On a shape regular mesh, only a (small) finite number of basis functions have
+overlapping support. Thus, $O$ has a small number of entries $1$ per row.
+There holds
+\begin{eqnarray*}
+\| \sum_i u_i \varphi_i \|_A^2 & = &
+        \sum_i \sum_j u_i u_j A(\varphi_i, \varphi_j) \\
+        & = & \sum_i \sum_j u_i u_j O_{ij} A(\varphi_i, \varphi_j)  \\
+        & \leq & \sum_i \sum_j (u_i \| \varphi_i \|_A)  O_{ij} (u_j  \| \varphi_j \|_A) \\
+        & \leq & \rho (O) \sum_i   ( u_i \|\varphi_i \|_A)^2 \\
+        & = & \rho(O) \ul u^T C \ul u.
+\end{eqnarray*}
+The spectral radius $\rho(O) = \max_{x \in \setR^N} \frac{x^T O x}{\|x\|^2}$ 
+is bounded by the (small) finite row-sum norm of $O$.
+
+The other estimate is proven element by element. Note that
+$$
+\ul u^T A \ul u \eqc \| u \|_{H^1(\Omega)}^2 = \sum_T \| \sum_i u_i \varphi_i \|_{H^1(T)}^2
+$$
+and
+$$
+\ul u^T C \ul u \eqc \sum_i \| u_i \varphi_i \|_{H^1(\Omega)}^2
+= \sum_T  \sum_i \| u_i \varphi_i \|_{H^1(T)}^2.
+$$
+We prove the inequality for each individual element.
+The triangle $T$ has diameter $h_T$. On $T$, we expand $u$ in terms of
+the element shape functions $\varphi_\alpha$, namely
+$u|_T = \sum_{\alpha=1}^3 u_\alpha \varphi_\alpha$. We transform to the
+reference element $\widehat T$:
+\begin{eqnarray*}
+\| \sum_\alpha u_\alpha \varphi_\alpha \|_{H^1(T)}^2 & = &
+\| \sum_\alpha u_\alpha \varphi_\alpha \|_{L_2(T)}^2 +
+\| \nabla \sum_\alpha u_\alpha \varphi_\alpha \|_{L_2(T)}^2 \\
+        & \eqc & 
+h_T^2 \, \| \sum_\alpha u_\alpha \widehat \varphi_\alpha \|_{L_2(\widehat T)}^2 +
+\| \nabla \sum_\alpha u_\alpha \widehat \varphi_\alpha \|_{L_2(\widehat T)}^2 \\
+& \geq & 
+h_T^2 \, \| \sum_\alpha u_\alpha \widehat \varphi_\alpha \|_{L_2(\widehat T)}^2
+\end{eqnarray*}
+and
+\begin{eqnarray*}
+ \sum_\alpha\| u_\alpha \varphi_\alpha \|_{H^1(T)}^2 & = &
+\sum_\alpha \|  u_\alpha \varphi_\alpha \|_{L_2(T)}^2 +
+\sum_\alpha \| \nabla  u_\alpha \varphi_\alpha \|_{L_2(T)}^2 \\
+        & \eqc & 
+h_T^2 \, \sum_\alpha \|  u_\alpha \widehat \varphi_\alpha \|_{L_2(\widehat T)}^2 +
+\sum_\alpha \| \nabla  u_\alpha \widehat \varphi_\alpha \|_{L_2(\widehat T)}^2 \\
+& \leqc & \sum_\alpha \|  u_\alpha \widehat \varphi_\alpha \|_{L_2(\widehat T)}^2 
+\end{eqnarray*}
+Both, $(u)_\alpha \rightarrow \| \sum_\alpha u_\alpha \widehat \varphi_\alpha \|_{L_2(\widehat T)}$ and
+$u \rightarrow \left\{ \sum_\alpha \|  u_\alpha \widehat \varphi_\alpha \|_{L_2(\widehat T)}^2 \right\}^{1/2}$ are norms on $\setR^3$. Since all norms in $\setR^3$ are equivalent, we have
+\begin{equation}  \label{equ_estjact}
+ \sum_\alpha\| u_\alpha \varphi_\alpha \|_{H^1(T)}^2 \leqc h_T^{-2}
+\| \sum_\alpha u_\alpha \varphi_\alpha \|_{H^1(T)}^2.
+\end{equation}
+By summing over all elements and choosing $h = \min h_T$, we have proven
+the left inequality of (\ref{equ_jacobi}).
+\hfill $\Box$
+
+\bigskip
+
+{\em Remark:} Inequality (\ref{equ_estjact}) is sharp. To prove this,
+choose $u_\alpha = 1$. 
+
+\subsubsection{Block-Jacobi preconditioners}
+
+Instead of choosing the diagonal, one can choose a block-diagonal of $A$, e.g.,
+\begin{itemize}
+\item In the  case of systems of PDEs, choose blocks consisting of all 
+degrees of freedom sitting in one vertex. E.g., mechanical deformations
+$(u_x, u_y, u_z)$.
+\item For high order elements, choose blocks consisting of all degrees of 
+freedom associated to the edges (faces, inner) of the elements.
+\item On anisotropic tensor product meshes, choose blocks consisting of 
+unknowns in the short direction
+\item Domain decomposition methods: Choose blocks consisting of the
+unknowns in a sub-domain
+\end{itemize}
+
+Decompose the unknowns into $M$ blocks, the block $i$ has dimension $N_i$. 
+Define the rectangular embedding matrices
+$$
+E_i \in \setR^{N \times N_i} \qquad i = 1, \ldots, M.
+$$
+$E_i$ consists of $N_i$ unit vectors corresponding to the unknowns in the
+block $i$. Each $\ul u \in \setR^N$ can be uniquely written as
+$$
+\ul u = \sum_{i=1}^M E_i \ul u_i \qquad \mbox{with} \quad \ul u_i \in \setR^{N_i}
+$$
+The diagonal blocks are
+$$
+A_i = E_i^T A E_i \qquad i = 1, \ldots, M.
+$$
+The block Jacobi preconditioner is
+$$
+C^{-1} \times \ul d = \sum_{i=1}^M E_i A_i^{-1} E_i^T \, \ul d
+$$
+%
+The quadratic form induced by $C$ can be written as
+$$
+\ul u^T C \ul u = \sum_i \ul u_i^T A_i \ul u_i = \sum_i \| G E_i \ul u_i \|_A^2
+$$
+where $u = \sum E_i u_i$.
+
+{\em Example:} Discretize the unit interval $I = (0,1)$ into $n$ elements
+of approximate size $h \eqc \ 1/n$. Split the unknowns into two blocks, the left half 
+and the right half, and define the corresponding block-Jacobi preconditioner.
+
+Set
+$$
+I = I_1 \cup T_{n/2} \cup I_2,
+$$
+with $I_1 = (0, x_{n/2})$, $T_{n/2} = [x_{n/2},x_{n/2+1}]$, and
+$I_2 = (x_{n/2+1}, 1)$. 
+Decompose
+$$
+\ul u = E_1 \ul u_1 + E_2 \ul u_2.
+$$
+The corresponding finite element functions are $u_i = G E_i \ul u_i$. There
+holds
+$$
+u_1 (x) = \left\{ \begin{array}{cl}
+        G \ul u (x) &  x \in I_1 \\
+        \mbox{linear} & x \in T \\
+        0 & x \in I_2
+        \end{array} \right.,
+$$
+and $u_2$ vice versa.  The quadratic form is
+$$
+\ul u^T C \ul u = \sum_i u_i A_i u_i = \sum_i \| G E_i u_i \|_A^2
+$$
+Evaluation gives 
+\begin{eqnarray*}
+\| u_1 \|_A^2 & = & \| u_1 \|_{H^1(I_1)}^2 + \| u_1 \|_{H^1(T)}^2 \\
+        & \eqc & \| u_1 \|_{H^1(I_1)}^2 + h^{-1} | u(x_{n/2}) |^2 \\
+        & \leqc & \| u \|_{H^1(I)}^2 + h^{-1} \| u \|_{H^1(I)}^2 \qquad
+        \mbox{(trace theorem)} \\
+        & \eqc & h^{-1}  \, \| u \|_A^2,
+\end{eqnarray*}
+and thus
+$$
+\ul u^T C \ul u = \sum_i \| u_i \|_A^2 \leqc h^{-1} \| u \|_A^2 \eqc h^{-1} \ul u^T A \ul u.
+$$
+The situation is the same in $\setR^d$.
+
+Exercise: Sub-divide the interval $I$ into $M$ sub-domains of approximative
+size $H \approx 1/M$. What are the sprectral bounds of the block-Jacobi
+preconditioner ?
+
+\subsubsection{Additive Schwarz preconditioners}
+
+The next generalization is an {\em overlapping}
+block Jacobi preconditioner. For $i = 1, \ldots, M$ let $E_i \in \setR^{N \times N_i}$ be rectangular matrices such that each $u \in \setR^N$ can be 
+(not necessarily uniquely) written as
+$$
+\ul u = \sum_{i=1}^M E_i \ul u_i \qquad \mbox{with} \quad \ul u_i \in \setR^{N_i}
+$$
+Again, the overlapping block-Jacobi preconditioning action is
+$$
+C^{-1} \times \ul d = \sum_{i=1}^M E_i A_i^{-1} E_i^T \, \ul d
+$$
+{\em Example:} Choose the unit-interval problem from above. The block 1
+contains all nodes in $(0, 3/4)$, and the block 2 contains nodes in $(1/4,1)$.
+The blocks overlap, the decomposition is not unique.
+
+The columns of the matrices $E_i$ are not necessarily unit-vectors, but  
+are linearly independent.
+In this general setting, the preconditioner is called 
+{\em Additive Schwarz preconditioner}. The following lemma gives
+a useful representation of the quadratic form. It was proven in similar
+forms by many authors (Nepomnyaschikh, Lions, Dryja+Widlund, Zhang, Xu, Oswald, Griebel, ...) and is called also Lemma of many fathers, or Lions' Lemma:
+
+\begin{lemma}[Additive Schwarz lemma] \label{lemma_aslinalg}
+There holds
+$$
+\ul u^T C \ul u = \inf_{\ul u_i \in \setR^{N_i} \atop \ul u = \sum E_i \ul u_i} \sum_{i=1}^M  \ul u_i^T A_i \ul u_i
+$$
+\end{lemma}
+{\em Proof:} The right hand side is a constrained minimization problem of 
+a convex function. The feasible set is non-empty, the CMP has a unique solution.
+It is solved by means of Lagrange multipliers. Define the Lagrange-function
+(with Lagrange multipliers $\lambda \in \setR^N$):
+$$
+L ( (u_i), \lambda) = \sum u_i^T A u_i + \lambda^T (u - \sum E_i u_i).
+$$
+Its stationary point (a saddle point) is the solution of the CMP:
+\begin{eqnarray*}
+0 = \nabla_{u_i} L( (u_i), \lambda) = 2 A_i u_i + E_i^T \lambda \\
+0 = \nabla_\lambda L ( (u_i), \lambda) = u - \sum E_i u_i
+\end{eqnarray*}
+The first line gives
+$$
+u_i = \frac{1}{2} A_i^{-1} E_i^T \lambda.
+$$
+Use it in the second line to obtain
+$$
+0 = u - \frac{1}{2} \sum E_i A_i^{-1} E_i \lambda = u - \frac{1}{2} C^{-1} \lambda,
+$$
+i.e., $\lambda = 2 C u$, and
+$$
+u_i = A_i^{-1} E_i^T C u.
+$$
+The minimal value is
+\begin{eqnarray*}
+\sum u_i^T A_i u_i & = & \sum u^T C E_i A_i^{-1} A_i A_i^{-1} E_i^T C u  \\
+        & = & \sum u^T C E_i A_i^{-1} E_i^T C u \\
+        & = & u^T C C^{-1} C u = u^T C u
+\end{eqnarray*}
+\hfill $\Box$
+
+\bigskip
+
+Next, we rewrite the additive Schwarz iteration matrix 
+$$
+I - \tau C^{-1} A = I - \tau \sum_{i=1}^M E_i A_i^{-1} E_i^T A
+$$
+in the fe framework. Let 
+$$
+V_i = G E_i \setR^{N_i} \subset V_h
+$$
+be the sub-space corresponding to the range of $E_i$, and define the $A$-orthogonal projection
+$$
+P_i : V_h \rightarrow V_i : \quad A(P_i u, v_i) = A(u, v_i) \qquad \forall \, v_i \in V_i
+$$
+\begin{lemma} Set $u = G \ul u$, the application of the iteration matrix is
+$ \hat {\ul u} = (I-\tau C^{-1} A) \ul u$, and set $\hat u = G \hat {\ul u}$.
+Then there holds
+$$
+\hat u = \left( I - \tau \sum_{i=1}^M P_i \right) u.
+$$
+\end{lemma}
+{\em Proof:} Let $\ul w_i = A_i^{-1} E_i^T A \ul u$. Then
+$$
+\hat u = u - \tau G E_i \ul w_i.
+$$
+There holds $w_i := G E_i \ul w_i \in V_i$, and
+\begin{eqnarray*}
+A(G E_i \ul w_i, G E_i \ul v_i) 
+        & = & \ul v_i^T E_i^T A E_i \ul w_i  \\
+        & = & \ul v_i^T A_i \ul w_i = \ul v_i^T E_i^T A \ul u \\
+        & = & A(G \ul u, G E_i \ul v_i) \qquad \qquad \qquad \forall \, v_i \in \setR^{N_i},
+\end{eqnarray*}
+i.e., $w_i = P_i u$.
+\hfill $\Box$
+
+\bigskip
+
+The additive Schwarz preconditioner is defined by the space splitting
+$$
+V = \sum_{i=1}^M V_i
+$$
+
+\bigskip
+
+If the spaces $V_i$ are $A$-orthogonal, then $\sum_i P_i = I$, and (with 
+$\tau = 1$), and the iteration matrix is $M = 0$.
+
+\bigskip
+
+The reformulation of the additive Schwarz lemma \ref{lemma_aslinalg} in the
+finite element framework is
+\begin{lemma}[Additive Schwarz lemma] Let $u = G \ul u$. There holds
+$$
+\ul u^T C \ul u = \inf_{u_i \in V_i \atop u = \sum u_i} \sum_{i=1}^M  \| u_i \|_A^2
+$$
+\end{lemma}
+
+\bigskip
+
+{\em Example:} Let 
+$$
+A(u,v) = \int_0^1 u^\prime v^\prime + \eps \int u v \, dx
+$$ 
+with $0 \leq \eps \ll 1$. 
+The bilinear-form is $H^1$-elliptic and continuous, but the bounds depend
+on the parameter $\eps$. Let $C_J$ be the Jacobi preconditioner. The proof
+of Theorem~\ref{theo_jacobi} shows that
+$$
+\eps h^2 \ul u^T C_J \ul u \leqc \ul u^T A \ul u \leqc \ul u^T C_J \ul u.
+$$
+The non-robust lower bound is sharp: Take $\ul u = (1,\ldots,1)^T$. 
+
+The solution is to add the additional sub-space 
+$$
+V_0 = \mbox{span} \{ 1 \} = G E_0 \setR^1
+$$
+to the AS preconditioner (with $E_0 \in \setR^{N\times1}$ consisting of 1-entries). The preconditioning action is
+$$
+C^{-1} \times d = \mbox{diag} \{ A \}^{-1} d + E_0 (E_0^T A E_0)^{-1} E_0^T d.
+$$
+The spectral bounds are robust in $\eps$:
+$$
+h^2 \ul u^T C \ul u \leqc \ul u^T A \ul u \leqc \ul u^T C \ul u,
+$$
+namely
+\begin{eqnarray*}
+\ul u^T C \ul u & = & 
+\inf_{u_i \in V_i \atop u = \sum_0^M u_i} \sum_{i=0}^M  \| u_i \|_A^2 \\
+& = & 
+\inf_{u_0 \in V_0} 
+\left\{ 
+\| u_0 \|_A^2 + \inf_{u_i \in V_i \atop u-u_0 = \sum_1^M u_i} \sum_{i=1}^M \| u_i \|_A^2 \right\} \\ 
+& \leqc & \inf_{u_0 \in V_0} 
+\| u_0 \|_A^2 + h^{-2} \| u - u_0 \|_{H^1}^2
+\end{eqnarray*}
+The last step was the result of the Jacobi preconditioner applied to $(u,v)_{H^1}$. Finally, we choose $u_0 = \int_0^1 u \, dx$ to obtain
+\begin{eqnarray*}
+\ul u^T C \ul u & \leqc & \| u_0 \|_A^2 + h^{-2} \| u - u_0 \|_{H^1}^2 \\
+        & \leqc & \eps \, \| u_0 \|_{L_2}^2 + h^{-2} \| \nabla (u-u_0) \|_{L_2}^2 \\
+        & \leqc & \eps \, \| u \|_{L_2}^2 + h^{-2} \| \nabla u \|_{L_2}^2 \\
+        & = & h^{-2} \, \| u \|_A^2
+\end{eqnarray*}
+
+
+\subsubsection{Overlapping domain decomposition preconditioning}
+
+Let $\Omega = \cup_{i=1}^M \Omega_i$ be a decomposition of $\Omega$ into 
+$M$ sub-domains of diameter $H$. Let $\widetilde \Omega_i$ be such that
+$$
+\Omega_i \subset \widetilde \Omega_i \qquad
+\mbox{dist}\{ \partial \widetilde \Omega_i \setminus \partial \Omega, \partial \Omega_i\} \geqc H,
+$$
+and only a small number of $\widetilde \Omega_i$ are overlapping.
+Choose a finite element mesh of mesh size $h \leq H$, and the finite element
+space is $V_h$. The overlapping domain decomposition preconditioner is the
+additive Schwarz preconditioner defined by the sub-space splitting
+$$
+V_h = \sum V_i \qquad \mbox{with} \qquad V_i = V_h \cap H_0^1(\widetilde \Omega_i).
+$$
+The bilinear-form $A(.,.)$ is $H^1$-elliptic and continuous.
+The implementation takes the sub-matrices of $A$ with nodes inside the 
+enlarged sub-domains $\widetilde \Omega_i$. 
+
+
+\begin{lemma} The overlapping domain decomposition preconditioner fulfills
+the spectral estimates
+$$
+H^2 \ul u^T C \ul u \leqc \ul u A \ul u \leqc \ul u^T C \ul u.
+$$
+\end{lemma}
+{\em Proof:} The upper bound is generic. For the lower bound, we construct
+an explicit decomposition $u = \sum u_i$.
+
+There exists a {\em partition of unity} $\{ \psi_i \}$ such that
+$$
+0 \leq \psi_i \leq 1, \qquad \mbox{supp} \{ \psi_i \} \subset \widetilde \Omega_i, \qquad \sum_{i=1}^M \psi_i = 1
+$$
+and
+$$
+\| \nabla \psi_i \|_{L_\infty} \leqc H^{-1}.
+$$
+
+Let $\Pi_h : L_2 \rightarrow V_h$ be a Cl\'ement-type quasi-interpolation 
+operator such that $\Pi_h$ is a projection on $V_h$, and 
+$$
+\| \Pi_h v \|_{L_2} \leqc \| v \|_{L_2}, \qquad \mbox{and} \qquad
+\| \nabla \Pi_h v \|_{L_2} \leqc \| \nabla v \|_{L_2}.
+$$
+
+For given $u \in V_h$, we choose the decomposition
+$$
+u_i = \Pi_h (\psi_i u).
+$$
+Indeed $u_i \in V_i$ is a decomposition of $u \in V_h$:
+$$
+\sum u_i = \sum \Pi_h (\psi_i u) = 
+\Pi_h \left( (\sum \psi_i) u \right) = \Pi_h u = u
+$$
+The lower bound follows from
+\begin{eqnarray*}
+\ul u^T C \ul u & = & \inf_{u = \sum v_i} \sum_i \| v_i \|_A^2 \\
+        & \leq & \sum_i \| u_i \|_A^2 \leqc \sum_i \| u_i \|_{H^1}^2 \\
+        & = & \sum_i \| \Pi_h (\psi_i u) \|_{H^1}^2 \\
+        & \leqc & \sum_i \| \psi_i u \|_{H^1}^2 \\
+        & = & \sum_i
+         \left\{ 
+        \| \psi_i u \|_{L_2(\widetilde \Omega_i)}^2 +
+         \| \nabla (\psi_i u) \|_{L_2(\widetilde \Omega_i)}^2 \right\} \\
+        & \leqc & \sum_i
+         \left\{ \| \psi_i u \|_{L_2(\widetilde \Omega_i)}^2 +
+         \| (\nabla \psi_i) u \|_{L_2(\widetilde \Omega_i)}^2 +
+         \| \psi_i \nabla u \|_{L_2(\widetilde \Omega_i)}^2 \right\} \\
+        & \leqc & \sum_i
+         \left\{ \| u \|_{L_2(\widetilde \Omega_i)}^2 +
+         H^{-2} \| u \|_{L_2(\widetilde \Omega_i)}^2 +
+         \| \nabla u \|_{L_2(\widetilde \Omega_i)}^2 \right\} \\
+        & \leqc & \| u \|_{L_2(\Omega)}^2 + H^{-2} \, \| u \|_{L_2(\Omega)}^2
+        + \| \nabla u \|_{L_2(\Omega)}^2 \\
+        & \leqc & H^{-2} \, \| u \|_A^2.
+\end{eqnarray*}
+\hfill $\Box$
+
+\bigskip
+
+\subsubsection{Overlapping DD preconditioning with coarse grid correction}
+
+The local DD preconditioner above gets worse, if the number of sub-domains
+increases. In the limit, if $H \eqc h$, the DD preconditioner is comparable 
+to the Jacobi preconditioner. 
+
+To overcome this degeneration, we add one more subspace. Let ${\cal T}_H$
+be a coarse mesh of mesh-size $H$, and ${\cal T}_h$ is the fine mesh 
+generated by sub-division of ${\cal T}_H$. Let $V_H$ be the finite element
+space on ${\cal T}_H$. 
+The sub-domains of the
+domain decomposition are of the same size as the coarse grid.
+
+The sub-space decomposition is
+$$
+V_h = V_H + \sum_{i=1}^M V_i.
+$$
+Let $G_H : \setR^{N_H} \rightarrow V_H$ be the Galerkin isomorphism on the
+coarse grid, i.e.,
+$$
+G_H \ul u_H = \sum_{i=1}^{N_H} u_{H,i} \varphi^H_i
+$$
+The coarse space fulfills $V_H \subset V_h$. Thus, every coarse grid
+basis $\varphi^H_i$ can be written as linear combination of fine grid
+basis functions $\varphi_j^h$:
+$$
+\varphi_i^H = \sum_{j=1}^N E_{H,ji} \varphi_j^h.
+$$
+Example:
+\begin{center}
+\includegraphics[height=2cm]{pictures/prol}
+\end{center}
+The first basis function $\varphi_1^H$ is
+$$
+\varphi_1^H = \varphi_1^h + \frac{1}{2} \varphi_2^h
+$$
+The whole matrix is
+$$
+E_H = 
+\left( \begin{array}{ccc}
+        1 \\
+        1/2 & 1/2 \\
+         & 1 & \\
+        & 1/2 & 1/2 \\
+        & & 1 
+        \end{array} \right).
+$$
+
+There holds
+$$
+G_H \ul u_H = G_h E_H \ul u_H.
+$$
+Proof:
+\begin{eqnarray*}
+G_H \ul u_H & = & \sum_{i=1}^{N_H} u_{H,i} \varphi_i^H = \sum_{i=1}^{N_H} \sum_{j=1}^{N_h} u_{H,i} E_{H,ji} \varphi_j^h \\
+        & = & \sum_{j=1}^{N_h} \varphi_j^h (E_H \ul u_H)_j = G E \ul u_H
+\end{eqnarray*}
+The matrix $E_H$ transforms the coefficients $\ul u_H$ w.r.t. the
+coarse grid basis to the coefficients $\ul u_h = E_H \ul u_H$ w.r.t. the
+fine grid basis. It is called {\em prolongation matrix}.
+
+\medskip
+
+The DD preconditioner with coarse grid correction is
+$$
+C^{-1} \times d = \sum_i E_i A_i^{-1} E_i^T d + E_H (E_H^T A E_H)^{-1} E_H^T d 
+$$
+
+The first part is the local DD preconditioner from above. The second part is
+the coarse grid correction step. The matrix $E_H^T$ (called {\em restriction matrix}) transfers the defect $d$ from the fine grid to a defect vector on 
+the coarse grid. Then, the coarse grid problem with matrix $E_H^T A E_H$
+is solved. Finally, the result is prolongated to the fine grid. 
+
+The matrix $A_H := E_H^T A E_H$ is the Galerkin matrix w.r.t. the coarse grid
+basis:
+\begin{eqnarray*}
+A_{H,ij} & = & \ul e_j^T E_H^T A E_H \ul e_i = A(G_h E_H \ul e_i, G_h E_H \ul e_j) \\
+        & = & A(G_H \ul e_i, G_H \ul e_j) = A(\varphi_i^H, \varphi_j^H).
+\end{eqnarray*}
+
+\begin{theorem} The overlapping domain decomposition preconditioner with
+coarse grid system fulfills the optimal spectral estimates
+$$
+\ul u^T C \ul u \leqc \ul u^T A \ul u \leqc \ul u^T C \ul u.
+$$
+\end{theorem}
+{\em Proof:} The quadratic form generated by the preconditioner is
+$$
+\ul u^T C \ul u = \inf_{u_H \in V_H, u_i \in V_i  \atop u = u_H + \sum u_i}
+\| u_H \|_A^2 + \sum_{i=1}^M \| u_i \|_A^2.
+$$
+Again, the upper bound $\ul u^T A \ul u \leqc \ul u^T C \ul u$ follows from
+the finite overlap of the spaces $V_H, V_1, \ldots V_M$. To prove the lower
+bound, we come up with an explicit decomposition. We split the minimization 
+into two parts:
+\begin{equation}
+\label{equ_ddc1}
+\ul u^T C \ul u = \inf_{u_H \in V_H} \inf_{u_i \in V_i  \atop u-u_H = \sum u_i}
+\| u_H \|_A^2 + \sum_{i=1}^M \| u_i \|_A^2
+\end{equation}
+In the analysis of the DD precondition without coarse grid system we have
+observed that
+$$
+\inf_{u_i \in V_i  \atop u-u_H = \sum u_i} \sum_{i=1}^M \| u_i \|_A^2 \leqc
+H^{-2} \| u - u_H \|_{L_2}^2 + \| \nabla (u-u_H) \|_{L_2}^2
+$$
+Using this in (\ref{equ_ddc1}) gives
+\begin{eqnarray*}
+\ul u^T C \ul u & \leqc & \inf_{u_H \in V_H}  \left\{ \| u_H \|_A^2 + H^{-2} \, \| u - u_H \|_{L_2}^2 + \| \nabla (u - u_H) \|_{L_2}^2 \right\} \\
+        & \leqc & \inf_{u_H \in V_H} \left\{ \| \nabla u_H \|_{L_2}^2 + H^{-2} \, \| u - u_H \|_{L_2}^2 + \| \nabla u \|_{L_2}^2 \right\}
+\end{eqnarray*}
+
+To continue, we introduce a Cl\'ement operator $\Pi_H : H^1 \rightarrow V_H$
+being continuous in the $H^1$-semi-norm, and approximating in $L_2$-norm:
+$$
+\| \nabla \Pi_H u \|_{L_2}^2 + H^{-2} \| u - \Pi_H u \|_{L_2}^2 \leqc \| \nabla u \|_{L_2}^2
+$$
+Choosing now $u_H := \Pi_H u$ in the minimization problem we obtain the result:
+\begin{eqnarray*}
+\ul u^T C \ul u & \leqc & \| \nabla \Pi_H u \|_A^2 + H^{-2} \, \| u - \Pi_H u \|_{L_2}^2 + \| \nabla u \|_{L_2}^2 \\
+        & \leqc & \| \nabla u \|^2 \eqc \| u \|_A^2
+\end{eqnarray*}
+\hfill $\Box$
+
+The inverse factor $H^{-2}$ we have to pay for the local decomposition could 
+be compensated by the approximation on the coarse grid. 
+
+\bigskip
+The costs for the setup depend on the underlying direct solver for the coarse
+grid problem and the local problems. Let the factorization step have time
+complexity $N^\alpha$. Let $N$ be the number of unknowns at the fine grid,
+and $M$ the number of sub-domains. Then the costs to factor the coarse grid
+problem and the $M$ local problems are  of order
+$$
+M^\alpha + M \left( \frac{N}{M} \right)^\alpha
+$$
+Equilibrating both terms gives the optimal choice of number of sub-domains
+$$
+M = N^\frac{\alpha}{2 \alpha-1},
+$$
+and the asymptotic costs
+$$
+N^\frac{\alpha^2}{2 \alpha-1}.
+$$
+Example: A Cholesky factorization using bandwidth optimization for 2D problems
+has time complexity $N^2$. The optimal choice is $M = N^{2/3}$, leading to
+the costs of 
+$$
+N^{4/3}.
+$$
+
+\bigskip
+
+\subsubsection{Multi-level preconditioners}
+The preconditioner above uses two grids, the fine one where the equations
+are solved, and an artificial coarse grid. Instead of two grids, one
+can use a whole hierarchy of grids ${\cal T}_0, {\cal T}_1, \ldots , {\cal T_L} = {\cal T}$. The according finite element spaces are
+$$
+V_0 \subset V_1 \subset \ldots \subset V_L = V_h.
+$$
+Let $E_l$ be the prolongation matrix from level $l$ to the finest level $L$.
+Define
+$$
+A_l = E_l^T A E_l \qquad \mbox{and} \qquad D_l = \mbox{diag} \{ A_l \}.
+$$
+Then, the multi-level preconditioner is
+$$
+C^{-1} = E_0 A_0^{-1} E_0^T + \sum_{l=1}^L E_l D_l^{-1} E_l^T
+$$
+
+The setup, and the application of the preconditioner takes
+$O(N)$ operations. One can show that the multi-level preconditioner
+fulfills optimal spectral bounds
+$$
+\ul u^T  C \ul u \leqc \ul u^T A \ul u \leqc \ul u^T C \ul u.
+$$
+
+An iterative method with multi-level preconditioning solves the
+matrix equation $A u = f$ of size $N$ with $O(N)$ operations !
+
+
+\input{multilevel.tex}

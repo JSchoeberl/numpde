@@ -1,0 +1,209 @@
+% \documentclass[12pt]{article}
+% \usepackage{amsmath,amsthm,amssymb,a4wide}
+% \usepackage[german,english]{babel}
+% \usepackage{epsfig}
+% \usepackage{latexsym}
+% \usepackage{amssymb}
+% % \usepackage{theorem}
+% \usepackage{amsthm}
+% % \usepackage{showkeys}
+
+% \newcommand{\setR}{ {\mathbb R} }
+% \newcommand{\setN}{ {\mathbb N} }
+% \newcommand{\setZ}{ {\mathbb Z} }
+% \newcommand{\eps}{\varepsilon}
+
+% \newcommand{\beq}{\begin{equation}}
+% \newcommand{\eeq}{\end{equation}}
+
+% \newcommand{\opdiv}{\operatorname{div}}
+% \newcommand{\opcurl}{\operatorname{curl}}
+% \newcommand{\opdet}{\operatorname{det}}
+% \newcommand{\optr}{\operatorname{tr}}
+% \newcommand{\optrn}{\operatorname{tr}_n}
+% \newcommand{\sfrac}[2]{ { \textstyle \frac{#1}{#2} } }
+
+% \newcommand{\Zh}{\mathrm{Z}_h}
+% \newcommand{\Ih}{\mathrm{I}_l}
+
+% \newcommand{\leqc}{\preceq} 
+% \newcommand{\geqc}{\succeq} 
+% \newcommand{\eqc}{\simeq} 
+% \newcommand{\ul}{\underline}
+
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{definition}[theorem]{Definition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{remark}[theorem]{Remark}
+% \newtheorem{example}[theorem]{Example}
+
+% %
+% %
+% \setlength{\unitlength}{1cm}
+% \sloppy 
+% %
+
+% \title{Analysis of the multi-level preconditioner}
+% \author{Joachim Sch\"oberl}
+
+% \begin{document}
+% \maketitle
+
+\section{Analysis of the multi-level preconditioner}
+
+We want to solve a finite element system on $V_L := V_h \subset H^1$.
+To define the multi-level preconditioner $C = C_L$, we use also finite
+element spaces on coarser meshes ${\mathcal T}_0, {\mathcal T}_1, \ldots
+{\mathcal T}_L$:
+$$
+V_0 \subset V_1 \subset \ldots \subset V_L
+$$
+Assume $h_l \eqc 2^{-l}$. Let $\{ \varphi_{l,i} : 1 \leq i \leq N_l \}$ be the hat-basis for $V_l$, with $N_l = \operatorname{dim} V_l$. 
+Let $A_l$ be the finite element matrix on $V_l$.
+
+$E_l \in \setR^{N_l \times N_{l-1}}$ is the prolongation matrix from level~$l-1$ to level~$l$.
+
+The multi-level preconditioner is defined recursively:
+\begin{eqnarray*}
+C_0^{-1} & := & A_0^{-1} \\
+C_l^{-1} & := & (\operatorname{diag}A_l)^{-1} + E_l C_{l-1}^{-1} E_l^T \quad 1 \leq l \leq L.
+\end{eqnarray*}
+The computational complexity of one application of $C_L^{-1}$ is $O(N)$ operations.
+
+(An extended version of) the Additive Schwarz Lemma allows to 
+rewrite 
+\begin{eqnarray*}
+\| u_l \|_{C_l}^2 & = &
+\inf_{u_l = u_{l-1} + \sum_{i=1}^{N_l} u_{l,i} \atop
+  u_{l-1} \in V_{l-1}, u_{l,i} \in \operatorname{span} \{\varphi_{l,i}} \}
+  \| u_{l-1} \|_{C_{l-1}}^2 + \sum_{i=1}^{N_l} \| u_{l,i} \|_A^2 \\ 
+ & = & \inf_{u = u_0 + \sum_{l=1}^L \sum_{i=1}^{N_l} u_{l,i}}
+ \sum_l \sum_i \| u_{l,i} \|_A^2 + \| u_0 \|_A^2
+\end{eqnarray*}
+
+Reordering the minimization we obtain
+\begin{eqnarray*}
+\| u \|_{C_L}^2 & = & \inf_{u = \sum_{l=0}^L u_l \atop u_l \in V_l}
+\| u_0 \|_A^2 + \sum_{l=1}^L \inf_{u_l = \sum u_{l,i}} \sum_{i=1}^{N_l} \| u_{l,i} \|_A^2 \\
+& \eqc & \inf_{u = \sum_{l=0}^L u_l \atop u_l \in V_l}
+\| u_0 \|_A^2 + \sum_{l=1}^L h_l^{-2} \| u_l \|_{L_2}^2
+\end{eqnarray*}
+
+\begin{lemma} [simple analysis] 
+$$
+\frac{1}{L} C \leqc  A \leqc L C
+$$
+\end{lemma}
+\begin{proof} $A \leqc L C$ follows from maximal overlap of spaces and
+the inverse estimate $\| \nabla u_l \|_{L_2} \leqc h_l^{-1} \| u_l \|_{L_2}$. Let $u = \sum_{l=0}^L u_l$ be an arbitrary decomposition:
+$$
+\| \sum_{l=0}^L u_l \|_A^2 \leq (L+1) \sum_{l=0}^L \| u_l \|_A^2 
+\leqc L  \big( \| u_0 \|_A^2 + \sum_{l=1}^L h_l^{-2} \| u_l \|_{L_2}^2 \big).
+$$
+Since the estimate holds for any decompositon, it also holds for the infimum.
+\medskip
+
+To show $C \leqc L A$ we come up with an explicit decomposition of $u \in V_L$. Let $\Pi_l : L_2 \rightarrow V_l$ be a Cl\'ement-type operator which is a projection and satisfies
+$$
+\| \Pi_l u \|_{H^1} + h_l^{-1} \, \| u - \Pi_l u \|_{L_2} \leqc \| u \|_{H^1} \qquad \forall \, u \in H^1.
+$$
+Define 
+\begin{eqnarray*}
+u_0 & := & \Pi_0 u \\
+u_l & := & \Pi_l u - \Pi_{l-1} u \qquad 1 \leq l \leq L.
+\end{eqnarray*}
+Then $u = \sum_{l=0}^L u_l$ and
+$$
+\| u \|_C^2 \leqc \| \Pi_0 u \|_A^2 + \sum_{l=1}^L h_l^{-2} \| \Pi_l u  - \Pi_{l-1} u \|_{L_2}^2 \leqc L  \, \| u \|_{H^1}^2 \approx \| u \|_A^2
+$$
+We have bound each of the $L+1$ terms by the $H^1$-norm of $u$, thus the factor $L$.
+\end{proof}
+
+Next we show an improved estimate leading to the optimal condition number $\kappa (C^{-1} A) \leqc 1$, independent of the number of refinement levels:
+\begin{lemma} There holds
+$$
+C \leqc A \leqc C
+$$
+\end{lemma}
+\begin{proof} We show $A \leqc C$. Let $u = \sum_{l=0}^L u_l$ an 
+arbitrary decomposition. First, we split up the coarsest level:
+$$
+\| u \|_A^2 \leq \| u_0 \|_A^2 + \| \sum_{l=1}^L u_l \|_A^2
+$$
+Next we show the estimate
+$$
+A(u_l, v_k) \leq 2^{-\frac{|l-k|}{2}} h_l^{-1} \| u_l \| h_k^{-1} \| v_k \|
+\qquad \forall \, u_l \in V_l, \; v_k \in V_k
+$$
+We assume $l \leq k$. We perform integration by parts on the level-l triangles, and apply Cauchy-Schwarz and scaling techniques:
+\begin{eqnarray*}
+A(u_l, v_k) & = & \sum_{T \in {\mathcal T}_l} \int_T \nabla u_l \nabla v_k \\
+& \leq & \sum_T  \int_T \underbrace{-\Delta u_l}_{= 0} v_k + \int_{\partial T} \frac{\partial u_l}{\partial n} v_k \\
+& \leq & \sum_T \left\| \frac{\partial u_l}{\partial n} \right\|_{\partial T_l} \, \| v_k \|_{\partial T_l} \\
+& \leq & h_l^{-3/2} \| u_l \|_{L_2} \, h_k^{-1/2} \| v_k \|_{L_2} \\
+& = & \underbrace{\sqrt{h_k/h_l}}_{\eqc 2^{-|k-l|/2}} \, h_l^{-1} \| u_l \|_{L_2} \, h_k^{-1} \| v_k \|_{L_2}
+\end{eqnarray*}
+We define the overlap - matrix ${\mathcal O} \in \setR^{L \times L}$ as
+$$
+{\mathcal O}_{kl} = 2^{-|k-l|/2}.
+$$
+Then
+\begin{eqnarray*}
+\| \sum_{l=1}^L u_l \|_A^2 & = & 
+\sum_{l,k=1}^N A(u_l, u_k) \leqc \sum_{l,k} {\mathcal O}_{kl} h_k^{-1} \| u_k \|_{L_2} \, h_l^{-1} \| u_l \|_{L_2} \\
+& \leq & \rho (\mathcal O) \, \sum_{l=1}^L h_l^{-2} \| u_l \|^2_{L_2}
+\end{eqnarray*}
+The spectral radius $\rho ({\mathcal O})$ can be estimated by the row-sum-norm, which is bounded by a convergent geometric sequence
+$$
+\sum_{k=1}^L 2^{-|k-l|/2} \leq 2 \sum_{k=0}^\infty \sqrt{2}^{-k} 
+\leq \frac{2}{1-\sqrt{2}}.
+$$
+Since the decomposition was arbitrary, the estimate holds for the minimal decomposition.
+
+
+\bigskip
+
+Now we show $C \leqc A$. We procede similar as above. 
+Let $\Pi_l : L_2 \rightarrow V_l$ be an Cl\'ement-type operator 
+such that
+\begin{eqnarray*}
+\| \Pi_l u \|_{L_2} & \leq & \| u \|_{L_2}  \qquad \forall \, u \in L_2 \\
+\| u - \Pi_l u \|_{L_2} & \leqc & h_l^2 \| u \|_{H^2} \quad \forall \, u \in H^2.
+\end{eqnarray*}
+We define $u_0 = \Pi_0 u$ and $u_l = \Pi_l u - \Pi_{l-1} u$. We obtain
+the 2 estimates
+\begin{eqnarray*}
+h_l^{-2} \| u_l \|_{L_2}^2 & \leqc & h_l^{-2} \| u \|_{L_2}^2, \\
+h_l^{-2} \| u_l \|_{L_2}^2 & \leqc & h_l^2 \| u \|_{H^2}.
+\end{eqnarray*}
+The idea of the proof is that $H^1$ is the interpolation space $[L_2, H^2]_{1/2}$. We define the K-functional
+$$
+K(t,u)^2 = \inf_{u = u_0 + u_2 \atop u_0 \in L_2, u_2 \in H^2}
+\big\{ \| u_0 \|_{L_2}^2 + t^2 \| u_2 \|_{H^2}^2 \big\}.
+$$
+Combining the 2 estimates above we get
+$$
+h_l^{-2} \| u_l \|_{L_2}^2 \leqc h_l^{-2} K^2 (h_l^2, u)
+$$
+Thus, the sum over $L$ levels is
+$$
+\sum_{l=1}^L h_l^{-2} \| u_l \|_{L_2}^2 \leq \sum_{l=1}^L h_l^{-2} K^2 (h_l^2, u) \eqc \sum_{l=1}^L 2^l K^2(2^{-l}, u)
+$$
+Next we use that $K(s,.) \eqc K(t,.)$ for $t \leq s \leq 2t$ and replace
+the sum by an integral, and substitute $t := 2^{-l}, dt \eqc -2^{-l} dl = t dl$:
+\begin{eqnarray*}
+\sum_{l=1}^L h_l^{-2} \| u_l \|_{L_2}^2 & \leq & 
+\int_{l=1}^{L+1} 2^l K^2(2^{-l}, u) dl \\
+& \eqc & \int_{2^{-L-1}}^1 t^{-1} K^2(t,u) \frac{dt}{t}  \\
+& \leqc & \int_0^\infty t^{-1} K^2(t,u) \frac{dt}{t} \\
+& = & \| u \|_{[L_2,H^2]_{1/2}} \eqc \| u \|_{H^1}
+\end{eqnarray*}
+\end{proof}
+An intuitive explanation of the proof is that different terms of 
+the sum
+$\sum_{l=1}^L h_l^{-2} \| \Pi_l u - \Pi_{l-1} u \|_{L_2}$ 
+are dominated by different frequency 
+components of $u$. The squared $H^1$-norm is the sum over $H^1$-norms of
+the individual frequency components.
+
+% \end{document}

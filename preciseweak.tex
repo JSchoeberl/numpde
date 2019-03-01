@@ -1,0 +1,185 @@
+\section{The weak formulation of the Poisson equation}
+
+We are now able to give a precise definition of the weak formulation
+of the Poisson problem as introduced in Section \ref{sec_intro}, and analyze the 
+existence and uniqueness of a weak solution. 
+
+Let $\Omega$ be a  bounded domain. Its boundary $\partial \Omega$ is 
+decomposed as $\partial \Omega = \Gamma_D \cup \Gamma_N \cup \Gamma_R$ according to Dirichlet, Neumann and Robin boundary conditions. 
+
+Let
+\begin{itemize}
+\item 
+ $u_D \in H^{1/2}(\Gamma_D)$, 
+\item
+$f \in L_2(\Omega)$,
+\item
+$g \in L_2(\Gamma_N \cup \Gamma_R)$,
+\item
+$\alpha \in L_\infty(\Gamma_D), \alpha \geq 0$. 
+\end{itemize}
+
+
+
+Assume that there holds 
+\begin{enumerate}
+\item[(a)] The Dirichlet part has positive measure $| \Gamma_D | > 0$,
+\item[(b)] or the Robin term has positive contribution $\int_{\Gamma_R} \alpha \, dx > 0$.
+\end{enumerate}
+
+Define the Hilbert space
+$$
+V := H^1(\Omega),
+$$
+the closed sub-space 
+$$
+V_0 = \{ v : \optr_{\Gamma_D} \, v = 0 \},
+$$
+and the linear manifold 
+$$
+V_D = \{ u \in V : \optr_{\Gamma_D} \, u = u_D \}.
+$$
+
+Define the bilinear form $A(.,.) : V \times V \rightarrow \setR$
+$$
+A(u,v) = \int_\Omega \nabla u \, \nabla v \, dx + \int_{\Gamma_R} \alpha u v \, ds 
+$$
+and the linear form
+$$
+f(v) = \int_\Omega f v \, dx + \int_{\Gamma_N \cup \Gamma_R} g v \, dx.
+$$
+
+\begin{theorem}
+The weak formulation of the Poisson problem
+\begin{quote}
+Find $u \in V_D$ such that
+\begin{equation} \label{equ_weakform}
+A(u,v) = f(v) \qquad \forall \, v \in V_0
+\end{equation}
+\end{quote}
+has a unique solution $u$.
+\end{theorem}
+{\em Proof:} 
+The bilinear-form $A(.,.)$ and the linear-form $f(.)$ are continuous
+on $V$. Tartar's theorem of equivalent norms proves that $A(.,.)$ is coercive
+on $V_0$.
+
+Since $u_D$ is in the closed range of
+$\optr_{\Gamma_D}$, there exists an $\tilde u_D \in V_D$ such that
+$$
+\optr \, \tilde u_D = u_D \qquad \mbox{and} \qquad \| \tilde u_D \|_V \leqc \| u_D \|_{H^{1/2}(\Gamma_D)}
+$$
+Now, pose the problem: Find $z \in V_0$ such that
+$$
+A(z,v) = f(v) - A(\widetilde u_D, v) \qquad \forall \, v \in V_0.
+$$
+
+The right hand side is the evaluation of the continuous linear form
+$f(.) - A(\widetilde u_D, .)$ on $V_0$. Due to Lax-Milgram, there
+exists a unique solution $z$. Then, $u := \widetilde u_D + z$ solves 
+(\ref{equ_weakform}). The choice of $\widetilde u_D$ is not unique, but,
+the constructed $u$ is unique.
+\hfill $\Box$
+
+
+\subsection{Shift theorems}
+%
+Let us restrict to Dirichlet boundary conditions $u_D = 0$ on the whole
+boundary. The variational problem: Find $u \in V_0$ such that
+$$
+A(u,v) = f(v) \qquad \forall \, v \in V_0
+$$
+is well defined for all $f \in V_0^\ast$, and, due to Lax-Milgram there holds
+$$
+\| u \|_{V_0} \leq c \| f \|_{V_0^\ast}.
+$$
+Vice versa, the bilinear-form defines the linear functional $A(u,.)$ with
+norm 
+$$
+\| A(u,.) \|_{V_0^\ast}  \leq c \| u \|_{V_0}
+$$
+
+
+This dual space is called $H^{-1}$:
+$$
+H^{-1} := [H_0^1(\Omega)]^\ast
+$$
+Since $H_0^1 \subset L_2$, there is $L_2 \subset H^{-1}(\Omega)$. All 
+negative spaces are defined as $H^{-s}(\Omega) := [H_0^s]^\ast(\Omega)$, 
+for $s \in \setR^+$. There holds
+$$
+\ldots H_0^{2} \subset H_0^{1} \subset L_2 \subset H^{-1} \subset H^{-2} \ldots
+$$
+
+The solution operator of the weak formulation is smoothing twice. The
+statements of shift theorem are that for $s > 0$, the solution operator 
+maps also
+$$
+f \in H^{-1+s} \rightarrow u \in H^{1+s}
+$$
+with norm bounds
+$$
+\| u \|_{H^{1+s}} \leqc \| f \|_{H^{-1+s}}.
+$$
+In this case, we call the problem $H^{1+s}$ - regular.
+
+\begin{theorem} [Shift theorem] ~
+\begin{enumerate}
+\item[(a)] Assume that $\Omega$ is convex. Then, the Dirichlet problem is $H^2$ regular.
+\item[(b)] Let $s \geq 2$. Assume that $\partial \Omega \in C^s$. Then,
+the Dirichlet problem is $H^s$-regular.
+\end{enumerate}
+\end{theorem}
+We give a proof of (a) for the square $(0,\pi)^2$ by Fourier series. Let 
+$$
+V_N = \mbox{span} \{ \sin (k x) \sin (ly) : 1 \leq k,l \leq N \}
+$$
+For an $u = \sum_{k,l = 1}^N u_{kl} \sin (kx) \sin (ly) \in V_N$, there
+holds
+\begin{eqnarray*}
+\| u \|_{H^2}^2 & = & \| u \|_{L_2}^2 + \| \partial_x u \|_{L_2}^2 + \| \partial_y u \|_{L_2}^2 + \| \partial _x^2 u \|_{L_2}^2 + \| \partial_x \partial_y u \|_{L_2}^2 + \| \partial_y^2 u \|^2 \\
+        & \eqc & \sum_{k,l = 1}^N (1 + k^2 +l^2 + k^4 + k^2 l^2 + l^4) u_{kl}^2 \\
+        & \eqc & \sum_{k,l = 1}^N (k^4 + l^4) u_{kl}^2,
+\end{eqnarray*}
+and, for $f = -\Delta u$,
+$$
+\| - \Delta u \|_{L_2}^2 = \sum_{k,l=1}^N  (k^2+l^2)^2 u_{kl}^2 
+        \eqc  \sum_{k,l=1}^N  (k^4+l^4) u_{kl}^2.
+$$
+Thus we have $\| u \|_{H^2} \eqc \| \Delta u \|_{L_2} = \| f \|_{L_2}$ for
+$u \in V_N$. The rest requires a closure argument: There is 
+$\{ -\Delta v : v \in V_N \} = V_N$, and $V_N$ is dense in $L_2$. 
+\hfill $\Box$
+
+Indeed, on non-smooth non-convex domains, the $H^2$-regularity is not true.
+Take the sector of the unit-disc
+$$
+\Omega = \{ (r \cos \phi, r \sin \phi) : 0 < r < 1, \; 0 < \phi < \omega \}
+$$
+with $\omega \in (\pi, 2 \pi)$. Set $\beta = \pi/\omega < 1$. The function
+$$
+u = (1-r^2) r^\beta sin (\phi \beta)
+$$
+is in $H_0^1$, and fulfills 
+$\Delta u = -(4 \beta + 4) r^{\beta} sin (\phi \beta) \in L_2$.
+Thus $u$ is the solution of a Dirichlet problem. But $u \not\in H^2$.
+
+
+On non-convex domains one can specify the regularity in terms of weighted
+Sobolev spaces. Let $\Omega$ be a polygonal domain containing $M$ vertices 
+$V_i$. 
+Let $\omega_i$ be the interior angle at $V_i$. If the vertex belongs to
+a non-convex corner ($\omega_i > \pi$), then choose some 
+$$
+\beta_i \in (1 - \frac{\pi}{\omega}, 1)
+$$
+Define
+$$
+w(x) = \prod_{\mbox{\tiny non-convex} \atop \mbox{\tiny Vertices V}_i}  | x - V_i |^{\beta_i}
+$$
+\begin{theorem} If $f$ is such that $w f \in L_2$. Then $f \in H^{-1}$, and
+the solution $u$ of the Dirichlet problem fulfills
+$$
+\| w D^2 u \|_{L_2} \leqc \| w f \|_{L_2}.
+$$
+\end{theorem}

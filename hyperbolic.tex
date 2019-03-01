@@ -1,0 +1,33 @@
+
+\chapter{Hyperbolic partial differential equations}
+
+Wave phenomena are are described by PDEs involving second order time derivatives:
+$$
+\frac{\partial^2 u(x,t)}{\partial t^2} - \opdiv (a(x) \nabla u) = f
+$$
+They require two initial conditions 
+\begin{eqnarray*}
+u(x,0) & = & u_0(x), \\
+\frac{\partial u(x,t)}{\partial t} & = & v_0(x).
+\end{eqnarray*}
+
+Space discretization is accoring to parablic problems, and lead to the second order
+ODE
+$$
+M u^{\prime \prime}(t) + A u(t) = f,
+$$
+and initial conditions
+$$
+u(0) = u_0 \qquad u^\prime(0) = v_0.
+$$
+By introducing a new function $v = u^\prime$, the second order ODE can be reduced to
+the first order system
+\begin{eqnarray*}
+u^\prime & = & v \\
+M v^\prime & = & f - A u,
+\end{eqnarray*}
+and initial conditions
+$$
+u(0) = u_0 \qquad v(0) = v_0.
+$$
+Time integration methods for first order systems can be applied.

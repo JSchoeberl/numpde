@@ -1,0 +1,351 @@
+% \documentclass[12pt]{article}
+% \usepackage{amsmath,amsthm,amssymb,a4wide}
+% \usepackage[german,english]{babel}
+% \usepackage{epsfig}
+% \usepackage{latexsym}
+% \usepackage{amssymb}
+% % \usepackage{theorem}
+% \usepackage{amsthm}
+% % \usepackage{showkeys}
+
+% \newcommand{\setR}{ {\mathbb R} }
+% \newcommand{\setN}{ {\mathbb N} }
+% \newcommand{\setZ}{ {\mathbb Z} }
+% \newcommand{\eps}{\varepsilon}
+
+% \newcommand{\beq}{\begin{equation}}
+% \newcommand{\eeq}{\end{equation}}
+
+% \newcommand{\opdiv}{\operatorname{div}}
+% \newcommand{\opcurl}{\operatorname{curl}}
+% \newcommand{\opdet}{\operatorname{det}}
+% \newcommand{\optr}{\operatorname{tr}}
+% \newcommand{\optrn}{\operatorname{tr}_n}
+% \newcommand{\sfrac}[2]{ { \textstyle \frac{#1}{#2} } }
+
+% \newcommand{\Zh}{\mathrm{Z}_h}
+% \newcommand{\Ih}{\mathrm{I}_l}
+
+% \newcommand{\leqc}{\preceq} 
+% \newcommand{\geqc}{\succeq} 
+% \newcommand{\eqc}{\simeq} 
+% \newcommand{\ul}{\underline}
+
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{definition}[theorem]{Definition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{remark}[theorem]{Remark}
+% \newtheorem{example}[theorem]{Example}
+
+% %
+% %
+% \setlength{\unitlength}{1cm}
+% \sloppy 
+% %
+
+% \title{Mixed methods for the flux : discrete norms, super-convergence and implementation techniques
+% }
+% \author{Joachim Sch\"oberl}
+
+% \begin{document}
+% \maketitle
+% \centerline{(supplement to lecture notes Chapter 7) }
+
+\section{Supplement on mixed methods for the flux : discrete norms, super-convergence and implementation techniques}
+\subsection{Primal and dual mixed formulations}
+\medskip
+A mixed method for the flux can be posed either in the so called primal form: find $\sigma \in V = [L_2]^2$, $u \in H^1$ with $u = u_D$ on $\Gamma_D$
+such that
+$$
+\begin{array}{ccccll}
+\int_\Omega (a^{-1} \sigma) \cdot \tau \, dx & - & 
+\int_\Omega \tau  \cdot \nabla u \, dx & = & 0 \qquad & \forall \, \tau, \\[0.5em]
+-\int_\Omega \sigma \cdot \nabla v \, dx & & & = &  -\int f v \, dx  - \int_{\Gamma_N}  g v \, ds \qquad & \forall \, v, \; v = 0 \; \mbox{on} \; \Gamma_D, \\
+\end{array}
+$$
+or in the so called dual mixed form: find $\sigma \in V = H(\opdiv)$,
+$u \in L_2$ with $\sigma \cdot n = g$ on $\Gamma_N$
+$$
+\begin{array}{ccccll}
+\int_\Omega (a^{-1} \sigma) \cdot \tau \, dx & + & 
+\int_\Omega \opdiv \, \tau  \, u \, dx & = & \int_{\Gamma_D} u_D \tau _n \, ds \qquad & \forall \, \tau, \; \tau_n = 0 \; \mbox{on} \; \Gamma_N \\[0.5em]
+\int_\Omega \opdiv \, \sigma \, v \, dx & & & = & - \int f v \, dx \qquad & \forall \, v.
+\end{array}
+$$
+Both are formally equivalent: If the solutions are smooth enough for
+integration by parts, both solutions are the same.
+In both cases, the big-B bilinear-form is $inf-sup$ stable with respect to the corresponding norms.
+
+\medskip
+
+The natural discretization for the primal-mixed formulation uses
+standard $H^1$-finite elements of order $k$ for $u$, and discontinuous
+$L_2$ elements of order $k-1$ for $\sigma$. Here, the discrete Brezzi
+conditions are trivial.  The dual one requires Raviart-Thomas (RT) or
+Brezzi-Douglas-Marini (BDM) elements for $\sigma$, and $L_2$ elements
+for $u$. 
+This pairing delivers locally exact conservation ($\int_{\partial T}
+\sigma_n = -\int_T f$). In particular this property makes the method
+interesting by itself, but often this scheme is a part of a more
+complex problem (e.g. Navier-Stokes equations).
+
+\medskip
+
+Our plan is as follows: We want to use the dual finite element method,
+but analyze it in a primal - like setting. 
+Since $Q_h$ is no sub-space of $H^1$, we have to use a discrete counterpart of the $H^1$-norm:
+\begin{eqnarray*}
+\| \tau \|_{V_h}^2 & := & \| \tau \|_{L_2}^2 \\
+\| v \|_{Q_h}^2 & := & \| v \|_{H^1,h}^2 := \sum_T \| \nabla v \|_{L_2(T)}^2 + \sum_{E \subset \Omega} \tfrac{1}{h}\| [v] \|_{L_2(E)}^2 
++ \sum_{E \subset \Gamma_D} \tfrac{1}{h} \| v \|_{L_2(E)}^2
+\end{eqnarray*}
+
+The factor $\tfrac{1}{h}$ provides correct scaling: If we transform an
+element patch to the reference patch, the jump term scales like the $H^1$-semi-norm. 
+This norm is called discrete $H^1$-norm, or DG-norm (as it is essential for Discontinuous Galerkin methods discussed later).
+
+There holds a discrete Friedrichs inequality
+$$
+\| v \|_{L_2} \leqc \| v \|_{H^1,h}.
+$$
+
+\medskip
+
+\begin{theorem} \label{theo_mixeddiscretenorms}
+The dual-mixed discrete problem satisfies Brezzi's conditons with respect to $L_2$ and discrete $H^1$-norms.
+\end{theorem}
+\begin{proof} The $a(.,.)$ bilinear-form is continuous and coercive on $(V_h, \| \cdot \|_{L_2})$. 
+Now we show continuity of $b(.,.)$ on the finite element spaces. We integrate by parts on the elements, and rearrange boundary terms:
+\begin{eqnarray*}
+\lefteqn{b(\sigma_h, v_h) = \int_\Omega \opdiv \, \sigma_h \, v_h = \sum_T \int_T \opdiv \, \sigma_h \, v_h} \\
+& = & \sum_T -\int_T \sigma_h \cdot \nabla v_h + \int_{\partial T} \sigma_h \cdot n \, v_h \\
+& = & \sum_T - \int_T \sigma_h \cdot \nabla v_h + \sum_{E \subset \Omega} \int_E \sigma_h n_E [v] + \sum_{E \subset \Gamma_D} \int_E \sigma_h n_E v  + \sum_{E \subset \Gamma_N} \int_E \underbrace{\sigma_h n_E}_{=0} v 
+\end{eqnarray*}
+The jump term is defined as $[v](x) = \lim_{t \rightarrow 0^+} v(x+t
+n_E) - v(x-t n_E)$. Thus, $\sigma_h n_E [v]$ is independent of
+the direction of the normal vector.
+Next we apply Cauchy-Schwarz, and use that $h \| \sigma_h \cdot n \|_{L_2(E)}^2 \leqc \| \sigma_h \|_{L_2(T)}$ for some $E \subset T$ (scaling and equivalence of norms on finite dimensional spaces):
+\begin{eqnarray*}
+b(\sigma_h, v_h) & \leq & \sum_T \| \sigma_h \|_{L_2(T)} \, \| \nabla v_h \|_{L_2(T)}  + \sum_{E \subset \Omega}  h^{1/2} \| \sigma \|_{L_2(E)} \, h^{-1/2} \| [v_h]\|_{L_2(E)}   + \sum_{E \subset \Gamma_D} ...  \\
+& \leqc &  \| \sigma_h \|_{L_2(\Omega)}  \|  v_h \|_{H^1,h}
+\end{eqnarray*}
+The linear-forms are continous with norms $h^{-1/2} \| u_D \|_{L_2(\Gamma_D)}$ and $\| f \|_{L_2(\Omega)}$, respectively.
+
+Finally, we show the LBB - condition: Given an $v_h \in Q_h$, we define $\sigma_h$ as follows:
+\begin{eqnarray*}
+\sigma_h \cdot n_E & =  & \tfrac{1}{h} [v_h] \qquad \text{on} \; E \subset \Omega \\
+\sigma_h \cdot n_E & =  & \tfrac{1}{h} v_h \; \qquad \text{on} \; E \subset \Gamma_D \\
+\sigma_h \cdot n_E & =  & 0 \qquad \qquad \text{on} \; E \subset \Gamma_N \\
+\int_T \sigma_h \cdot q & = & -\int_T \nabla v_h \cdot q \quad \forall \, q \in [P^{k-1}]^2. 
+\end{eqnarray*}
+This definition mimics $\sigma = -\nabla v$. This construction is allowed by the definition of Raviart-Thomas finite elements.
+Thus we get
+\begin{eqnarray*}
+b(\sigma_h, v_h) & = & \sum_T -\int \sigma_h \underbrace{\nabla
+                       v_h}_{\in [P^{k-1}]^2} + \sum_{E \subset \Omega} \tfrac{1}{h} \| [v_h] \|_{L_2(E)}^2 + \sum_{E \subset \Gamma_D} \tfrac{1}{h} \| v_h \|_{L_2(E)}^2 \\
+& = & \sum_T \int \nabla v_h \cdot  \nabla v_h + \sum_{E \subset \Omega} \tfrac{1}{h} \| [v_h] \|_{L_2(E)}^2 + \sum_{E \subset \Gamma_D} \tfrac{1}{h} \| v_h \|_{L_2(E)} \\
+& = & \| v_h \|_{H^1,h}^2
+\end{eqnarray*}
+By scaling arguments we see that $\| \sigma_h \|_{L_2} \leqc \| v_h \|_{H^1,h}$. Thus we got $\sigma_h$ such that
+$$
+\frac{b(\sigma_h, v_h)} {\| \sigma_h \|_{L_2}} \geqc \| v_h \|_{H^1,h},
+$$
+and we have constructed the candidate for the LBB condition.
+\end{proof}
+
+
+\subsection{Super-convergence of the scalar}
+
+Typically, the discretization error of mixed methods depend on best-approximation errors in all variables:
+$$
+\| \sigma - \sigma_h \|_{L_2} + \| u - u_h \|_{H^1,h} \leqc \inf_{\tau_h, v_h} \| \sigma - \tau_h \|_{L_2} + \| u - v_h \|_{H^1,h}
+$$
+By the usual Bramble-Hilbert and scaling arguments we see that (using the element-wise $L_2$-projection $P_h$):
+$$
+\| u - P_h u \|_{H^1,h} \leqc h^{k} \| u \|_{H^{1+k}} \qquad k \geq 0.
+$$
+In the lowest order case ($k = 0$) we don't get any convergence !!
+
+But, we can show error estimates for $\sigma$ in terms of approximability for $\sigma$ only. Furthermore, we can perform a local postprocessing to
+improve also the scalar variable.
+
+\begin{theorem} There holds
+$$
+\| \sigma - \sigma_h \|_{L_2} + \| P_h u - u_h \|  \leqc \| \sigma - I_h \sigma \|_{L_2},
+$$
+where $I_h$ is the canonical RT interpolation operator satisfying the commuting diagram property $\opdiv I_h = P_h \opdiv$.
+\end{theorem}
+\begin{proof} As usual for a priori estimates, we apply stability of the discrete problem, and use the Galerkin orthogonality:
+\begin{eqnarray}
+\| I_h \sigma - \sigma_h \|_{L_2} + \| P_h u - u_h \|_{H^1,h} & \leqc & \sup_{\tau_h, v_h} \frac{B( (I_h \sigma - \sigma_h, P_h u - u_h), (\tau_h, v_h) )}  { \| \tau_h \|_{L_2} + \| v_h \|_{H^1,h}} \\
+& = & 
+\label{equ_invsubsuperproof}
+\sup_{\tau_h, v_h} \frac{B( (I_h \sigma - \sigma, P_h u - u), (\tau_h, v_h) )}  { \| \tau_h \|_{L_2} + \| v_h \|_{H^1,h}} 
+\end{eqnarray}
+Now we elaborate on the terms of  $B( (I_h \sigma - \sigma, P_h u - u), (\tau_h, v_h) ) = \int a^{-1} (I_h \sigma - \sigma) \cdot \tau_h +
+\int \opdiv (I_h \sigma - \sigma) v_h + \int \opdiv \tau_h (P_h u - u)$:
+For the first one we use Cauchy-Schwarz, and bounds for the coefficient $a$:
+$$
+\int a^{-1} (I_h \sigma - \sigma) \cdot \tau_h \leqc \| \sigma - I_h \sigma \|_{L_2} \, \| \tau_h \|_{L_2}
+$$
+For the second one we use the commuting diagram, and orthogonality:
+$$
+\int \opdiv (I_h \sigma - \sigma) v_h = \int \underbrace{ (P_h - Id) \opdiv \sigma }_{\in Q_h^\bot} \underbrace{ v_h }_{\in Q_h} = 0
+$$
+For the third one we use that $\opdiv V_h \subset Q_h$:
+$$
+\int \underbrace{ \opdiv \tau_h}_{\in V_h}   \underbrace{ (P_h  u - u) }_{V_h^\bot}
+$$
+Thus, the right hand side of equation (\ref{equ_invsubsuperproof}) can be estimated by $\| \sigma - I_h \sigma \|_{L_2}$. Finally, an application of the
+ triangle inequality proves the result.
+\end{proof}
+
+\begin{remark} This technique applies for BDM elements as well as for RT. Both satisfy $\opdiv V_h = Q_h$, and the commuting diagram.
+For $RT_k$ elements, i.e. $[P^{k}]^2 \subset RT_k \subset [P^{k+1}]^2$ as well as $BDM_k$ elements, i.e. $BDM_k = [P^k]^d$
+we get the error estimate
+$$
+\| \sigma - I_h \sigma \|_{L_2} \leqc h^{k+1} \| \sigma \|_{H^k}
+$$ 
+with $k \geq 0$ for RT and $k \geq 1$ for BDM.
+\end{remark}
+
+\begin{remark} The scalar variable shows super-convergence: A filtered
+  error, i.e. $P_h u - u_h$ is of higer order than the error $u - u_h$
+  itself: One order for RT and two orders for BDM
+\end{remark}
+We can apply a local post-processing to compute the scalar part with higher accuracy: We use the equation $\sigma = a \nabla u$, and the good 
+error estimates for $\sigma$ and $P_h u$. We set $\widetilde Q_h := P^{k+1}$, and solve a local 
+problem on every element:
+$$
+\min_{\tilde v_h \in \widetilde Q_h \atop \int_T v_h = \int_T \tilde v_h}  \| a \nabla
+\tilde v_h - \sigma_h \|_{L_2(T),a^{-1}}^2 
+$$
+
+% \newpage
+\subsection{Solution methods for the linear system}
+%
+The finite element discretization leads to the linear system for the
+coefficient vectors (called $\sigma$ and $u$ again):
+$$
+\left( \begin{array}{cc}
+  A & B^t \\ B & 0 
+\end{array} \right) 
+\left( \begin{array}{cc}
+         \sigma \\ u 
+\end{array} \right) 
+=
+\left( \begin{array}{cc}
+         0 \\ -f
+\end{array} \right) 
+$$
+This matrix is indefinite, it has $\dim V_h$ positive and $\dim Q_h$
+negative eigenvalues. This causes difficulties for the linear equation
+solver. 
+
+The first possibility is a direct solver, which must (in
+contrast to positive definite systems) apply Pivot strategies. 
+
+A second possibility is block-elimination: eliminate $\sigma$ from the
+first equation. The regularity of $A$ follows from $L_2$-coercivity of $a(.,.)$:
+$$
+\sigma = -A^{-1}B^t u 
+$$
+and insert it into the second equation:
+$$
+- B A^{-1} B^t u = -f
+$$
+Thanks to the LBB-condition, $B$ has full rank, and thus the Schur complement 
+matrix is regular. Since $B$ is the discretization of the $\opdiv$-operator,
+$B^t$ of the negative gradient, and $A$ of $a(x)^{-1} I$, the equation can be
+interpreted as a discretization of 
+$$
+\opdiv a \nabla u = -f
+$$
+This approach is not feasible, since $A^{-1}$ is not a sparse matrix
+anymore.
+
+One can use extensions of the conjugate gradient (CG) method for
+symmetric but indefinit matrices (e.g. MINRES). Here, preconditioners
+are important. Typically, for block-systems one uses block-diagonal
+preconditioners to rewrite the system as
+$$
+\left( \begin{array}{cc}
+  \widetilde G_V^{-1} & 0 \\ 0 & \widetilde G_Q^{-1} 
+\end{array} \right) 
+\left( \begin{array}{cc}
+  A & B^T \\ B & 0 
+\end{array} \right) 
+\left( \begin{array}{cc}
+         \sigma \\ u 
+\end{array} \right) 
+=
+\left( \begin{array}{cc}
+  \widetilde G_V^{-1} & 0 \\ 0 & \widetilde G_Q^{-1} 
+\end{array} \right) 
+\left( \begin{array}{cc}
+         0 \\ -f
+\end{array} \right) 
+$$
+where $\widetilde G_V$ and $\widetilde G_Q$ are approximations to the
+Gramien matrices in $V_h$ and $Q_h$:
+$$
+G_{V,ij} = (\varphi_i^\sigma, \varphi_j^\sigma)_V \quad \text{and}
+\quad G_{Q,ij} = (\varphi_i^u, \varphi_j^u)_Q
+$$
+One can either choose the $H (\opdiv)$-$L_2$, or the $[L_2]^2$-$H^1$
+setting, which leads to different kind of preconditioners. Here, the
+later one is much simpler. This is a good motivation for considering the alternative framework.
+\subsection{Hybridization}
+Hybridization is a technique to derive a new variational formulation
+which obtains the same solution, but its system matrix is positive
+definit. For this, we break the normal-continuity of the flux
+functions, and re-inforce it via extra equations. We obtain new
+variables living on the element-edges (or faces in 3D).
+
+We start from the first equation $a^{-1} \sigma - \nabla u = 0$,
+multiply with element-wise discontinuous test-functions $\tau$, and
+integrate by parts on the individual elements:
+$$
+\int_\Omega a^{-1} \sigma \tau + \sum_T \big\{  \int_T u \, \opdiv
+\tau - \int_{\partial T} u \, \tau_n \big\} = 0
+$$
+We now introduce the new unknown variable $\hat u$ which is indeed 
+the restriction of $u$ onto the mesh skeleton $u_{|\cup E}$. 
+
+We set $V := \prod_T H(\opdiv, T)$ and $Q := L_2(\Omega) \times \prod_E
+H^{1/2}(E)$, and pose the so called hybrid problem: find $\sigma \in V$ and $(u,\hat
+u) \in Q$ such that
+$$
+\begin{array}{ccccccll}
+  \int_\Omega (a^{-1} \sigma) \cdot \tau \, dx & + & 
+\sum_T\int_T \opdiv \, \tau  \, u \, dx & + &
+\sum_T\int_{\partial T} \hat u \, \tau_n   & = & 0 & \forall \, \tau \in V\\[0.5em]
+\sum_T  \int_T \opdiv \, \sigma \, v \, dx & & & & & = & - \int f v \,
+                                                        dx & \forall \, v \in L_2(\Omega) \\[0.5em]
+  \sum_T\int_{\partial T} \hat v \, \sigma_n   &&&&& = & 0 
+                                                         \qquad & \forall \, \hat v \in \prod_E H^{1/2}(E) .  
+\end{array}
+$$
+The last equation can be rearranged edge by edge:
+$$
+\sum_{E \subset \Omega} \int_E [\sigma_n] \, \hat v +
+\sum_{E \subset \partial \Omega} \int_E \sigma_n \, \hat v = 0 \qquad \forall \, \hat v \in \prod_E H^{1/2}(E) ,
+$$
+which implies normal-continuity of $\sigma$. Dirichlet/Neumann boundary conditions are posed now for the skeleton variable $\hat u$.
+
+This system is discretized by discontinuous $RT/BDM$ elements for $\sigma$, piecewise polynomials on elements $T$ for $u$, 
+and piecewise polynomials on edges for $\hat u$ such that the order matches with $\sigma \cdot n$. 
+\begin{enumerate}
+\item This discrete system is well-posed with respect to the norms $\|
+  \sigma \|_V := \| \sigma \|_{L_2}$ and $\| u, \hat u \|^2 = \sum_T
+  \| \nabla u \|_{L_2(T)}^2 + \tfrac{1}{h} \| u - \hat u \|_{\partial
+    T}^2$. Similar proof as for Theorem~\ref{theo_mixeddiscretenorms}.
+\item The components $\sigma_h$ and $u_h$ of the solution of the hybrid problem correspond to the solution of the mixed method.
+\item Since the $\sigma_h$ is discontinuous across elements, the arising matrix $A$ is block-diagonal. Now it is cheap to form the Schur complement
+$$
+-B A^{-1} B^T \left( u \atop \hat u \right) = \left( f \atop 0 \right)
+$$
+This is now a system with a positive definite matrix for unknowns in the elements and on the edges. Since the matrix block for the element-variables is still block-diagonal, they can be locally eliminated, and only the skeleton variables are remaining. In the lowest order case, the matrix is the same as for 
+the non-conforming $P^1$ element.
+\end{enumerate}
+% \end{document}

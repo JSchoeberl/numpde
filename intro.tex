@@ -1,0 +1,293 @@
+\chapter{Introduction}
+%
+{\em Differential equations} are equations for an unknown function
+involving differential operators. An {\em ordinary} differential
+equation (ODE) requires differentiation with respect to one variable. A {\em
+partial} differential equation (PDE) involves partial differentiation with
+respect to two or more variables.
+
+\section{Classification of PDEs}
+%
+The general form of a linear PDE of second order is: find $u : \Omega \subset \setR^d \rightarrow \setR$ such that
+\beq \label{general_pde}
+\sum_{i,j = 1}^d 
+-\frac{\partial}{\partial x_i} \big( a_{i,j}(x) \frac{\partial u(x)}{\partial x_j}  \big) + 
+\sum_{i = 1}^d 
+b_{i}(x) \frac{\partial u(x)}{\partial x_i}  +  c(x) u(x) = f(x).
+\eeq
+%
+The coefficients $a_{i,j}(x), b_i(x), c(x)$ and the right hand side $f(x)$ are
+given functions. In addition, certain type of boundary conditions are
+required. The behavior of the PDE depends on the type of the
+differential operator
+$$
+L := 
+\sum_{i,j = 1}^d 
+\frac{\partial}{\partial x_i} a_{i,j} \frac{\partial}{\partial x_j}   + 
+\sum_{i = 1}^d 
+b_{i} \frac{\partial}{\partial x_i}   +  c.
+$$
+Replace $\frac{\partial}{\partial x_i}$ by $s_i$. Then
+$$
+\sum_{i,j = 1}^d s_i a_{i,j} s_j +  \sum_{i = 1}^d  b_{i} s_i  +  c = 0
+$$
+%
+describes a quartic shape in $\setR^d$. We treat the following cases:
+\begin{enumerate}
+\item
+In the case of a (positive or negative) definite matrix $a = (a_{i,j})$ this is an
+ellipse, and the corresponding PDE is called elliptic. A simple example is
+$a = I$, $b = 0$, and $c = 0$, i..e.
+$$
+- \sum_i \frac{\partial^2 u}{\partial x_i^2} = f.
+$$
+Elliptic PDEs require boundary conditions.
+\item
+If the matrix $a$ is semi-definite, has the one-dimensional kernel $\operatorname{span} \{v \}$, and $b \cdot v \neq 0$, then the shape is a parabola. Thus, the PDE is called parabolic. A simple example is
+$$
+- \sum_{i=1}^{d-1} \frac{\partial^2 u}{\partial x_i^2} + \frac{\partial u}{\partial x_d} = f.
+$$
+Often, the distinguished direction corresponds to time. This type of equation requires boundary conditiosn on the $d-1$-dimensional boundary, and initial conditions in the different direction.
+\item
+If the matrix $a$ has $d-1$ positive, and one negative (or vise versa) eigenvalues, then the shape is a hyperbola. The PDE is called hyperbolic. The simplest one is
+$$
+- \sum_{i=1}^{d-1} \frac{\partial^2 u}{\partial x_i^2} + \frac{\partial^2 u}{\partial x_d^2} = f.
+$$
+Again, the distinguished direction often corresponds to time. Now, two initial conditions are needed.
+\item
+If the matrix $a$ is zero, then the PDE degenerates to the first order PDE
+$$
+b_{i} \frac{\partial u}{\partial x_i} +  c u = f.
+$$
+Boundary conditions are needed at a part of the boundary.
+\end{enumerate}
+%
+These cases behave very differently. We will establish theories for
+the individual cases.  A more general classicfication, for more
+positive or negative eigenvalues, and systems of PDEs is possible. The
+type of the PDE may also change for different points $x$.
+
+
+
+
+
+
+\section{Weak formulation of the Poisson Equation}
+\label{sec_intro}
+The most elementary and thus most popular PDE is the Poisson equation
+\begin{equation}
+\label{equ_laplace}
+-\Delta u = f \qquad \mbox{ in } \Omega,
+\end{equation}
+with the boundary conditions
+\begin{equation}
+\label{equ_laplace_bc}
+\begin{array}{rcll}
+u & = & u_D \qquad & \mbox{on } \Gamma_D, \\
+\frac{\partial u}{\partial n} & = & g \qquad & \mbox{on } \Gamma_N, \\
+\frac{\partial u}{\partial n} + \alpha u & = & g \qquad & \mbox{on} \Gamma_R.
+\end{array}
+\end{equation}
+%
+The domain $\Omega$ is an open and bounded subset of $\setR^d$, where
+the problem dimension $d$ is usually 1, 2 or 3. For $d = 1$, the
+equation is not a PDE, but an ODE. The boundary $\Gamma := \partial
+\Omega$ consists of the three non-overlapping parts $\Gamma_D$,
+$\Gamma_N$, and $\Gamma_R$. The outer
+unit normal vector is called $n$. The Laplace differential operator is
+$\Delta := \sum_{i=1}^d
+\frac{\partial^2}{\partial x_i^2}$, the normal derivative at the
+boundary is $\frac{\partial}{\partial n} := \sum_{i=1}^d n_i
+\frac{\partial}{\partial x_i}$. Given are the functions $f$, $u_D$ and
+$g$ in proper function spaces (e.g., $f \in L_2(\Omega)$). We search for
+the unknown function $u$, again, in a proper function space defined later. 
+
+The boundary conditions are called
+\begin{itemize}
+\item 
+Dirichlet boundary condition on $\Gamma_D$. The function value is prescribed,
+\item
+Neumann boundary condition on $\Gamma_N$. The normal derivative is prescribed,
+\item
+Robin boundary condition on $\Gamma_R$. An affine linear relation between
+the function value and the normal derivative is prescribed.
+\end{itemize}
+
+Exactly one boundary condition must be specified on each part of the
+boundary.
+
+We transform equation (\ref{equ_laplace}) together with the boundary
+conditions (\ref{equ_laplace_bc}) into its weak
+form. For this, we multiply (\ref{equ_laplace}) by smooth functions 
+(called test functions) and integrate over the domain:
+\begin{equation}
+\label{equ_multiplied}
+- \int_\Omega \Delta u v \, dx  = \int_\Omega f v \, dx 
+\end{equation}
+We do so for sufficiently many test functions $v$ in a proper function space.
+Next, we apply Gauss' theorem 
+$
+\int_\Omega \opdiv p \, dx = \int_\Gamma p \cdot n \, ds
+$ 
+to the function $p := \nabla u \, v$ to obtain
+$$
+\int_\Omega \opdiv (\nabla u \, v) \, dx = \int_\Gamma \nabla u \cdot n \, v \, ds
+$$
+From the product rule there follows $\opdiv (\nabla u v) = \Delta u v + \nabla u \cdot \nabla v$. Together we obtain
+$$
+\int_\Omega \nabla u \cdot \nabla v \, dx - \int_\Gamma \frac{\partial u}{\partial n} v \, ds = \int_\Omega f v \, dx.
+$$
+
+
+Up to now, we only used the differential equation in the domain. Next, we
+incorporate the boundary conditions. The Neumann and Robin b.c. are very
+natural (and thus are called natural boundary conditions). We simply replace
+$\frac{\partial u}{\partial n}$ by $g$ and $-\alpha u + g$ on $\Gamma_N$ and
+$\Gamma_R$, respectively. Putting unknown terms to the left, and known terms
+to the right hand side, we obtain
+$$
+\int_\Omega \nabla u \cdot \nabla v \, dx + \int_{\Gamma_R} \alpha u v \, ds 
+-\int_{\Gamma_D} \frac{\partial u}{\partial n} v \, ds = 
+\int f v \, dx + \int_{\Gamma_N+\Gamma_R} g v \, ds.
+$$
+Finally, we use the information of the Dirichlet boundary condition. We
+work brute force and simple keep the Dirichlet condition in strong sense.
+At the same time, we only allow test functions $v$ fulfilling $v = 0$
+on $\Gamma_D$. We obtain the 
+\begin{quote}
+{\bf Weak form of the Poisson equation:} \newline
+Find $u$ such that $u = u_D$ on $\Gamma_D$ and
+\begin{equation}
+\label{equ_weak_form}
+\int_\Omega \nabla u \cdot \nabla v \, dx + \int_{\Gamma_R} \alpha u v \, ds = 
+\int_\Omega f v \, dx + \int_{\Gamma_N+\Gamma_R} g v \, ds \quad
+\end{equation}
+\hfill $\forall \, v \mbox{ such that } v = 0 \mbox{ on } \Gamma_D.$
+\end{quote}
+%
+We still did not define the function space in which we search for the
+solution $u$. A proper choice is $$ V := \{ v \in L_2(\Omega) : \nabla
+u \in [L_2(\Omega)]^d \mbox{ and } u|_\Gamma \in L_2(\partial \Omega)
+\}.  $$ It is a complete space, and, together with the inner product
+$$ (u,v)_V := (u,v)_{L_2(\Omega)} + (\nabla u, \nabla v)_{L_2(\Omega)}
++ (u, v)_{L_2(\Gamma)} $$ it is a Hilbert space.  Now, we see that $f
+\in L_2(\Omega)$ and $g \in L_2(\Gamma)$ is useful. The Dirichlet
+b.c. $u_D$ must be chosen such that there exists an $u \in V$ with $u
+= u_D$ on $\Gamma_D$.  By definition of the space, all terms are well
+defined. We will see later, that the problem indeed has a unique
+solution in $V$. 
+
+
+\section{The Finite Element Method}
+%
+Now, we are developing a numerical method for approximating the weak
+form~(\ref{equ_weak_form}). For this, we decompose the domain $\Omega$
+into triangles $T$. We call the set ${\cal T} = \{ T \}$
+triangulation. The set ${\cal N} = \{ x_j \}$ is the set of nodes.
+By means of this triangulation, we define the finite element space,
+$V_h$:
+%
+$$
+V_h := \{ v \in C(\Omega) : v|_T \mbox{ is affine linear } \; \forall \, T \in {\cal T} \}
+$$
+%
+This is a sub-space of $V$. The derivatives (in weak sense, see below) are
+piecewise constant, and thus, belong to $[L_2(\Omega)]^2$.
+The function $v_h \in V_h$ is uniquely defined by its values $v(x_j)$ in the 
+nodes $x_j \in {\cal N}$. We decompose the set of nodes as
+$$
+{\cal N} = {\cal N}_D \cup {\cal N}_f,
+$$
+%
+where ${\cal N_D}$ are the nodes on the Dirichlet boundary, and
+${\cal N}_f$ are all others ($f$ as free).  The finite element approximation 
+is defined as
+%
+\begin{quote}
+Find $u_h$ such that $u_h(x) = u_D(x) \; \; \forall \, x \in {\cal N}_D$ and
+\begin{equation}
+\label{equ_fem}
+\int_\Omega \nabla u_h \cdot \nabla v_h \, dx + \int_{\Gamma_R} \alpha u_h v_h \, ds =
+\int f v_h \, dx + \int_{\Gamma_N+\Gamma_R} g v_h \, ds \quad
+\end{equation}
+\hfill
+$\forall \, v_h \in V_h \mbox{ such that } v_h(x) = 0 \; \; \forall \, x \in {\cal N}_D$
+\end{quote}
+
+Now it is time to choose a basis for $V_h$. The most convenient one is 
+the nodal basis $\{ \varphi_i \}$ characterized as
+%
+\begin{equation}
+\label{equ_nodal_prop}
+\varphi_i(x_j) = \delta_{i,j}.
+\end{equation}
+%
+The Kronecker-$\delta$ is defined to be 1 for $i=j$, and 0 else. These are the popular
+hat functions.
+We represent the finite element solution with respect to this basis:
+\begin{equation}
+\label{equ_basisexpansion}
+u_h(x) = \sum u_i \varphi_i(x)
+\end{equation}
+By the nodal-basis property (\ref{equ_nodal_prop}) there holds 
+$u_h(x_j) = \sum_i u_i \varphi_i(x_j) = u_j$.
+We have to determine the coefficients $u_i \in \setR^N$, with 
+$N = | {\cal N} |$. The $N_D := | {\cal N}_D | $ values according to nodes on $\Gamma_D$ are
+given explicitely:
+$$
+u_j = u_h (x_j) = u_D(x_j) \qquad \forall \, x_j \in \Gamma_D
+$$
+The others have to be determined from the variational equation (\ref{equ_fem}).
+It is equivalent to fulfill (\ref{equ_fem}) for the whole space $\{ v_h \in V_h : v_h(x) = 0 \; \forall \; x_j \in {\cal N}_D \}$, or just for its basis 
+$\{ \varphi_i : x_i \in {\cal N}_f\}$ associated to the free nodes:
+\begin{quote}
+\begin{equation}
+\sum_i \Big\{ \int_\Omega \nabla \varphi_i \cdot \nabla \varphi_j \, dx +
+ \int_{\Gamma_R} \alpha \varphi_i \varphi_j \, ds \Big\} u_i   = 
+\int f \varphi_j \, dx + \int_{\Gamma_N+\Gamma_R} g \varphi_j \, ds \quad
+\end{equation}
+\hfill
+$\forall \, \varphi_j \; \mbox{ such that } x_j \in {\cal N}_f$
+\end{quote}
+We have inserted the basis expansion (\ref{equ_basisexpansion}).
+We define the matrix $A = (A_{ji}) \in \setR^{N\times N}$ and the vector $f = (f_j) \in \setR^N$ as
+\begin{eqnarray*}
+A_{ji} & := & \int_\Omega \nabla \varphi_i \cdot \nabla \varphi_j \, dx +
+ \int_{\Gamma_R} \alpha \varphi_i \varphi_j \, ds, \\ 
+f_j & := & \int f \varphi_j \, dx + \int_{\Gamma_N+\Gamma_R} g \varphi_j \, ds.
+\end{eqnarray*}
+According to Dirichlet- and free nodes they are splitted as
+$$
+A = \left( \begin{array}{cc}
+        A_{DD} & A_{DD} \\
+        A_{fD} & A_{ff} 
+        \end{array} \right)
+\qquad \text{and} \qquad
+f = \left( \begin{array}{c}
+        f_{D} \\
+        f_{f}
+        \end{array} \right).
+$$
+Now, we obtain the system of linear equations for $u = (u_i) \in \setR^N$, $u = (u_D, u_f)$:
+\begin{equation}
+\label{equ_linear_system}
+\left( \begin{array}{cc}
+        I & 0 \\
+        A_{fD} & A_{ff} 
+        \end{array} \right)
+ \left( \begin{array}{c}
+        u_{D} \\
+        u_{f}
+        \end{array} \right)
+=
+\left( \begin{array}{c}
+        u_{D} \\
+        f_{f}
+        \end{array} \right).
+\end{equation}
+At all, we have $N$ coefficients $u_i$. $N_D$ are given explicitely from the
+Dirichlet values. These are $N_f$ equations to determine the remaining ones.
+Using the known $u_D$, we can reformulate it as symmetric system of equations for $u_f \in \setR^{N_f}$:
+$$
+A_{ff} u_f = f_f - A_{fD} u_D
+$$

@@ -1,0 +1,915 @@
+\chapter{Mixed Methods}
+
+A mixed method is a variational formulation involving two function spaces, 
+and a bilinear-form of a special saddle point structure. Usually, it is
+obtained from variational problems {\em with constraints}.
+
+\section{Weak formulation of Dirichlet boundary conditions}
+
+We start with the Poisson problem
+\begin{equation} \label{equ_mixeddirpde}
+-\Delta u = f \qquad \mbox{in} \; \Omega,
+\end{equation}
+and boundary conditions
+$$
+\begin{array}{rcll}
+u & = & u_D \qquad & \mbox{on} \; \Gamma_D, \\
+\frac{\partial u}{\partial n} & = & 0 & \mbox{on} \; \Gamma_N.
+\end{array}
+$$
+In contrast to the earlier method, we multiply equation (\ref{equ_mixeddirpde})
+with test functions $v \in H^1$ (without imposing Dirichlet constraints), 
+and integrate by parts. Using the Neumann boundary conditions, we obtain
+$$
+\int_\Omega \nabla u \nabla v \, dx - \int_{\Gamma_D} \frac{\partial u}{\partial n} \, v \, ds = \int_\Omega f v \, dx
+$$
+The normal derivative $\frac{\partial u}{\partial n}$ is not known on $\Gamma_D$. We simply call it $-\lambda$:
+$$
+\lambda := - \frac{\partial u }{\partial n}
+$$
+To pose the Dirichlet boundary condition, we multiply $u = u_D$ by sufficiently many test functions, and integrate over $\Gamma_D$:
+$$
+\int_{\Gamma_D} u \mu \, ds = \int_{\Gamma_D} u_D \mu \, ds \qquad \forall \, 
+\mu \in \; ?
+$$
+
+Combining both equations, we get the system of equations:
+Find $u \in V = H^1(\Omega)$ and $\lambda \in Q = ?$ such
+that
+\begin{equation} \label{equ_mixeddirichlet}
+\begin{array}{ccccll}
+\int_\Omega \nabla u \cdot \nabla v \, dx & + & \int_{\Gamma_D} v \lambda \, ds & = & \int f v \, dx \quad & \forall \, v \in V, \\[0.5em]
+\int_{\Gamma_D} u \mu \, ds & & & = & \int_{\Gamma_D} u_D \mu \, ds \quad & \forall \, \mu \in Q.
+\end{array}
+\end{equation}
+A similar formulation can be obtained for interface conditions.
+
+\section{A Mixed method for the flux}
+
+We start from the second order pde
+$$
+\opdiv (a \nabla u) = f \qquad \mbox{in} \; \Omega,
+$$
+and boundary conditions
+\begin{eqnarray*}
+u & = & u_D \qquad \mbox{on} \, \Gamma_D \\
+a \frac{\partial u}{\partial n} & = & g \qquad \mbox{on} \, \Gamma_N
+\end{eqnarray*}
+Next, we introduce the flux variable $\sigma := a \nabla u$
+to rewrite the equations as: Find $u$ and $\sigma$ such that
+\begin{eqnarray}
+a^{-1} \sigma - \nabla u & = & 0,   \label{equ_mixedsigma}  \\
+\opdiv \, \sigma & = & -f,       \label{equ_mixedu}
+\end{eqnarray}
+and boundary conditions
+\begin{eqnarray*}
+u & = & u_D \qquad \mbox{on} \, \Gamma_D \\
+\sigma \cdot n & = & g \qquad \mbox{on} \, \Gamma_N.
+\end{eqnarray*}
+
+We want to derive a variational formulation for the system of equations.
+For that, we multiply the first equations by vector-valued test functions~$\tau$, the second equation by test functions $v$, and integrate:
+$$
+\begin{array}{ccccll}
+\int_\Omega (a^{-1} \sigma) \cdot \tau \, dx & - & \int_\Omega \tau \cdot \nabla u \, dx & = & 0 \qquad & \forall \, \tau \\[0.5em]
+\int_\Omega \opdiv \, \sigma \, v \, dx & & & = & - \int f v \, dx \qquad & \forall \, v
+\end{array}
+$$
+We would like to have the second term of the first equation of the same
+structure as the first term in the second equation. This can be obtained
+by integration by parts applied to either one of them. The interesting
+case is to integrate by parts in the first line to obtain:
+$$
+\int_\Omega a \sigma \tau \, dx + \int_\Omega \opdiv \, \tau \, u \, dx
+-\int_{\Gamma_D} \tau_n \, u \, ds - \int_{\Gamma_N} \tau_n \, u \, ds = 0.
+$$
+Here, we make use of the boundary conditions. On the Dirichlet boundary,
+we know $u = u_D$, and use that in the equation. The Neumann boundary
+condition $\sigma \cdot n = g$ must be put into the approximation space,
+it becomes an essential boundary condition. Thus, it is enough to choose
+test functions of the sub-space fulfilling $\tau \cdot n = 0$.
+The problem is now the following. The space $V$ will be fixed later.
+Find $\sigma \in V, \sigma_n = g$ on $\Gamma_N$, and $u \in Q$
+such that
+$$
+\begin{array}{ccccll}
+\int_\Omega (a^{-1} \sigma) \cdot \tau \, dx & + & 
+\int_\Omega \opdiv \, \tau  \, u \, dx & = & \int_{\Gamma_D} u_D \tau _n \, ds \qquad & \forall \, \tau, \; \tau_n = 0 \; \mbox{on} \; \Gamma_N \\
+\int_\Omega \opdiv \, \sigma \, v \, dx & & & = & - \int f v \, dx \qquad & \forall \, v
+\end{array}
+$$
+The derivatives are put onto the flux unknown $\sigma$ (and its test function $\tau$).
+We don't have to derive the primal unknown $u$. This will give us better
+approximation for the fluxes than for the scalar. That is one of the reasons
+to use this mixed method.
+
+
+\section{Abstract theory}
+
+A mixed variational formulation involves two Hilbert spaces $V$ and $Q$,
+bilinear-forms
+\begin{eqnarray*}
+a(u,v) & : & V \times V  \rightarrow \setR, \\
+b(u,q) & : & V \times Q  \rightarrow \setR,
+\end{eqnarray*}
+and continuous linear-forms
+\begin{eqnarray*}
+f(v) & : & V \rightarrow \setR, \\
+g(q) & : & Q \rightarrow \setR.
+\end{eqnarray*}
+%
+The problem is to find $u \in V$ and $p \in Q$ such that
+\begin{equation}
+\begin{array}{ccccll}
+a(u,v) & + & b(v,p) & = & f(v) \quad & \forall \, v \in V, \\[0.2em]
+b(u,q) & & & = & g(q) \quad & \forall \, q \in Q.
+\end{array}
+\end{equation}
+%
+The two examples from above are of this form.
+
+
+\bigskip
+
+Instead of considering this as a system of equations, one can look at
+the mixed method as one variational problem on the product spaces $V \times Q$.
+For this, simply add both lines, and search for $(u,p) \in V \times Q$ such that
+$$
+a(u,v) + b(u,q) + b(v,p) = f(v) + g(q) \qquad \forall \, (v,q) \in V \times Q.
+$$
+Define the big bilinear-form $B(.,.) : (V \times Q) \times (V \times Q) \rightarrow \setR$ as
+$$
+B( (u,p), (v,q) ) = a(u,v) + b(u,q) + b(v,p),
+$$
+to write the whole system as single variational problem
+$$
+\mbox{Find } (u,p) \in V \times Q : \qquad
+B((u,p),(v,q)) = f(v) + g(q) \qquad \forall \, (v,q) \in V \times Q
+$$
+
+\bigskip
+
+By the Riesz-representation theorem, we can define operators:
+$$
+\begin{array}{lllrcl}
+A : & V \rightarrow V : & u \rightarrow A u : & (Au,v)_V & = & a(u,v) \quad \forall \, v \in V \\
+B : & V \rightarrow Q : & u \rightarrow B u : & (Bu,q)_Q & = & b(u,q) \quad \forall \, q \in Q \\
+B^* : & Q \rightarrow V : & p \rightarrow B^* p : & (B^*p,v)_V & = & b(v,p) \quad \forall \, v \in V.
+\end{array}
+$$
+By means of these operators, we can write the mixed variational problem as
+operator equation
+\begin{equation}
+\begin{array}{ccccl}
+A u & + & B^* p & = J_V f, \\
+B u & & & = J_Q g.
+\end{array}
+\end{equation}
+Here, we used the Riesz-isomorphisms $J_V : V^\ast \rightarrow V$ and $J_Q : Q^\ast \rightarrow Q$. 
+
+\bigskip
+
+In the interesting examples, the operator $B$ has a large kernel:
+$$
+V_0 := \{ v : B v = 0 \}
+$$
+\begin{lemma} Assume that $B^\ast Q$ is closed in $V$. Then there holds 
+the $V$-orthogonal decomposition
+$$
+V = V_0 + B^\ast Q
+$$
+\end{lemma}
+{\em Proof:} There holds
+\begin{eqnarray*}
+V_0 & = & \{ v : B v = 0 \} \\
+   & = & \{ v : (B v, q)_Q = 0  \quad \forall \, q \in Q\} \\
+   & = & \{ v : (v, B^\ast q)_V = 0 \quad \forall \, q \in Q \}.
+\end{eqnarray*}
+This means, $V_0$ is the $V$-orthogonal complement to $B^\ast Q$.
+\hfill $\Box$
+
+
+Now, we will give conditions to ensure a unique solution of a mixed
+problem:
+\begin{theorem}[Brezzi's theorem] \label{theo_brezzi}
+Assume that $a(.,.)$ and $b(.,.)$ are continuous bilinear-forms
+\begin{eqnarray}
+a(u,v) & \leq & \alpha_2 \, \| u \|_V \,  \| v \|_V \qquad \forall \, u,v \in V, \\
+b(u,q) & \leq & \beta_2 \, \| u \|_V \, \| q \|_Q \qquad \forall \, u \in V, \; 
+\forall \, q \in Q.
+\end{eqnarray}
+Assume there holds coercivity of $a(.,.)$ on the kernel,i.e.,
+\begin{equation} \label{equ_kernelell}
+a(u,u) \geq \alpha_1 \, \| u \|_V^2 \qquad \forall \, u \in V_0,
+\end{equation}
+and there holds the LBB (Ladyshenskaja-Babu\v{s}ka-Brezzi) condition
+\begin{equation} \label{equ_lbb}
+\sup_{u \in V} \frac{b(u,q)}{\|u\|_V} \geq \beta_1 \, \| q \|_Q \quad \forall \, q \in Q.
+\end{equation}
+Then, the mixed problem is uniquely solvable. The solution fulfills
+the stability estimate
+$$
+\| u \|_V + \| p \|_Q \leq c \{ \| f \|_{V^\ast} + \| g \|_{Q^\ast} \},
+$$
+with the constant $c$ depending on $\alpha_1, \alpha_2, \beta_1, \beta_2$.
+\end{theorem}
+{\em Proof:} The big bilinear-form $B(.,.)$ is continuous
+$$
+B((u,p),(v,q)) \leqc ( \| u \| + \| p \| ) \, ( \| v \| + \| q \| ).
+$$
+We prove that it fulfills the $\inf-\sup$ condition
+$$
+\inf_{v,q} \sup_{u,p} \frac{B((u,p),(v,q))}{ ( \|v\|_V+\|q\|_Q) (\|u\|_V+\|p\|_Q)} \geq \beta.
+$$
+Then, we use Theorem~\ref{theo_infsup} (by Babu\v{s}ka-Aziz) to conclude
+continuous solvability.
+
+To prove the $\inf-\sup$-condition, we choose 
+arbitrary $v \in V$ and $q \in Q$. We will construct $u \in V$ and 
+$p \in Q$ such that
+$$
+\| u \|_V + \| p \|_Q \leqc \| v \|_V + \| q \|_Q
+$$
+and
+$$
+B((u,p),(v,q)) = \| v \|_V^2 + \| q \|_Q^2.
+$$
+First, we use (\ref{equ_lbb}) to choose $u_1 \in V$ such that
+$$
+b(u_1,q) = \| q \|_Q^2 \qquad \mbox{and} \qquad \| u_1 \|_V \leq 2 \beta_1^{-1} \, \| q \|_Q.
+$$
+Next, we solve a problem on the kernel:
+$$
+\mbox{Find } u_0 \in V_0 : \quad
+a(u_0, w_0) = (v,w_0)_V - a(u_1, w_0) \qquad \forall \, w_0 \in V_0
+$$
+Due to assumption (\ref{equ_kernelell}), the left hand side is a coercive 
+bilinear-form on $V_0$. The right hand side is a continuous linear-form.
+By Lax-Milgram, the problem has a unique solution fulfilling
+$$
+\| u_0 \|_V \leqc \| v \|_V + \| u_1 \|_V
+$$
+We set 
+$$
+u = u_0 + u_1.
+$$
+By the Riesz-isomorphism, we define a $z \in V$ such that
+$$
+(z,w)_V = (v,w)_V - a(u, w) \qquad \forall \, w \in V
+$$
+By construction, it fulfills $z \bot_V V_0$. The LBB condition implies
+$$
+\| p \|_Q \leq 
+\beta_1^{-1} \sup_v \frac{b(v,p)}{\| v\|_V} 
+= \beta_1^{-1} \sup_v \frac{(v, B^\ast p)_V}{\| v\|_V} 
+= \beta_1^{-1} \| B^\ast p \|_V,
+$$
+and thus $B^\ast Q$ is closed, and $z \in B^\ast Q$. Take the $p \in Q$ such that
+$$
+z = B^\ast p.
+$$
+It fulfills
+$$
+\| p \|_Q \leq \beta_1^{-1} \| z \|_V \leqc \| v \|_V + \| q \|_Q
+$$
+Concluding, we have constructed $u$ and $p$ such that
+$$
+\| u \|_V + \| p \|_Q \leqc \| v \|_V + \| q \|_Q,
+$$
+and
+\begin{eqnarray*}
+B((u,p),(v,q)) & = & a(u,v) + b(v,p) + b(u,q) \\
+        & = & a(u,v) + (z,v)_V + b(u,q) \\
+        & = & a(u,v) + (v,v)_V - a(u,v) + b(u,q) \\
+        & = & \| v \|_V^2 + b(u_1, q) \\
+        & = & \| v \|_V^2 + \| q \|_Q^2.
+\end{eqnarray*}
+\hfill $\Box$
+
+\section{Analysis of the model problems}
+Now, we apply the abstract framework to the two model problems.
+
+\subsubsection{Weak formulation of Dirichlet boundary conditions}
+
+The problem is well posed for the spaces
+$$
+V = H^1(\Omega) \qquad \mbox{and} \qquad Q = H^{-1/2}(\Gamma_D)
+$$
+Remember, $H^{-1/2}(\Gamma_D)$ is the dual to $H^{1/2}(\Gamma_D)$.
+The later one is the trace space of $H^1(\Omega)$, the norm fulfills
+$$
+\| u_D \|_{H^{1/2}(\Gamma_D)} \eqc \inf_{ w \in H^1 \atop \optr \, w = u_D} \| w \|_{H^1(\Omega)}.
+$$
+The bilinear-forms are
+\begin{eqnarray*}
+a(u,v) & = & \int_\Omega \nabla u \, \nabla v \, dx  \\
+b(u,\lambda) & = & \left< \lambda, \optr \, u \right>_{H^{-1/2} \times H^{1/2}}
+\end{eqnarray*}
+To be precise, the integral $\int_{\Gamma_D} \lambda u \, dx$ is extended
+to the duality product $\left< \lambda, u \right>$. For regular 
+functions ($\lambda \in L_2(\Gamma_D)$), we can write the $L_2$-inner
+product.
+
+\begin{theorem} The mixed problem (\ref{equ_mixeddirichlet}) has
+a unique solution $u \in H^1(\Omega)$ and $\lambda \in H^{-1/2}(\Gamma_D)$.
+\end{theorem}
+{\em Proof:} 
+The spaces $V$ and $Q$, and the bilinear-forms $a(.,.)$ and
+$b(.,.)$ fulfill the assumptions of Theorem~\ref{theo_brezzi}.
+The kernel space $V_0$ is
+$$
+V_0 = \{ u : \int_{\Gamma_D} u \mu \, dx = 0 \; \quad \forall \, \mu \in L_2(\Gamma_D) \} = \{ u : \optr_{\Gamma_D} u = 0 \}
+$$
+The continuity of $a(.,.)$ on $V$ is clear. It is not coercive
+on $V$, but, due to Friedrichs inequality, it is coercive on $V_0$.
+
+The bilinear-form $b(.,.)$ is continuous on $V \times Q$:
+$$
+b(u,\mu) = \left< \mu, \optr \, u  \right>_{H^{-1/2} \times H^{1/2} }
+ \leq \| \mu \|_{H^{-1/2}} \| \optr \, u \|_{H^{1/2}(\Gamma_D)} 
+ \leqc \| \mu \|_Q \| u \|_{H^1} = \| \mu \|_Q \| u \|_V
+$$
+The LBB - condition of $b(.,.)$ follows more or less from the definition
+of norms:
+\begin{eqnarray*}
+\| q \|_Q & = & \sup_{u \in H^{1/2}} \frac{ \left< q, u \right> }{ \| u \|_{H^{1/2}}} \\
+        & \eqc & \sup_{u \in H^{1/2}} \frac{ \left< q, u \right> }{ \inf_{w \in H^1(\Omega) \atop \optr \, w = u} \| w \|_{H^1(\Omega)}} \\
+        & = & \sup_{u \in H^{1/2}} \sup_{w \in H^1(\Omega) \atop \optr \, w = u} \frac{ \left< q, u \right> }{ \| w \|_{H^1}} \\
+        & = & \sup_{w \in H^1} \frac{ \left< q, \optr \, w \right> }{ \| w \|_{H^1}} 
+        = \sup_{w \in V} \frac{b(w,q)}{\| w \|_V}
+\end{eqnarray*}
+
+
+\subsubsection{Mixed method for the fluxes}
+
+This mixed method requires the function space $H(\opdiv, \Omega)$:
+
+\begin{definition} A measurable function $g$ is called the weak divergence
+of $\sigma$ on $\Omega \subset \setR^d$ if there holds
+$$
+\int_\Omega g \, \varphi \, dx = -\int_\Omega \sigma \cdot \nabla \varphi \, dx 
+\qquad \forall \, \varphi \in C_0^\infty (\Omega)
+$$
+The function space $H(\opdiv)$ is defined as
+$$
+H(\opdiv,\Omega) := \{ \sigma \in [L_2(\Omega)]^d : \opdiv \, \sigma \in L_2 \},
+$$
+its norms is
+$$
+\| \sigma \|_{H(\opdiv)} = \left\{ \| \sigma \|_{L_2}^2 + \| \opdiv \, \sigma \|_{L_2}^2 \right \}^{1/2}
+$$
+\end{definition}
+
+The mixed method is formulated on the spaces
+$$
+V = H(\opdiv) \qquad Q = L_2
+$$
+The bilinear-forms are
+\begin{eqnarray*}
+a(\sigma, \tau) & = & \int a^{-1} \sigma \tau \, dx \qquad \forall \, \sigma, \tau \in V \\
+b(\sigma, v) & = & \int \opdiv \, \sigma \, v \, dx \qquad \forall \, \sigma \in V, \; \forall \, v \in Q
+\end{eqnarray*}
+We assume that the symmetric matrix $a \in \setR^{d\times d}$
+and its inverse $a^{-1}$ are bounded.
+
+\begin{theorem} The mixed problem for the fluxes is well posed.
+\end{theorem}
+{\em Proof:} We check the conditions of the theorem of Brezzi:
+The bilinear-forms are bounded, namely
+$$
+a(\sigma, \tau) = \int a^{-1} \sigma \tau \, dx \leq \| a^{-1} \|_{L_\infty} \| \sigma \|_{L_2} \, \| \tau \|_{L_2} \leqc \| \sigma \|_V \, \| \tau \|_V
+$$
+and 
+$$
+b(\sigma, v) = \int \opdiv \, \sigma v \, dx \leq \| \opdiv \sigma \|_{L_2} \, \| v \|_{L_2} \leq \| \sigma \|_V \, \| v \|_Q.
+$$
+
+The kernel space $V_0 = \{ \tau : b(\tau, v) = 0 \; \forall \, v \in Q \}$
+is
+$$
+V_0 = \{ \tau \in H(\opdiv) : \opdiv \, \tau = 0 \}
+$$
+There holds the kernel-ellipticity of $a(.,.)$. Let $\tau \in V_0$. Then
+$$
+a(\tau, \tau) = \int \tau^T a^{-1} \tau \, dx \geq \inf_{x\in \Omega} \lambda_{\min} (a^{-1}) \int |\tau|^2 \,dx \geqc \| \tau \|_{L_2}^2 = \| \tau \|_{H(\opdiv)}^2
+$$
+
+We are left to verify the LBB condition
+\begin{equation} \label{equ_lbbhdiv}
+\sup_{\sigma \in H(\opdiv)} \frac{\int \opdiv \, \sigma \,  v \, dx} { \| \sigma \|_{H(\opdiv)}}
+\geqc \| v \|_{L_2} \qquad \forall \, v \in L_2.
+\end{equation}
+For given $v \in L_2$, we will construct a flux $\sigma$ satisfying the 
+inequality.
+For this, we solve the artificial Poisson problem $-\Delta \varphi = v$ with
+Dirichlet boundary conditions $\varphi = 0$ on $\partial \Omega$. The solution
+satisfies $\| \nabla \varphi \|_{L_2} \leqc \| v \|_{L_2}$. Set $\sigma = -\nabla \varphi$. There holds $\opdiv \, \sigma = v$. Its norm is
+$$
+\| \sigma \|_{H(\opdiv)}^2 = \| \sigma \|_{L_2}^2 + \| \opdiv \, \sigma \|_{L_2}^2
+        = \| \nabla \varphi \|_{L_2}^2 + \| v \|_{L_2}^2 \leqc \| v \|_{L_2}^2.
+$$
+Using it in (\ref{equ_lbbhdiv}), we get the result
+$$
+\frac{ \int \opdiv \, \sigma \, v \, dx} { \| \sigma \|_{H(\opdiv)}}
+ = \frac{ \int v^2 \, dx} { \| \sigma \|_{H(\opdiv)}} \geqc \| v \|_{L_2}.
+$$
+
+\subsubsection{The function space $H(\opdiv)$}
+
+The mixed formulation has motivated the definition of the function
+space $H(\opdiv)$. Now, we will study some properties of this
+space. We will also construct finite elements for the approximation of
+functions in $H(\opdiv)$.  In Section~\ref{sec_traceh1}, we have
+investigated traces of functions in $H^1$. Now, we apply similar
+techniques to the space $H(\opdiv)$. Again, the proofs are based on
+the density of smooth functions.
+
+For a function in $H^1$, the boundary values are well defined by the 
+trace operator. For a vector-valued function in $H(\opdiv)$, only the 
+normal-component is well defined on the boundary:
+
+\begin{theorem} There exists a normal-trace operator 
+$$
+\optrn : H(\opdiv) \rightarrow H^{-1/2} (\partial \Omega)
+$$
+such that for $\sigma \in H(\opdiv) \cap [C(\overline \Omega)]^d$ it coincides with
+its normal component
+$$
+\optrn \sigma = \sigma \cdot n \qquad \mbox{on} \; \partial \Omega.
+$$
+\end{theorem}
+{\em Proof:} For smooth functions, the trace operator gives the normal
+component on the boundary. We have to verify that this operator is bounded
+as operator from $H(\opdiv)$ to $H^{-1/2}(\partial \Omega)$. Then, by 
+density, we can extend the trace operator to $H(\opdiv)$. Let $\sigma \in H(\opdiv) \cap [C^1(\overline \Omega)]^d$:
+\begin{eqnarray*}
+\| \optrn \sigma \|_{H^{-1/2}} 
+& = & \sup_{\varphi \in H^{1/2}(\partial \Omega)} \frac{ \int_{\partial \Omega} \sigma \cdot n \, \varphi \, ds } { \| \varphi \|_{H^{1/2} }} 
+\eqc 
+\sup_{\varphi \in H^1(\Omega)} \frac{ \int_{\partial \Omega} \sigma \cdot n \, \optr \, \varphi \, ds } { \| \varphi \|_{H^1 }} \\
+& = & 
+\sup_{\varphi \in H^1(\Omega)} \frac{ \int_{\partial \Omega} (\sigma \, \optr \, \varphi) \cdot n \, ds } { \| \varphi \|_{H^1 }} 
+=
+\sup_{\varphi \in H^1(\Omega)} \frac{ \int_{\Omega} \opdiv (\sigma  \varphi) \, dx } { \| \varphi \|_{H^1 }} \\
+& = & 
+\sup_{\varphi \in H^1(\Omega)} \frac{ \int_{\Omega} (\opdiv \sigma)  \varphi \, dx +   \int_{\Omega} \sigma \cdot \nabla \varphi \, dx } { \| \varphi \|_{H^1 }} \leq
+\sup_{\varphi \in H^1(\Omega)} \frac{ \| \opdiv \sigma \|_{L_2} \, \| \varphi \|_{L_2} + \| \sigma \|_{L_2} \, \| \nabla \varphi \|_{L_2} } { \| \varphi \|_{H^1 }} \\
+& \leq & \left\{ \| \sigma \|_{L_2}^2 + \| \opdiv \, \sigma \|_{L_2}^2 \right\}^{1/2}
+ = \| \sigma \|_{H(\opdiv)}
+\end{eqnarray*}
+\hfill $\Box$
+
+\medskip
+
+\begin{lemma} There holds integration by parts
+$$
+\int_\Omega \sigma \cdot \nabla \varphi \, dx + \int_\Omega (\opdiv \, \sigma) \varphi \, dx = \left< \optrn \, \sigma , \optr \varphi \right>_{H^{-1/2} \times H^{1/2}}
+$$
+for all $\sigma \in H(\opdiv)$ and $\varphi \in H^1(\Omega)$.
+\end{lemma}
+{\em Proof:} By density of smooth functions, and continuity of the trace operators.
+
+\medskip
+
+Now, let $\Omega_1, \ldots \Omega_M$ be a non-overlapping partitioning of $\Omega$.
+In Section~\ref{sec_traceh1}, we have proven that functions which are 
+in $H^1(\Omega_i)$, and which are continuous across the boundaries 
+$\gamma_{ij} = \overline \Omega_i \cap \overline \Omega_j$, are in $H^1(\Omega)$. 
+A similar property holds for functions in $H(\opdiv)$. 
+
+\begin{theorem} Let $\sigma \in [L_2(\Omega)]^d$ such that
+\begin{itemize}
+\item
+$$
+\sigma|_{\Omega_i} \in H(\opdiv, \Omega_i)
+$$
+\item
+$$
+\optr_{n,i} \sigma|_{\Omega_i} = - \optr_{n,j} \sigma|_{\Omega_j} \qquad \mbox{ on } \gamma_{ij}.
+$$
+\end{itemize}
+Then $\sigma \in H(\opdiv, \Omega)$, and 
+$$
+(\opdiv \, \sigma)|_{\Omega_i} = \opdiv \, (\sigma|_{\Omega_i}).
+$$
+\end{theorem}
+The proof follows the lines of Theorem~\ref{theo_subdomainh1}.
+
+\bigskip
+
+We want to compute with functions in $H(\opdiv)$. For this, we need
+finite elements for this space. The characterization by sub-domains
+allows the definition of finite element sub-spaces of $H(\opdiv)$. Let
+${\cal T} = \{ T \}$ be a triangulation of $\Omega$.  One family of
+elements are the BDM (Brezzi-Douglas-Marini) elements. The space is
+%
+$$
+V_h = \{ \sigma \in [L_2]^2 : \sigma|_T \in [P^k]^d, \; \sigma \cdot n \; \mbox{ continuous across edges} \}.
+$$
+%
+This finite element space is larger than the piece-wise polynomial
+$H^1$-finite element space of the same order.  The finite element
+functions can have non-continuous tangential components across edges.
+
+\bigskip
+
+The cheapest element for $H(\opdiv)$ is the lowest order Raviart-Thomas 
+element RT0. The finite element $(T, V_T, \{ \psi_i \})$ is defined by the 
+space of shape functions $V_T$, and linear functionals $\psi_i$. The
+element space is
+$$
+V_T = \left\{ \left( a \atop b \right) + c \left( x \atop y \right) : a,b,c \in \setR \right\},
+$$
+the linear functionals are the integrals of the normal components on the three
+edges of the triangle
+$$
+\psi_i(\sigma) = \int_{e_i} \sigma \cdot n \, ds \qquad \; i = 1,2,3
+$$
+The three functionals are linearly independent on $V_T$. This means,
+for each choice of $\sigma_1, \sigma_2, \sigma_3$, there exists three 
+unique numbers $a,b,c \in \setR$ such that 
+$$
+\sigma = \left( a \atop b \right) + c \left( x \atop y \right).
+$$
+satisfies $\psi_i(\sigma) = \sigma_i$.
+
+{\em Exercise: } Compute the shape functions for the RT0 - reference triangle.
+
+\bigskip
+
+The global finite element functions are defined as follows. Given one 
+value $\sigma_i$
+for each edge $e_i$ of the triangulation. The corresponding RT0 finite element
+function $\sigma$ is defined by
+$$
+\sigma |_T \in V_T \qquad \mbox{and} \qquad \int_{e_i} \sigma|_{T} \cdot n_{e_i} \, ds = \sigma_i
+$$
+for all edges $e_i \subset T$ and all triangles $T \in {\cal T}$. 
+
+
+\bigskip
+
+We have to verify that this construction gives a function in $H(\opdiv)$. For
+each element, $\sigma|_T$ is a linear polynomial, and thus in $H(\opdiv, T)$. The normal
+components must be continuous. By construction, there holds
+$$
+\int_e \sigma|_{T,i} \cdot n \, ds =
+\int_e \sigma|_{T,j} \cdot n \, ds 
+$$
+for the edge $e = T_i \cap T_j$. The normal component is continuous since 
+$\sigma \cdot n_e$ is constant on an edge: Points $(x,y)$ on the edge $e$ fulfill
+$x n_x + y n_y$ is constant. There holds
+$$
+\sigma \cdot n_e = \left[ \left( a \atop b \right) + c \left( x \atop y \right) \right]
+\cdot \left( n_x \atop n_y \right) =
+a n_x + b n_y + c (x n_x + y n_y) = \mbox{constant}
+$$
+
+\bigskip
+
+The global RT0-basis functions $\varphi_i^{RT}$ are associated to the edges,
+and satisfy
+$$
+\int_{e_i} \varphi_j^{RT} \cdot n_e \, ds = \delta_{ij} \qquad 
+\forall \, i,j = 1, \ldots N_{edges}
+$$
+
+By this basis, we can define the RT - interpolation operator
+$$
+I_h^{RT} \sigma = \sum_{edges \; e_i} \left( \int_{e_i} \sigma \cdot n_e \, ds \right) 
+\varphi_i^{RT}
+$$
+
+It is a projection on $V_h$. The interpolation operator preserves the
+divergence {\em in mean}:
+
+\begin{lemma} \label{lemma_commute}
+The RT0 - interpolation operator satisfies
+$$
+\int_T \opdiv I_h \sigma \, dx = \int_T \opdiv \, \sigma dx
+$$
+for all triangles $T \in {\cal T}$.
+\end{lemma}
+
+
+Let $P_h$ be the $L_2$ projection onto piece-wise constant finite
+element functions. This is: Let $Q_h = \{ q \in L_2 : q |_T = \mbox{const} \; \forall T \in {\cal T} \}$. Then $P_h p$ is defined by $P_h p \in Q_h$ and
+$\int_\Omega P_h p \, q_h \, dx = \int_\Omega P p \, q_h \, dx \; \forall \, q_h \in Q_h$. 
+This is equivalent to $P_h p$ satisfies $P_h p \in Q_h$ and
+$$
+\int_T P_h p \, dx = \int_T p \, dx \qquad \forall \, T \in {\cal T}.
+$$ 
+
+The Raviart-Thomas finite elements are piecewise linear. Thus, the
+divergence is piece-wise constant. From $\opdiv \, I_h \sigma \in Q_h$
+and Lemma~\ref{lemma_commute} there follows
+$$
+\opdiv \, I_h \sigma = P_h \opdiv \, \sigma.
+$$
+This relation is known as commuting diagram property:
+
+
+\begin{equation}
+\begin{array}{ccc}
+H(\opdiv)       &      \stackrel{\opdiv}{\longrightarrow}    & 
+L^2                                                                                    \\[8pt]
+\Big\downarrow  \vcenter{ \rlap{$I_h$}}  &                  &
+\Big\downarrow  \vcenter{ \rlap{$P_h$}}                             \\[8pt]
+V_h^{RT}                   &      
+\stackrel{\opdiv}{\longrightarrow}          &
+ Q_h    
+\end{array}
+\label{diagram2}
+\end{equation}
+
+
+\bigskip
+
+The analysis of the approximation error is based on the transformation
+to the reference element. For $H^1$ finite elements, interpolation on
+the element $T$ is equivalent to interpolation on the reference
+element $\widehat T$, i.e., 
+$(I_h v) \circ F_T = \hat I_h (v \circ F_T)$. This is not
+true for the $H(\opdiv)$ elements: The transformation $F$ changes
+the direction of the normal vector. Thus 
+$\int_{e} \sigma \cdot n \, ds \neq \int_{\hat e} \hat \sigma \cdot \hat n \, ds$. 
+
+The Piola transformation is the remedy:
+\begin{definition}[Piola Transformation]
+Let $F : \widehat T \rightarrow T$ be the mapping from the reference element
+$\widehat T$ to the element $T$. Let $\hat \sigma \in L_2(\widehat T)$. Then, the 
+Piola transformation 
+$$
+\sigma = {\cal P} \{ \hat \sigma \}
+$$
+is defined by
+$$
+\sigma (F (\hat x)) = (\opdet F^\prime)^{-1} F^\prime \sigma (x).
+$$
+\end{definition}
+
+The Piola transformation satisfies:
+\begin{lemma} Let $\hat \sigma \in H(\opdiv, \widehat T)$, and 
+$\sigma = {\cal P} \{ \hat \sigma \}$. Then there holds
+$$
+(\opdiv \, \sigma) (F (\hat x)) = (\det F^\prime)^{-1} \opdiv \, \hat \sigma
+$$
+Let $\hat e$ be an edge of the reference element, and $e = F (\hat e)$.
+Then
+$$
+\int_e \sigma \cdot n \, ds = \int_{\hat e} \hat \sigma \cdot \hat n \, ds
+$$
+\end{lemma}
+{\em Proof:} Let $\widehat \varphi \in C_0^\infty (\widehat T)$, 
+and $\varphi(F(\hat x)) = \widehat \varphi (x)$. Then there holds
+\begin{eqnarray*}
+\int_T \opdiv \, \sigma \, \varphi \, dx & = & \int_T \sigma \cdot \nabla \varphi \, dx  \\
+& = & \int_{\widehat T} \left[ (\opdet F^\prime)^{-1} F^\prime \sigma \right] \cdot \left[ (F^\prime)^{-T} \nabla \hat \varphi \right] (\opdet F^\prime) \, d \hat x \\
+& = & \int_{\widehat T} \hat \sigma \nabla \hat \varphi \, d \hat x 
+= \int_{\widehat T} \opdiv \hat \sigma \, \hat \varphi \, d \hat x \\
+& = & \int_T (\opdet F^\prime)^{-1} \, (\opdiv \hat \sigma) \varphi \, dx.
+\end{eqnarray*}
+Since $C_0^\infty$ is dense in $L_2(T)$, there follows the first claim.
+To prove the second one, we show that
+$$
+\int_e (\sigma \cdot n) \varphi \, ds = \int_{\hat e} (\hat \sigma \cdot n) \hat \varphi \, dx
+$$
+holds for all $\varphi \in C^\infty (T), \; \varphi = 0 \; \mbox{on} \; \partial T \setminus e$. Then, let $\varphi \rightarrow 1$ on the edge $e$:
+\begin{eqnarray*}
+\int_e (\sigma \cdot n) \varphi \, ds = \int_T \opdiv (\sigma \varphi) \, dx
+= \int_{\widehat T} \opdiv (\hat \sigma \hat \varphi) \, d \hat x =
+\int_{\hat e} (\hat \sigma \cdot \hat n) \hat \varphi \, d \hat s.
+\end{eqnarray*}
+\hfill $\Box$
+
+\begin{lemma} The Raviart-Thomas triangle $T$ and the Raviart-Thomas
+reference triangle are interpolation equivalent:
+$$
+I_h^{RT} { \cal P } \{ \hat \sigma \} = 
+ {\cal P} \{ \widehat I_h^{RT} \hat \sigma \}
+$$
+\end{lemma}
+{\em Proof:} The element spaces are equivalent, i.e., 
+$V_T = {\cal P} \{ V_{\widehat T} \}$, and the functionals $\psi_i (\sigma) = \int_e \sigma \cdot n \, ds$ are preserved by the Piola transformation.
+
+
+\bigskip
+
+\begin{theorem} The Raviart-Thomas interpolation operator satisfies
+the approximation properties
+\begin{eqnarray*}
+\| \sigma - I_h^{RT} \sigma \|_{L_2(\Omega)} & \leqc &
+         h \, \| \nabla \sigma \|_{L_2(\Omega)} \\
+\| \opdiv \sigma - \opdiv \, I_h^{RT} \sigma \|_{L_2(\Omega)} & \leqc &
+         h \, \| \nabla \opdiv \sigma \|_{L_2(\Omega)} \\
+\end{eqnarray*}
+\end{theorem}
+{\em Proof:} Transformation to the reference element, using that the 
+interpolation preserves constant polynomials, and the Bramble Hilbert lemma.
+The estimate for the divergence uses the commuting diagram property
+$$
+\| \opdiv (I - I_h^{RT}) \sigma \|_{L_2} = \| (I-P_h) \opdiv \, \sigma \|_{L_2}
+\leqc h \, \| \nabla \, \opdiv \sigma \|_{L_2}
+$$
+\hfill $\Box$
+\section{Approximation of mixed systems}
+We apply a Galerkin-approximation for the mixed system. For this,
+we choose (finite element) sub-spaces $V_h \subset V$ and $Q_h \subset Q$, 
+and define the Galerkin approximation $(u_h, p_h) \in V_h \times Q_h$ by
+$$
+B( (u_h, p_h), (v_h, q_h) ) = f(v_h) + g(q_h) \qquad \forall \, v_h \in V_h 
+\; \forall \, q_h \in Q_h.
+$$
+\begin{theorem}
+Assume that the finite element spaces fulfill the discrete stability
+condition
+\begin{equation}\label{equ_discreteinfsup}
+\inf_{v \in V_h, q \in Q_h } \sup_{u \in V_h, p \in Q_h} \frac{B((u,p),(v,q))}{ ( \|v\|_V+\|q\|) (\|u\|_V+\|p\|_Q)} \geq \beta.
+\end{equation}
+Then the discretization error is bounded by the best-approximation error
+$$
+\| u - u_h \|_V + \| p - p_h \|_Q \leqc \inf_{v_h \in V_h, q_h \in Q_h}
+        \{ \| u - v_h \|_V + \| p - q_h \|_Q \}
+$$
+\end{theorem}
+{\em Proof:} Theorem~\ref{theo_approxinfsup} applied to the big system $B((u,p),(v,q))$. \hfill $\Box$
+
+\bigskip
+
+The stability on the continuous level $V \times Q$ does not imply the
+discrete stability ! Usually, one checks the conditions of Brezzi 
+on the discrete level to prove stability of $B(.,.)$ on the discrete
+levels. The continuity of $a(.,.)$ and $b(.,.)$ are inherited from the
+continuous levels. The stability conditions have to be checked separately.
+The discretet kernel ellipticity
+\begin{equation}
+a(v_h,v_h) \geqc \| v_h \|_V^2 \qquad \forall \, v_h \in V_{0h} = \{ v_h \in V_h : b(v_h,q_h) = 0 \; \forall \, q_h \in Q_h \},
+\end{equation}
+and the discrete LBB condition
+\begin{equation}
+\sup_{u_h \in V_h} \frac{b(u_h, q_h)}{ \| u_h \|_V } \geqc \| q_h \|_Q \qquad \forall \, q_h \in Q_h.
+\end{equation}
+The discrete LBB condition is posed for less dual variables $q_h$ in $Q_h \subset Q$, 
+but the space in the supremum is also smaller. It does not follow 
+from the LBB condition on the continuous levels.
+
+There is a canonical technique to derive the discrete LBB condition from
+the continuous one:
+\begin{lemma} \label{lemma_cont2discr_lbb} Assume there exists a quasi-interpolation operator
+$$
+\Pi_h : V \rightarrow V_h 
+$$
+which is continuous
+$$
+\| \Pi_h v \|_V \leqc \| v \|_V \qquad \forall \, v \in V,
+$$
+and which satisfies 
+$$
+b(\Pi_h v, q_h) = b(v,q_h) \qquad \forall \, q_h \in Q_h.
+$$
+Then, the continuous LBB condition implies the discrete one.
+\end{lemma}
+{\em Proof:} For all $p_h \in Q_h$ there holds
+$$
+\sup_{v_h \in V_h} \frac { b(v_h, p_h) }{\| v_h \|_V}
+\geq 
+\sup_{v \in V} \frac{b(\Pi_h v,p_h)}{\| \Pi_h v\|_V}
+\geqc 
+\sup_{v \in V} \frac{b(v, p_h)}{  \| v \|_V }
+\geqc
+\| p_h \|_Q
+$$
+\hfill $\Box$
+
+
+\subsubsection{Approximation of the mixed method for the flux}
+
+Choose the pair of finite element spaces, the Raviart Thomas spaces
+$$
+V_h = \{ v \in H(\opdiv) : v|_T \in V_T^{\mbox{RT}} \} \; \; \subset \; \;
+V = H(\opdiv)
+$$
+and the space of piece-wise constants
+$$
+Q_h = \{ q \in L_2 : q|_T \in P^0 \}  \subset Q = L_2.
+$$
+Pose the discrete mixed problem: Find $(\sigma_h, u_h) \in V_h \times Q_h$
+such that
+\begin{equation} \label{equ_discrmixedflux}
+\begin{array}{ccccll}
+\int_\Omega (a^{-1} \sigma_h) \cdot \tau_h \, dx & + & 
+\int_\Omega \opdiv \, \tau_h  \, u_h \, dx & = & \int_{\Gamma_D} u_D \tau _n \, ds \qquad & \forall \, \tau_h \in V_h \\
+\int_\Omega \opdiv \, \sigma_h \, v_h \, dx & & & = & - \int f v_h \, dx \qquad & \forall \, v_h \in Q_h.
+\end{array}
+\end{equation}
+%
+\begin{lemma}[Discrete Stability] The discrete mixed variational 
+problem (\ref{equ_discrmixedflux}) is well posed.
+\end{lemma}
+{\em Proof:} By Brezzi's theorem. Continuity of the bilinear-form and
+the linear-form follow from the continuous level. We prove the
+kernel ellipticity: Since
+$$
+\opdiv \, V_h \subset Q_h, 
+$$
+there holds
+$$
+\int \opdiv \, \sigma_h \, q_h \, dx = 0 \quad \forall \, q_h \in Q_h
+\quad \Rightarrow \quad \opdiv \, \sigma_h = 0,
+$$
+and thus $V_{0h} \subset V_0$. In this special case, the discrete
+kernel ellipticity is simple the restriction of the continuous one to
+$V_{0h}$.
+We are left with the discrete LBB condition. We would like to apply
+Lemma~\ref{lemma_cont2discr_lbb}. The quasi-interpolation operator 
+is the Raviar-Thomas interpolation operator $I_h^{RT}$. The abstract
+condition
+$$
+b(I_h^{RT} \sigma , v_h) = b(\sigma, v_h) \qquad v_h \in Q_h
+$$
+reads as
+$$
+\int_T \opdiv I_h^{RT} \sigma \, dx = \int_T \opdiv \sigma dx,
+$$
+which was proven in Lemma~\ref{lemma_commute}. But, the interpolation
+operator is not continuous on $H(\opdiv)$. The edge-integrals are not
+well defined on $H(\opdiv)$. We have to include the
+sub-space $[H^1]^d \subset H(\opdiv)$. There holds
+$$
+\| I_h^{RT} \sigma \|_{H(\opdiv)} \leqc \| \sigma \|_{H^1} \qquad \forall \, \sigma \in [H^1]^d,
+$$
+and the stronger LBB condition (see Section on Stokes below)
+$$
+\sup_{\sigma \in [H^1]^d} \frac{ (\opdiv \, \sigma, v)_{L_2} } { \| \sigma \|_{H^1}} \geq \, \beta \| v \|_{L_2} \qquad \forall \, v \in L_2.
+$$
+We follow the proof of Lemma~\ref{lemma_cont2discr_lbb}:
+ For all $v_h \in Q_h$ there holds
+$$
+\sup_{\sigma_h \in V_h} \frac { b(\sigma_h, v_h) }{\| \sigma_h \|_V}
+\geq 
+\sup_{\sigma \in [H^1]^d} \frac{ (\opdiv I_h^{RT} \, \sigma, v_h)}{\| I_h^{RT} \sigma \|_V}
+\geqc 
+\sup_{\sigma \in [H^1]^d} \frac{ (\opdiv \, \sigma, v_h) }{  \| \sigma \|_{H^1} }
+\geqc
+\| v_h \|_{L_2}.
+$$
+Brezzi's theorem now proves that the discrete problem is well posed, i.e.,
+it fulfills the discrete inf-sup condition.
+
+\hfill $\Box$
+
+\begin{theorem}[A priori estimate] The mixed finite element methods for 
+the fluxes satisfies the error estimates
+\begin{equation}
+\label{equ_apriorifluxes}
+\| \sigma - \sigma_h \|_{L_2} + \| \opdiv (\sigma - \sigma_h) \|_{L_2} +
+\| u - u_h \|_{L_2} \leqc h \, \left( \| \sigma \|_{H^1} + \| u \|_{H^1} + \| f \|_{H^1} \right)
+\end{equation}
+\end{theorem}
+{\em Proof:} By discrete stability, one can bound the discretization error
+by the best approximation error
+$$
+\| \sigma - \sigma_h \|_{H(\opdiv)} + \| u - u_h \|_{L_2} \leqc
+\inf_{\tau_h \in V_h \atop v_h \in Q_h } \left\{ \| \sigma - \tau_h \|_{H(\opdiv)} + \| u - v_h \|_{L_2} \right\}.
+$$
+The best approximation error is bounded by the interpolation error. The first
+term is (using the commuting diagram property and  $\opdiv \sigma = f$)
+$$
+\inf_{\tau_h \in V_h } \left\{ \| \sigma - \tau_h \|_{L_2} + \| \opdiv( \sigma - \tau_h) \|_{L_2} \right\}
+\leq \| \sigma - I_h^{RT} \sigma \|_{L_2} + \| (I-P^0) \opdiv \sigma \|_{L_2}
+        \leqc h \; \left( \| \sigma \|_{H^1} + \| f \|_{H^1} \right).
+$$
+The second term is
+$$
+\inf_{v_h \in Q_h} \| u - v_h \|_{L_2} \leq \| u - P^0 u \|_{L_2} \leqc h \, \| u \|_{H^1}.
+$$
+\hfill $\Box$
+
+\bigskip
+
+The smoothness requirements onto the solution of (\ref{equ_apriorifluxes})
+are fulfilled for problems on convex domains, and smooth (constant) 
+coefficients $a$. 
+There holds $\|u \|_{H^2} \leqc \| f \|_{L_2}$. Since $\sigma = a \nabla u$,
+there follows $\| \sigma \|_{H^1} \leqc \| f \|_{L_2}$. The mixed method
+requires more smoothness onto the right hand side data, $f \in H^1$. 
+It can be reduced to $H^1$ on sub-domains, what is a realistic assumption.
+On non-convex domains, $u$ is in general not in $H^2$ (and $\sigma$ not in $H^1$). Again, weighted Sobolev spaces can be used to prove similar estimates
+on properly refined meshes.
+
+\subsubsection{Approximation of the mixed method for Dirichlet boundary conditions}
+A possibility is to choose continuous and piece-wise linear finite element
+spaces on the domain and on the boundary
+$$
+V_h = \{ v \in C(\Omega) : v|_T \in P^1 \qquad \forall \, T\},
+$$
+$$
+Q_h = \{ \mu \in C(\partial \Omega) : \mu|_E \in P^1 \qquad \forall \, E \subset \partial \Omega\}.
+$$
+\begin{theorem} The discrete mixed method is well posed.
+\end{theorem}
+{\em Proof: } Exercises.
+
+
+
+\input{mixedflux.tex}

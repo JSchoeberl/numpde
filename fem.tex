@@ -1,0 +1,1346 @@
+
+\chapter{Finite Element Method}
+
+Ciarlet's definition of a finite element is:
+
+\begin{definition}[Finite element] A finite element is a triple $(T, V_{T}, \Psi_{T})$, where
+\begin{enumerate}
+\item $T$ is a bounded set
+\item $V_{T}$ is function space on $T$ of finite dimension $N_T$ 
+\item $\Psi_{T} = \{ \psi^1_T, \ldots , \psi^{N_T}_T \}$ is a set of linearly independent functionals on $V_{T}$.
+\end{enumerate}
+\end{definition}
+
+\noindent
+The nodal basis $\{\varphi^1_T\, \ldots \varphi^{N_T}_T\}$ for $V_T$ is the basis 
+dual to $\Psi_T$, i.e., 
+$$
+\psi^i_T (\varphi^j_T) = \delta_{ij}
+$$
+Barycentric coordinates are useful to express the nodal basis functions.
+
+
+Finite elements with point evaluation functionals are called Lagrange  
+finite elements, elements using also derivatives are called Hermite finite elements.
+
+Usual function spaces on $T \subset \setR^2$ are
+\begin{eqnarray*}
+P^p & := & \mbox{span} \{ x^i y^j : 0 \leq i, \, 0 \leq j, \, i+j \leq p \} \\
+Q^p & := & \mbox{span} \{ x^i y^j : 0 \leq i \leq p, \, 0 \leq j \leq p  \}
+\end{eqnarray*}
+
+Examples for finite elements are
+\begin{itemize}
+\item A linear line segment 
+\item A quadratic line segment
+\item A Hermite line segment
+\item A constant triangle
+\item A linear triangle
+\item A non-conforming triangle
+\item A Morley triangle
+\item A Raviart-Thomas triangle
+\end{itemize}
+The local nodal interpolation operator defined for functions $v \in C^m(\overline T)$ is
+$$
+I_T v := \sum_{\alpha = 1}^{N_T} \psi^\alpha_T(v) \varphi^\alpha_T
+$$
+It is a projection.
+
+
+Two finite elements $(T,V_T, \Psi_T)$ and 
+$(\widehat T, V_{\widehat T}, \Psi_{\widehat T})$ are called 
+{\em equivalent} if there exists an invertible function $F$ such that
+\begin{itemize}
+\item $T = F (\widehat T)$
+\item $V_T = \{ \hat v \circ F^{-1} : \hat v \in V_{\widehat T} \}$
+% \item $\Psi_T = \{ \psi_{\widehat T} (. \circ F) \}$
+\item $\Psi_T = \{ \psi^T_i : V_T \rightarrow \setR : v \rightarrow \psi^{\hat T}_i (v \circ F) \}$
+\end{itemize}
+Two elements are called affine equivalent, if $F$ is an affine-linear function.
+
+Lagrangian finite elements defined above are equivalent. The Hermite elements are not equivalent.
+
+Two finite elements are called interpolation equivalent if there holds
+$$
+I_T (v) \circ F = I_{\widehat T} (v \circ F)
+$$
+
+\begin{lemma} Equivalent elements are interpolation equivalent
+\end{lemma}
+
+The Hermite elements define above are also interpolation equivalent.
+
+A regular triangulation ${\cal T} = \{ T_1, \ldots, T_M \}$ of a domain 
+$\Omega$ is the subdivision of a domain $\Omega$ into closed triangles $T_i$
+such that $\overline \Omega = \cup T_i$ and $T_i \cap T_j$ is 
+\begin{itemize}
+\item either empty
+\item or an common edge of $T_i$ and $T_j$
+\item or $T_i = T_j$ in the case $i = j$.
+\end{itemize}
+%
+In a wider sense, a triangulation may consist of different element shapes such
+as segments, triangles,  quadrilaterals, tetrahedra, hexhedra, prisms, pyramids.
+
+
+A finite element complex $\{ (T, V_T, \Psi_T) \}$ is a set of finite elements
+defined on the geometric elements of the triangulation ${\cal T}$.
+
+It is convenient to construct finite element complexes such that all
+its finite elements are affine equivalent to one {\em reference finite element} $(\widehat T, \hat V_T, \hat \Psi_T)$. The transformation $F_T$ is such that
+$T = F_T (\widehat T)$.
+
+
+Examples: linear reference line segment on $(0,1)$.
+
+
+The finite element complex allows the definition of the global 
+interpolation operator for $C^m$-smooth functions by
+$$
+I_{\cal T} v_{|T} = I_T v_T \qquad \forall \, T \in {\cal T}
+$$
+%
+The finite element space is 
+$$
+V_{\cal T} := \{ v = I_{\cal T} w : w \in C^m(\overline \Omega) \}
+$$
+
+We say that $V_{\cal T}$ has regularity $r$ if $V_{\cal T} \subset C^r$.
+If $V_{\cal T} \neq C^0$, the regularity is defined as~$-1$.
+
+Examples:
+\begin{itemize}
+\item
+The $P^1$ - triangle with vertex nodes leads to regularity $0$.
+\item
+The $P^1$ - triangle with edge midpoint nodes leads to regularity $-1$.
+\item
+The $P^0$ - triangle leads to regularity $-1$.
+\end{itemize}
+
+\medskip
+
+For smooth functions, functionals $\psi_{T,\alpha}$ and $\psi_{\widetilde T, \tilde \alpha}$ sitting in the same location are equivalent. The set of global 
+functionals $\Psi  = \{ \psi_1, \ldots, \psi_N\}$ is the linearly independent
+set of functionals containing all (equivalence classes of) local functionals.
+
+The connectivity matrix $C_T \in \setR^{N \times N_T}$ is defined such
+that the local functionals are derived from the global ones by
+$$
+\Psi_T (u) = C_T^t \Psi (u)
+$$
+Examples in 1D and 2D
+
+
+The nodal basis for the global finite element space is the
+basis in $V_{\cal T}$ dual to the global functionals $\psi_j$, i.e., 
+$$
+\psi_j(\varphi_i) = \delta_{ij}
+$$
+There holds
+\begin{eqnarray*}
+\varphi_i|_T & = & 
+I_T \varphi_i = \sum_{\alpha = 1}^{N_T} \psi_T^\alpha (\varphi_i) \varphi^\alpha_T \\
+& = & \sum_{\alpha = 1}^{N_T} (C_T^t \psi(\varphi_i))_\alpha \varphi_T^\alpha \\
+& = & \sum_{\alpha = 1}^{N_T} (C_T^t e_i)_\alpha \varphi_T^\alpha = \sum_{\alpha = 1}^{N_T} C_{T,i\alpha} \varphi_T^\alpha 
+\end{eqnarray*}
+
+
+\section{Finite element system assembling}
+
+As a first step, we assume there are no Dirichlet boundary conditions.
+The finite element problem is
+\begin{equation}
+\label{equ_femproblem}
+\mbox{Find } u_h \in V_{\cal T} \mbox{ such that } : A (u_h, v_h) = f(v_h) \qquad \forall \, v_h \in V_{\cal T}
+\end{equation}
+The nodal basis and the dual functionals provides the one to one relation 
+between $\setR^N$ and $V_{\cal T}$:
+$$
+\setR^N \ni \underline u \leftrightarrow u_h \in V_{\cal T} \qquad \mbox{with} \qquad 
+u_h = \sum_{i=1}^N \varphi_i \underline u_i \qquad \mbox{and} \qquad
+\underline u_i = \psi_i (u_h).
+$$
+Using the nodal basis expansion of $u_h$ in (\ref{equ_femproblem}), and
+testing only with the set of basis functions, one has
+
+$$
+A( \sum_{i=1}^N u_i \varphi_i, \varphi_j) = f(\varphi_j) \qquad \forall \, j = 1 \ldots N
+$$
+With
+$$
+A_{ji} = A(\varphi_i, \varphi_j) \qquad \mbox{and} \qquad \underline f_j = f(\varphi_j),
+$$
+one obtains the linear system of equations
+$$
+A \underline u = \underline f
+$$
+The preferred way to compute the matrix $A$ and vector $f$ is a sum over element 
+contributions. The restrictions of the bilinear and linear form to the elements are
+$$
+A_T(u,v) = \int_T \nabla u \cdot \nabla v \, dx + 
+        \int_{\partial \Omega \cap T} \alpha u v \, ds
+$$
+and
+$$
+f_T(v) = \int_T f v \, dx + 
+        \int_{\partial \Omega \cap T} g v \, ds
+$$
+Then 
+$$
+A(u,v) = \sum_{T \in \cal T} A_T(u,v)  \qquad
+f(v) = \sum_{T \in \cal T} f_T(v)
+$$
+On each element, one defines the $N_T \times N_T$ {\bf element matrix}  and 
+{\bf element vector} in terms of the local basis on $T$:
+$$
+A_{T,\alpha \beta} = A_T (\varphi^T_\alpha, \varphi^T_\beta)
+\qquad \qquad
+\underline{f}_{T,\alpha} = \underline{f}_T (\varphi^T_\alpha)
+$$
+
+Then, the global matrix and the global vector are
+$$
+A = \sum_{T \in \cal T} C_T A_T C_T^t
+$$
+and
+$$
+\underline f = \sum_{T \in \cal T} C_T \underline f_T
+$$
+
+
+Namely,
+\begin{eqnarray*}
+\underline f_i & = & f(\varphi_i) = \sum_{T \in \cal T} f_T (\varphi_i|_T) = 
+\sum_{T \in \cal T} f_T (\sum_\alpha C_{T,i\alpha} \varphi_T^\alpha) \\
+& = &
+\sum_{T \in \cal T} \sum_{\alpha} C_{T,i\alpha} f_T (\varphi_T^\alpha) =
+\sum_{T \in \cal T}  \sum_{\alpha} C_{T,i\alpha} \underline f_\alpha
+\end{eqnarray*}
+and
+\begin{eqnarray*}
+A_{ij} & = & \sum_{T \in \cal T} A(\varphi_i|_T, \varphi_j|_T) = 
+         \sum_{T \in \cal T} A (\sum_\alpha C_{T,i\alpha} \varphi_T^\alpha,
+                                      \sum_\beta C_{T,j\beta} \varphi_T^\beta) \\
+        & = & \sum_{T \in \cal T} \sum_\alpha \sum_\beta C_{T,i\alpha} A_{T,\alpha \beta} C_{T,j\beta}
+\end{eqnarray*}
+
+\bigskip
+
+On the elements $T$, the integrands are smooth functions. Thus, numerical
+integration rules can be applied.
+
+\bigskip
+
+In the case of Dirichlet boundary conditions,
+let $\gamma_D \subset \{ 1, \ldots , N \}$ correspond to the vertices $x_i$
+at the Dirichlet boundary, and $\gamma_f = \{ 1, \ldots N \} \setminus \gamma_D$.
+
+We have the equations
+$$
+\sum_{i \in \gamma_D} A_{ji} u_i + \sum_{i \in \gamma_f} A_{ji} u_i = f_j
+\qquad \forall \, j \in \gamma_f
+$$
+Inserting $u_i = u_D(x_i)$ for $i \in \gamma_i$ results in the reduced system
+$$
+\sum_{i \in \gamma_f} A_{ji} u_i = f_j - \sum_{i \in \gamma_D} A_{ji} u_D(x_i)
+$$
+
+An alternative approach is to approximate Dirichlet boundary conditions by
+Robin b.c., $\frac{\partial u}{\partial n} + \alpha u = \alpha u_D$, with large 
+parameter $\alpha$.
+
+\section{Finite element error analysis}
+%
+Let $u$ be the solution of the variational problem, and $u_h$ its
+Galerkin approximation in the finite element sub-space $V_h$. Cea's Lemma 
+bounds the finite element error $u - u_h$ by the 
+best approximation error 
+$$
+\| u - u_h \|_V \leq C \inf_{v \in V_h} \| u - v_h \|_V.
+$$
+The constant factor $C$ is the ratio of the continuity bound and the
+coercivity bound of the bilinear form $A(.,.)$.
+
+Provided that the solution $u$ is sufficiently smooth,
+we can take the finite element interpolant to bound the best approximation 
+error:
+$$
+\inf_{v \in V_h} \| u - v_h \|_V \leq \| u - I_{\cal T} u \|_V
+$$
+In the following, we will bound the interpolation error.
+
+
+\begin{lemma} Let $\widehat T$ and $T$ be $d$-dimensional domains related
+by the invertible affine linear transformation $F_T : \widehat T \rightarrow T $ 
+$$
+F_T (x) = a + B x,
+$$
+where $a \in \setR^d$ and $B$ is a regular matrix in $\setR^{d\times d}$.
+Then there holds:
+\begin{equation}
+\| u \circ F_T \|_{L_2(\widehat T)} = (\det B)^{-1/2} \, \| u  \|_{L_2(T)}
+\end{equation}
+%
+\begin{equation}
+\frac{\partial}{\partial x_{i_m}} \ldots 
+\frac{\partial}{\partial x_{i_1}} \left( u \circ F_T \right) = 
+\sum_{j_m = 1}^d \ldots \sum_{j_1=1}^d 
+\left(
+\frac{\partial}{\partial x_{j_m}} \ldots 
+\frac{\partial}{\partial x_{j_1}} u \right) \circ F_T \; \;
+B_{j_m,i_m} \ldots B_{j_1, i_1}
+\end{equation}
+%
+\begin{equation}
+| u \circ F |_{H^m(\widehat T)} \leqc (\det B)^{-1/2} \| B \|^m  \, | u |_{H^m(T)}
+\end{equation}
+\end{lemma}
+
+{\em Proof:} Transformation of integrals, chain rule. \hfill $\Box$
+
+
+\bigskip
+We define the diameter of the element $T$
+$$
+h_T = \operatorname{diam} T 
+$$
+A triangulation is called {\bf shape regular}, if all its elements fulfill
+$$
+| T | \geqc h_T^2
+$$
+with a ``good'' constant $\sim 1$. If one studies convergence, one considers families
+of triangulations with decreasing element sizes $h_T$. In that case, the family
+of triangulations is called shape regular, if there is a common constant $C$ such that 
+all elements of all triangulations fulfill $| T | \geq C h_T^2$.
+
+
+\begin{lemma} Let $F_T = a + B x$ be the mapping from the reference triangle
+to the triangle $T$. Let $|T| \geqc h_T^2$. Then there holds
+\begin{eqnarray*}
+\| B_T \| & \eqc & h_T \\
+\| B_T^{-1} \| & \eqc & h_T^{-1}
+\end{eqnarray*}
+\end{lemma}
+
+
+The following lemma is the basis for the error estimate. This lemma is the main
+application for the Bramble Hilbert lemma. Sometimes, it is called 
+the Bramble Hilbert lemma itself:
+\begin{lemma}
+Let $(T, V_T, \Psi_T)$ be a finite element such that
+the element space $V_T$ contains polynomials up to order $P^k$. 
+Then there holds
+$$
+\| v - I_T v \|_{H^1} \leq C | v |_{H^m} \qquad \forall \, v \in H^m(T)
+$$
+for all $m > d/2$, $m \geq 1$, and $m \leq k+1$.
+\end{lemma}
+{\em Proof:} First, we prove that $id - I_T$ is a bounded operator
+from $H^m$ to $H^1$:
+\begin{eqnarray*}
+\| v - I_T v \|_{H^1} & \leq & \| v \|_{H^1} + \| I_T v \|_{H^1}
+        =  \| v \|_{H^1} + \| \sum_{\alpha} \psi_\alpha(v) \varphi_\alpha \|_{H^1}
+ \\
+& \leq & \| v \|_{H^1} + \sum_\alpha \| \varphi_\alpha \|_{H^1} | \psi_\alpha(v) | \\
+& \leq & \| v \|_{H^m}
+\end{eqnarray*}
+The last step used that for $H^m$, with $m > d/2$, point evaluation is continuous.
+Now, let $v \in P^k(T)$. Since $P^k \subset V_T$, and $I_T$ is a projection on $V_T$, 
+there holds $v - I_T v = 0$. The Bramble Hilbert Lemma applied for $U = H^1$ and
+$L = id - I_T$ proves the result.
+\hfill $\Box$
+
+
+
+To bound the finite element interpolation error, we will transform
+functions from the elements $T$ to the reference element $\widehat T$.
+
+\begin{theorem} Let ${\cal T}$ be a shape regular triangulation of $\Omega$.
+Let $V_{\cal T}$ be a $C^0$-regular finite element space such that all local spaces contain $P^1$. Then there holds
+$$
+\| v - I_{\cal T} v \|_{L_2(\Omega)} \leqc  \left\{ \sum_{T \in {\cal T}} h_T^4 | v |_{H^2(T)^2} \right\}^{1/2} \qquad \forall \, v \in H^2(\Omega)
+$$
+$$
+| v - I_{\cal T} v |_{H^1(\Omega)}^2 \leq 
+C \left\{ \sum_{T \in {\cal T}} h_T^2  \, | v |_{H^2(T)^2} \right\} \qquad \forall \, v \in H^2(\Omega)
+$$
+\end{theorem}
+
+{\em Proof:} We prove the $H^1$ estimate, the $L_2$ one follows the same lines. The interpolation error on each element is transformed to the interpolation error on one reference element:
+\begin{eqnarray*}
+| v - I_{\cal T} v |_{H^1(\Omega)}^2 & = & 
+        \sum_{T \in {\cal T}} | (id - I_T) v_T |_{H^1(T)}^2 \\
+        & \leqc & \sum_{T \in {\cal T}} (\det B_T) \, \| B_T^{-1} \|^2 \, | (id - I_T) v_T \circ F_T |_{H^1(\widehat T)}^2  \\
+        & = & \sum_{T \in {\cal T}} (\det B_T) \| B_T^{-1}  \|^2 \| (id - I_{\widehat T}) (v_T \circ F_T) \| _{H^1 (\widehat T)}^2
+\end{eqnarray*}
+On the reference element $\widehat T$ we apply the Bramble-Hilbert lemma.
+Then, we transform back to the individual elements:
+\begin{eqnarray*}
+| v - I_{\cal T} v |_{H^1(\Omega)}^2 & \leqc & 
+        \sum_{T \in {\cal T}} (\det B_T) \| B_T^{-1}  \|^2 | v_T \circ F_T | _{H^m (\widehat T)}^2 \\
+  & \leqc &  \sum_{T \in {\cal T}} (\det B_T) \, \| B_T^{-1} \|^2 \, (\det B_T^{-1}) \, \| B_T \|^4  \; | v_T |_{H^2 (T)}^2 \\
+        & \eqc & \sum_{T \in {\cal T}} h_T^2 \| v_T \|_{H^2 (T)}^2.
+\end{eqnarray*}
+\hfill $\Box$
+
+
+\bigskip
+
+A triangulation is called ${\bf quasi-uniform}$, is all elements are essentially of the
+same size, i.e., there exists one global $h$ such that
+$$
+h \eqc h_T \qquad \forall \, T \in {\cal T}.
+$$
+
+
+On a quasi-uniform mesh, there hold the interpolation error estimates
+\begin{eqnarray*}
+\| u - I_{\cal T} u \|_{L_2(\Omega)} & \leqc & h^2 \, | u |_{H^2} \\
+| u - I_{\cal T} u |_{H^1(\Omega)} & \leqc & h \, | u |_{H^2} 
+\end{eqnarray*}
+
+
+We are interested in the rate of the error in terms of the mesh-size $h$.
+
+\begin{theorem}[Finite element error estimate] Assume that
+\begin{itemize}
+\item the solution $u$ of the weak bvp is in $H^2$,
+\item the triangulation ${\cal T}$ is quasi-uniform of mesh-size $h$,
+\item the element spaces contain $P^1$.
+\end{itemize}
+Then, the finite element error is bounded by
+$$
+\| u - u_h \|_{H^1} \leqc h \, | u |_{H^2}
+$$
+\end{theorem}
+
+
+\subsubsection{Error estimates in $L_2$-norm}
+
+The above theorem bounds the error in the $L_2$-norm of the function, and the
+$L_2$-norm of the derivatives with the same rate in terms of $h$. This is 
+obtained by the natural norm of the variational formulation.
+
+The interpolation error suggests a faster convergence in the weaker norm $L_2$. Under
+certain circumstances, the finite element error measured in $L_2$ also decays faster.
+The considered variational problem is
+$$
+\mbox{Find } u \in V : A(u,v) = f(v) \qquad \forall \, v \in V.
+$$
+We define the {\em dual problem} as
+$$
+\mbox{Find } w \in V : A(v,w) = f(v) \qquad \forall \, v \in V.
+$$
+In the case of a symmetric bilinear form, the primal and the dual problem coincide.
+
+\begin{theorem}[Aubin-Nitsche] Assume that 
+\begin{itemize}
+\item the dual weak bvp is $H^2$ regular
+\item the triangulation ${\cal T}$ is quasi-uniform of mesh-size $h$,
+\item the element spaces contain $P^1$.
+\end{itemize}
+Then, there holds the $L_2$-error estimate
+$$
+\| u - u_h \|_{L_2} \leqc h^2 \, | u |_{H^2}
+$$
+\end{theorem}
+{\em Proof:} 
+Solve the dual problem with the error $u - u_h$ as right hand side:
+$$
+\mbox{Find } w \in V : A(v,w) = (u-u_h, v)_{L_2} \qquad \forall \, v \in V.
+$$
+Since the dual problem is $H^2$ regular, there holds $w\in H^2$, and $\| w \|_{H^2} \leqc \| u-u_h \|_{L_2}$. Choose the test function $v := u - u_h$ to obtain the squared norm
+$$
+A(u-u_h, w) = (u-u_h, u-u_h)_{L_2}.
+$$
+Using the Galerkin orthogonality $A(u-u_h, v_h) = 0$ for all $v_h \in V_h$, we can insert $I_{\cal T} w$:
+$$
+\| u - u_h \|_{L_2}^2 = A(u-u_h, w-I_{\cal T} w).
+$$
+Next we use continuity of $A(.,.)$ and the interpolation error estimates:
+$$
+\| u - u_h \|_{L_2}^2 \leqc \| u - u_h \|_{H^1} \, \| w - I_{\cal T} w \|_{H^1}
+        \leqc \| u - u_h \|_{H^1} \, h \, | w  |_{H^2}.
+$$
+From $H^2$ regularity:
+$$
+\| u - u_h \|_{L_2}^2 \leqc h \| u - u_h \|_{H^1} \, \| u - u_h \|_{L_2},
+$$
+and, after dividing one factor
+$$
+\| u - u_h \|_{L_2} \leqc h \| u - u_h \|_{H^1} \leqc h^2 \| u \|_{H^2}.
+$$
+\hfill $\Box$
+\bigskip
+
+
+\subsubsection{Approximation of Dirichlet boundary conditions}
+Till now, we have neglected Dirichlet boundary conditions. In this case, the continuous problem is
+$$
+\mbox{Find } u \in V_D : \qquad A(u,v) = f(v) \qquad \forall \, v \in V_0,
+$$
+where
+$$
+V_D = \{ v \in H^1 : \optr_{\Gamma_D} v = u_D \} \qquad \mbox{and} \qquad
+V_0 = \{ v \in H^1 : \optr_{\Gamma_D} v = 0 \}.
+$$
+The finite element problem is
+$$
+\mbox{Find } u_h \in V_{hD} : \qquad A(u_h,v_h) = f(v_h) \qquad \forall \, v_h \in V_{h0},
+$$
+where
+$$
+V_{hD} = \{ I_{\cal T} v : v \in V_D \} \qquad \mbox{and} \qquad
+V_{h0} = \{ I_{\cal T} v : v \in V_0 \}.
+$$
+The definition of $V_{hD}$ coincides with
+$
+\{ v_h \in V_h : v_h(x_i) = u_D(x_i) \; \; \forall \mbox{ vertices } x_i \mbox{ on } \Gamma_D \}.
+$
+
+There holds $V_{h0} \subset V_0$, but, in general, there does not hold $V_{hD} \subset V_D$.
+
+\begin{theorem}[Error estimate for Dirichlet boundary conditions] Assume that 
+\begin{itemize}
+\item  $A(.,.)$ is coercive on $V_{h0}$:
+$$
+A(v_h, v_h) \geq \alpha_1 \, \| v_h \|_V^2 \qquad \forall \, v_h \in V_{h0}
+$$
+\item  $A(.,.)$ is continuous on $V$:
+$$
+A(u, v) \leq \alpha_2 \, \| u \|_V \| v \|_V \qquad \forall \, u, v \in V
+$$
+\end{itemize}
+Then there holds the finite element error estimate
+$$
+\| u - u_h \|_{H^1} \leqc h | u |_{H^2}
+$$
+\end{theorem}
+{\em Proof: } To make use of the coercivity of $A(.,.)$, we need an element in $V_{h0}$. There holds Galerkin orthogonality $A(u-u_h, v_h) = 0 \; \forall \, v_h \in V_{h0}$:
+\begin{eqnarray*}
+\| u - u_h \|_V^2 
+        & = & \| u - I_h u + I_h u - u_h \|_V^2
+          \leq 2 \, \| u - I_h u \|_V^2 + 2 \, \| I_h u - u_h \|_V^2 \\
+        & \leq & 2 \, \| u - I_h u \|_V^2 + \frac{2}{\alpha_1} A(I_h u - u_h, I_h u - u_h) \\
+        & \leq & 2 \| u - I_h u \|_V^2 + \frac{2}{\alpha_1} A(I_h u - u, I_h u - u_h) +  \frac{2}{\alpha_1}  A(u - u_h, I_h u - u_h) \\
+        & \leq & 2 \, \| u - I_h u \|_V^2 + \frac{2 \alpha_2}{\alpha_1} \, \| I_h u - u \| \| I_h u - u_h \| + 0 \\
+        & \leq & 2 \, \| u - I_h u \|_V^2 +  \frac{2 \alpha_2}{\alpha_1} \, \| I_h u - u \| ( \| I_h u - u \| + \| u - u_h \| ) \\
+        & = & ( 2 + \frac{2 \alpha_2}{\alpha_1}) \, \| u - I_h u \|_V^2 +
+         \frac{2 \alpha_2}{\alpha_1} \, \| u - I_h u \|_V \| u - u_h \|_V
+\end{eqnarray*}
+
+Next, we apply $a b \leq \frac{1}{2} a^2 +  \frac{1}{2} b^2$  for $a = \frac{2 \alpha_2}{\alpha_1} \| u - I_h u \|_V$ and $b = \| u - u_h \|_V$:
+$$
+\| u - u_h \|_V^2 \leq 
+    ( 2 + \frac{2 \alpha_2}{\alpha_1}) \| u - I_h u \|_V^2 +
+         2  \frac{\alpha_2^2}{\alpha_1^2}  \| u - I_h u \|_V^2 + \frac{1}{2} \, \| u - u_h \|_V^2
+$$
+Moving the term $\frac{1}{2} \| u - u_h \|$ to the left, we obtain
+$$
+\| u - u_h \|_V^2 \leqc \| u - I_h u \|_V^2 \leqc h \, \| u \|_{H^2}
+$$
+\hfill $\Box$
+
+\subsubsection{High order elements}
+
+One can obtain faster convergence, if the solution is smooth, and elements of higher
+order are used:
+\begin{theorem} Assume that
+\begin{itemize}
+\item the solution is smooth: $u \in H^m$ for $m \geq 2$ 
+\item all element spaces $V_T$ contain polynomials $P^p$ for $p \geq 1$
+\item the mesh is quasi-uniform
+\end{itemize}
+Then there holds
+$$
+h^{-1} \| u - I_h u \|_{L_2} + \| u  - I_h u \|_{H^1} \leqc h^{\min\{ m-1,k\} } \| u \|_{H^m}
+$$
+\end{theorem}
+
+The proof is analogous to the case $m=2$ and $k=1$. The constants in
+the estimates depend on the Sobolev index $m$ and on the polynomial
+order $p$. Nodal interpolation is instable (i.e., the constant grow
+with $p$) for increasing order $p$. There exist better choices to
+bound the best approximation error.
+
+
+
+\subsubsection{Graded meshes around vertex singularities}
+
+On non-convex meshes domains, the solution is in general not in $H^2$, but
+in some weighted Sobolev space. The information of the weight can be used to
+construct proper locally refined meshes.
+
+On a sector domain with a non-convex corner of angle $\omega > \pi$, the
+solution is bounded in the weighted Sobolev norm
+$$
+\| r^\beta D^2 u \|_{L_2} \leq C,
+$$
+with $\beta = \frac{\pi}{\omega}$. One may choose a mesh such that
+$$
+h_T \eqc \underline h r_T^\beta, \qquad \forall \, T \in {\cal T}
+$$
+where $r_T$ is the distance of the center of the element to the singular
+corner, and $\underline h \in \setR^+$ is a global mesh size parameter.
+
+
+We bound the interpolation error:
+\begin{eqnarray*}
+\| u - I_{\cal T} u \|_{H^1}^2 & \leqc &
+\sum_{T \in \cal T} h_T^2 | u |_{H^2(T)} \eqc
+\sum_{T \in \cal T} \underline h^2 \, | r^\beta D^2 u |_{L_2(T)} \\
+& \eqc & \underline h^2 \, \| r^\beta D^2 u \|_{L_2(\Omega)}^2
+\leqc C \, \underline h^2
+\end{eqnarray*}
+
+
+The number of elements in the domain can be roughly estimated by the
+integral over the density of elements. The density is number of elements per
+unit volume, i.e., the inverse of the area of the element:
+$$
+N_{el} \eqc \int_\Omega |T|^{-1} \, dx =  \int_\Omega \underline h^{-2} r^{-2 \beta} \, dx = \underline h^{-2} \int r^{-2\beta} \, dx \eqc C \underline h^{-2}
+$$
+In two dimensions, and $\beta \in (0,1)$, the integral is finite.
+
+Combining the two estimates, one obtains a relation between the error and the
+number of elements:
+$$
+\| u - I_{\cal T} u \|_V^2 \leqc N_{el}^{-1}
+$$
+This is the same order of convergence as in the $H^2$ regular case !
+
+
+\section{A posteriori error estimates}
+
+We will derive methods to estimate the error of the computed finite
+element approximation. Such {\em a posteriori} error estimates may use the finite element solution $u_h$, and input data such as the source term $f$. 
+$$
+\eta(u_h, f)
+$$
+
+An error estimator is called {\em reliable}, if it is an upper bound for the error,
+i.e., there exists a constant $C_1$ such that
+\begin{equation}
+\label{equ_reliable}
+\| u - u_h \|_V \leq C_1 \, \eta(u_h, f)
+\end{equation}
+
+An error estimator is {\em efficient}, if it is a lower bound for the error,
+i.e., there exists a constant $C_2$ such that
+\begin{equation}
+\label{equ_efficient}
+\| u - u_h \|_V \geq C_2 \, \eta(u_h, f).
+\end{equation}
+
+The constants may depend on the domain, and the shape of the triangles,
+but may not depend on the source term $f$, or the (unknown)
+solution $u$.
+
+\bigskip
+
+One use of the a posteriori error estimator is to know the accuracy of
+the finite element approximation. A second one is to guide the
+construction of a new mesh to improve the accuracy of a new finite
+element approximation.
+ 
+The usual error estimators are defined as sum over element contributions:
+$$
+\eta^2 (u_h, f) = \sum_{T \in {\cal T}} \eta_T^2 (u_h, f)
+$$
+
+The local contributions should correspond to the local error. For
+the common error estimators there hold the local efficiency estimates
+$$
+\| u - u_h \|_{H^1(\omega_T)} \geq C_2 \, \eta_T(u_h, f).
+$$
+The patch $\omega_T$ contains $T$ and all its neighbor elements.
+
+\bigskip
+
+In the following, we consider the Poisson equation $-\Delta u = f$ with
+homogenous Dirichlet boundary conditions $u = 0$ on $\partial \Omega$. We choose
+piecewise linear finite elements on triangles.
+
+\subsubsection{The Zienkiewicz Zhu error estimator}
+The simplest a posteriori error estimator is the one by
+Zienkiewicz and Zhu, the so called ZZ error estimator.
+
+The error is measured in the $H^1$-semi norm:
+$$
+\| \nabla u - \nabla u_h \|_{L_2}
+$$
+
+Define the gradient $p = \nabla u$ and the discrete gradient $p_h = \nabla u_h$. 
+The discrete gradient $p_h$ is a constant on each element. 
+Let $\tilde p_h$ be the p.w. linear and continuous
+finite element function obtained by averaging the element values of $p_h$ in the vertices:
+$$
+\tilde p_h(x_i) = \frac{1}{ | \{ T : x_i \in T \} |} \sum_{T : x_i \in T} 
+        p_{h|T}
+\qquad \mbox{for all vertices } x_i
+$$
+The hope is that the averaged gradient is a much better approximation to the true gradient,
+i.e.,
+\begin{equation}
+\label{equ_superconvergence}
+\| p - \tilde p_h \|_{L_2} \leq \alpha \, \| p - p_h \|_{L_2}
+\end{equation}
+holds with a small constant $\alpha \ll 1$. This property is known as {\em super-convergence}.It is indeed true on (locally) uniform meshes, and smoothness assumptions onto the source term $f$. 
+
+The ZZ error estimator replaces the true gradient in the error $p-p_h$ by the good approximation $\tilde p_h$:
+$$
+\eta (u_h) = \| \tilde p_h - p_h \|_{L_2(\Omega)}
+$$
+
+If the super-convergence property (\ref{equ_superconvergence}) is fulfilled, 
+than the ZZ error estimator is reliable:
+\begin{eqnarray*}
+\| \nabla u - \nabla u_h \|_{L_2} & = & \| p - p_h \|_{L_2} \leq 
+        \| p_h - \widetilde p_h \|_{L_2} + \| p - \widetilde p_h \|_{L_2} \\
+        & \leq & \| p_h - \widetilde p_h \|_{L_2} + \alpha \| p - p_h \|_{L_2},
+\end{eqnarray*}
+and
+$$
+\| \nabla u - \nabla u_h \|_{L_2} \leq \frac{1}{1-\alpha} \| p_h - \widetilde p_h \|_{L_2}.
+$$
+It is also efficient, a similar short application of the triangle inequality.
+
+There is a rigorous analysis of the ZZ error estimator, e.g., by showing equivalence
+to the following residual error estimator.
+
+\subsubsection{The residual error estimator}
+The idea is to compute the residual of the Poisson equation
+$$
+f + \Delta \, u_h,
+$$
+in the natural norm $H^{-1}$. The classical $\Delta$-operator cannot be 
+applied  to $u_h$, since the first derivatives, $\nabla u_h$, are non-continuous across element 
+boundaries. One can compute the residuals on the elements
+$$
+f_{|T} + \Delta \, u_{h|T} \qquad \forall \, T \in {\cal T},
+$$
+and one can also compute the violation of the continuity of the gradients on the
+edge $E = T_1 \cap T_2$.  We define the normal-jump term
+$$
+\left[\frac{\partial u_h}{\partial n} \right] := 
+\frac{\partial u_h}{\partial n_1}|_{T_1} + 
+\frac{\partial u_h}{\partial n_2}|_{T_2}.
+$$
+
+The residual error estimator is
+$$
+\eta^{res}(u_h,f)^2 := \sum_T \eta_T^{res}(u_h,f)^2
+$$
+with the element contributions
+$$
+\eta_T^{res}(u_h, f)^2 := h_T^2 \| f + \Delta u_h \|_{L_2(T)}^2 +
+ \sum_{E : E \subset T \atop E \subset \Omega} h_E \left\| \left[ \frac{\partial u_h}{\partial n} \right] \right\|_{L_2(E)} ^2.
+$$
+
+The scaling with $h_T$ corresponds to the natural $H^{-1}$ norm of the residual.
+
+\bigskip
+
+To show the reliability of the residual error estimator, we need a new
+{\em quasi}-interpolation operator, the Cl\'{e}ment- operator $\Pi_h$. In
+contrast to the interpolation operator, this operator is well defined
+for functions in $L_2$.
+
+We define the vertex patch of all elements connected with the vertex $x$
+$$
+\omega_x = \bigcup_{T : x \in T} T,
+$$
+the edge patch consisting of all elemenets connected with the edge $E$
+$$
+\omega_E = \bigcup_{T : E \cap T \neq \emptyset} T,
+$$
+and the element patch consisting of the element $T$ and all its neighbors
+$$
+\omega_T = \bigcup_{T^\prime : T \cap T^\prime \neq \emptyset} T^\prime.
+$$
+
+The nodal interpolation operator $I_h$ was defined as
+$$
+I_h v = \sum_{x_i \in {\cal V}} v(x_i) \varphi_i,
+$$
+where $\varphi_i$ are the nodal basis functions.
+Now, we replace the nodal value $v(x_i)$ be a local mean value.
+
+\begin{definition}[Cl\'ement quasi-interpolation operator] For each vertex $x$,let $\overline{v}^{\omega_x}$ be the mean value of $v$ on the patch $\omega_x$, i.e.,
+$$
+\overline{v}^{\omega_x} = \frac{1}{|\omega_x|} \int_{\omega_x} v \, dx.
+$$
+The Cl\'ement operator is 
+$$
+\Pi_h v := \sum_{x_i \in {\cal V}} \overline{v}^{\omega_{x_i}} \varphi_i.
+$$
+In the case of homogeneous Dirichlet boundary values, the sum contains only
+inner vertices.
+\end{definition}
+
+
+\bigskip
+
+
+\begin{theorem} The Cl\'ement operator satisfies the following continuity and
+approximation estimates:
+\begin{eqnarray*}
+\| \nabla \Pi_h v \|_{L_2(T)} & \leqc & \| \nabla v \|_{L_2(\omega_T)} \\
+\| v - \Pi_h v \|_{L_2(T)} & \leqc & h_T \| \nabla v \|_{L_2(\omega_T)} \\
+\| v - \Pi_h v \|_{L_2(E)} & \leqc & h_E^{1/2} \| \nabla v \|_{L_2(\omega_E)} \\
+\end{eqnarray*}
+\end{theorem}
+
+{\em Proof:} First, choose a reference patch $\widehat \omega_T$ of 
+dimension 
+$\eqc 1$. The quasi-interpolation operator is bounded on $H^1(\omega_T)$:
+\begin{equation}
+\label{equ_clement_bh}
+\| v - \Pi_h v \|_{L_2(\widehat T)} + \| \nabla (v - \Pi_h v) \|_{L_2(\widehat T)} \leqc \| v \|_{H^1(\widehat \omega_T)}
+\end{equation}
+If $v$ is constant on $\omega_T$, then the mean values in the vertices
+take the same values, and also $(\Pi_h v)_{|T}$ is the same constant.
+The constant function (on $\omega_T$) is in the kernel of 
+$\| v - \Pi_h v \|_{H^1(T)}$. Due to
+the Bramble-Hilbert lemma, we can replace the norm on the right hand side
+of (\ref{equ_clement_bh}) by the semi-norm:
+\begin{equation}
+\label{equ_clement_bh2}
+\| v - \Pi_h v \|_{L_2(\widehat T)} + \| \nabla (v - \Pi_h v) \|_{L_2(\widehat T)} \leqc \| \nabla v \|_{L_2(\widehat \omega_T)}
+\end{equation}
+
+The rest follows from scaling. Let $F : x \rightarrow h x$ scale the reference patch $\widehat \omega_T$ to the actual patch $\omega_T$. Then
+$$
+\| v - \Pi_h v \|_{L_2(T)} + h \, \| \nabla (v-\Pi_h v) \|_{L_2(T)} \leqc h \, \| \nabla v \|_{L_2(\omega_T)}
+$$
+
+The estimate for the edge term is similar. One needs the scaling of integrals
+form the reference edge $\widehat E$ to $E$:
+$$
+\| v \|_{L_2(E)} = h_E^{1/2} \| v \circ F \|_{L_2(\hat E)}
+$$
+\bigskip
+
+\begin{theorem}The residual error estimator is reliable:
+$$
+\| u - u_h \| \leqc \eta^{res} (u_h, f)
+$$
+\end{theorem}
+{\em Proof:} From the coercivity of $A(.,.)$ we get
+$$
+\| u - u_h \|_{H^1} \leqc \frac{A(u-u_h, u-u_h)}{ \| u-u_h \|_{H^1} } \leq 
+        \sup_{0 \neq v \in H^1} \frac{A(u-u_h, v)}{ \| v \|_{H^1} }.
+$$
+The Galerkin orthogonality $A(u-u_h,v_h) = 0$ for all $v_h \in V_h$ allows
+to insert the Cl\'ement interpolant in the numerator. It is well defined for
+$v \in H^1$:
+$$
+\| u - u_h \|_{H^1} \leq
+        \sup_{0 \neq v \in H^1} \frac{A(u-u_h, v - \Pi_h v)}{ \| v \|_{H^1} }.
+$$
+We use that the true solution $u$ fulfills $A(u,v) = f(v)$, and insert
+the definitions of $A(.,.)$ and $f(.)$:
+
+\begin{eqnarray*}
+A(u-u_h, v-\Pi_h v) & = & f(v-\Pi_h v) - A(u_h, v - \Pi_h v) \\
+        & = & \int_{\Omega} f v \, dx - \int_\Omega \nabla u_h \nabla (v - \Pi_h v) \, dx \\
+        & = & \sum_{T \in \cal T} \int_{T} f v \, dx - \sum_{T \in \cal T} \int_T \nabla u_h \nabla (v - \Pi_h v) \, dx
+\end{eqnarray*}
+On each $T$, the finite element function $u_h$ is a polynomial. This allows 
+integration by  parts on each element:
+\begin{eqnarray*}
+A(u-u_h, v-\Pi_h v) 
+        & = & \sum_{T \in \cal T} \int_{T} f v \, dx - \sum_{T \in \cal T} 
+ \left\{ -\int_T \Delta u_h (v - \Pi_h v) \, dx + \int_{\partial T} \frac{\partial u_h}{\partial n} (v - \Pi_h v) \, ds \right\}
+\end{eqnarray*}
+All inner edges $E$ have contributions from normal derivatives from their two adjacent triangles $T_{E,1}$ and $T_{E,2}$. On boundary edges, $v-\Pi_h v$ vanishes.
+\begin{eqnarray*}
+\lefteqn{A(u-u_h, v-\Pi_h v)} \\
+         & = & \sum_T \int_T (f + \Delta u_h) (v - \Pi_h v) \, dx
+        + \sum_E \int_E \left\{
+         \frac{\partial u_h}{\partial n}|_{T_{E,1}} +
+         \frac{\partial u_h}{\partial n}|_{T_{E,2}}  \right\} (v - \Pi_h v) \, ds \\
+& = & \sum_T \int_T (f + \Delta u_h) (v - \Pi_h v) \, dx
+        + \sum_E \int_E \left[ \frac{\partial u_h}{\partial n} \right] (v - \Pi_h v) \, ds
+\end{eqnarray*}
+Applying Cauchy-Schwarz first on $L_2(T)$ and $L_2(E)$, and then in $\setR^n$:
+\begin{eqnarray*}
+\lefteqn{A(u-u_h, v-\Pi_h v)} \\
+        & \leq & \sum_T \| f + \Delta u_h \|_{L_2(T)} \| v - \Pi_h v \|_{L_2(T)}
+        + \sum_E \left\| \left[ \frac{\partial u_h}{\partial n} \right] \right\|_{L_2(E)} \| v - \Pi_h v \|_{L_2(E)} \\
+        & = & \sum_T h_T \| f + \Delta u_h \|_{L_2(T)} h_T^{-1} \| v - \Pi_h v \|_{L_2(T)}
+        + \sum_E h_E^{1/2} \left\| \left[ \frac{\partial u_h}{\partial n} \right] \right\|_{L_2(E)} h_E^{-1/2} \| v - \Pi_h v \|_{L_2(E)} \\
+        & \leq & 
+        \left\{ \sum_T h_T^2 \| f + \Delta u_h \|_{L_2(T)}^2 \right\}^{1/2}  
+        \left\{ \sum_T h_T^{-2} \| v - \Pi_h v \|_{L_2(T)}^2 \right\}^{1/2} + \\
+        & & + 
+        \left\{ \sum_E h_E \left\| \left[ \frac{\partial u_h}{\partial n} \right] \right\|_{L_2(E)}^2 \right\}^{1/2}  
+        \left\{ \sum_E h_E^{-1} \| v - \Pi_h v \|_{L_2(E)}^2 \right\}^{1/2}
+\end{eqnarray*}
+We apply the approximation estimates of the Cl\'ement operator, and use that
+only a bounded number of patches are overlapping:
+$$
+\sum_T h_T^{-2} \| v - \Pi_h v \|_{L_2(T)}^2 
+ \leqc
+\sum_T \| \nabla v \|_{L_2(\omega_T)}^2  \leqc \| \nabla v \|_{L_2(\Omega)}^2,
+$$
+and similar for the edges
+$$
+\sum_E h_E^{-1} \| v - \Pi_h v \|_{L_2(E)}^2 \leq \| \nabla v \|_{L_2(\Omega)}^2.
+$$
+Combining the steps above we observe
+\begin{eqnarray*}
+\| u - u_h \|_V & \leqc & \sup_{v \in H^1} \frac{A(u-u_h, v -\Pi_h v)}{\| v \|_H^1} \\
+ & \leqc &  \sup_{V \in H^1}
+         \frac{
+        \left\{ 
+        \sum_T h_T^2 \| f + \Delta u_h \|_{L_2(T)}^2  +
+        \sum_E h_E \left\| \left[ \frac{\partial u_h}{\partial n} \right] \right\|_{L_2(E)}^2 \right\}^{1/2}  
+        \; \| \nabla v \|_{L_2(\Omega)} }
+        { \| v \|_{H^1} } \\
+        & \leq &
+        \left\{ 
+        \sum_T h_T^2 \| f + \Delta u_h \|_{L_2(T)}^2  +
+        \sum_E h_E \left\| \left[ \frac{\partial u_h}{\partial n} \right] \right\|_{L_2(E)}^2 \right\}^{1/2},
+\end{eqnarray*}
+what is the reliability of the  error estimator $\eta^{res}(u_h,f)$
+
+\bigskip
+
+
+\begin{theorem} If the source term $f$ is piecewise polynomial on the mesh, then the error estimator $\eta^{res}$ is efficient:
+$$
+\| u - u_h \|_V \geqc \eta^{res} (u_h, f)
+$$
+\end{theorem}
+
+\subsubsection{Goal driven error estimates}
+% 
+The above error estimators estimate the error in the energy norm $V$.
+Some applications require to compute certain values (such as point values, average values, line integrals, fluxes through surfaces, ...). These 
+values are descibed by linear functionals $b : V \rightarrow \setR$.
+We want to design a method such that the error in this goal, i.e.,
+$$
+b(u) - b(u_h) 
+$$
+is small. The technique is to solve additionally the dual problem, where 
+the right hand side is the goal functional:
+$$
+\mbox{Find } w \in V : \qquad A(v, w) = b(v) \qquad \forall \, v \in V.
+$$
+Usually, one cannot solve the dual problem either, and one applies a Galerkin method also for the dual problem:
+$$
+\mbox{Find } w_h \in V_h : \qquad A(v_h, w_h) = b(v_h) \qquad \forall \, v_h \in V_h.
+$$
+In the case of point values, the solution of the dual problem is the Green
+function (which is not in $H^1$). The error in the goal is
+$$
+b(u-u_h) = A(u-u_h, w) = A(u-u_h, w-w_h).
+$$
+A rigorous upper bound for the error in the goal is obtained by using
+continuity of the bilinear-form, and energy error estimates 
+$\eta^1$ and $\eta^2$ for the primal and
+dual problem, respectively:
+$$
+| b(u-u_h) | \leqc \| u - u_h \|_V \| w - w_h \|_V \leqc
+         \eta^1(u_h, f) \, \eta^2(w_h, b).
+$$
+
+A good heuristic is the following (unfortunately, not correct)
+estimate
+\begin{equation}
+\label{equ_incorrect}
+b(u-u_h)  = A(u-u_h, w-w_h) \leqc \sum_{T \in {\cal T} } 
+        \| u - u_h \|_{H^1(T)} \, \| w - w_h \|_{H^1(T)} 
+        \leqc \sum_{T} \eta_T^1 (u_h, f) \, \eta_T^2 (w_h, b)
+\end{equation}
+The last step would require a local reliability estimate. But, this is
+not true.
+
+We can interpret (\ref{equ_incorrect}) that way: The local estimators
+$\eta^2_T(w_h)$ provide a way for weighting the primal local estimators
+according to the desired goal.
+
+
+\subsubsection{Mesh refinement algorithms}
+
+A posteriori error estimates are used to control recursive mesh refinement:
+
+\begin{quote}
+Start with initial mesh ${\cal T}$ \newline
+Loop \newline
+\hspace*{1cm} compute fe solution $u_h$ on ${\cal T}$ \newline
+\hspace*{1cm} compute error estimator $\eta_T (u_h, f)$ \newline
+\hspace*{1cm} if $\eta \leq$ tolerance then stop \newline
+\hspace*{1cm} refine elements with large $\eta_T$ to obtain a new mesh
+\end{quote}
+
+The mesh refinement algorithm has to take care of
+\begin{itemize}
+\item generating a sequence of regular meshes
+\item generating a sequence of shape regular meshes
+\end{itemize}
+
+{\bf Red-Green Refinement: \newline }
+A marked element is split into four equivalent elements (called red refinement):
+\begin{center}
+\includegraphics[height=2cm]{pictures/refine_irreg}
+\end{center}
+But, the obtained mesh is not regular. To avoid such irregular nodes,
+also neighboring elements must be split (called green closure):
+\begin{center}
+\includegraphics[height=2cm]{pictures/refine_reg}
+\end{center}
+If one continues to refine that way, the shape of the elements may get worse and worse:
+\begin{center}
+\includegraphics[height=2cm]{pictures/refinebad}
+\end{center}
+A solution is that elements of the green closure will not be further refined. 
+Instead, remove the green closure, and replace it by red refinement. 
+\begin{center}
+\includegraphics[height=2cm]{pictures/refinegood}
+\end{center}
+
+
+\bigskip
+{\bf Marked edge bisection:} \newline
+Each triangle has one marked edge. 
+The triangle is only refined by cutting from the middle of the
+marked edge to the opposite vertex. The marked edges of the new triangles
+are the edges of the old triangle.
+
+If there occurs an irregular node, then also the neighbor triangle must be refined.
+\begin{center}
+\includegraphics[height=2cm]{pictures/bisect}
+\end{center}
+To ensure finite termination, one has to avoid cycles in the initial mesh. 
+This can be obtained by first sorting the edges (e.g., by length), end then, 
+always choose the largest edges as marked edge.
+
+\bigskip
+
+Both of these refinement algorithms are also possible in 3D.
+
+\input{equilibrated.tex}
+
+\section{Non-conforming Finite Element Methods}
+\label{sec_nonconforming}
+In a conforming finite element method, one chooses a sub-space $V_h \subset V$, and defines the finite element approximation as
+$$
+\mbox{Find } u_h \in V_h: \qquad A(u_h, v_h) = f(v_h) \qquad \forall \, v_h \in V_{h}
+$$
+For reasons of simpler implementation, or even of higher accuracy, the 
+conforming framework is often violated. Examples are:
+\begin{itemize}
+\item
+The finite element space $V_h$ is not a sub-space of $V = H^m$. 
+Examples are the non-conforming $P^1$ triangle, and the Morley element for
+approximation of $H^2$.
+\item
+The Dirichlet boundary conditions are interpolated in the boundary vertices.
+\item
+The curved domain is approximated by straight sided elements
+\item
+The bilinear-form and the linear-form are approximated  by 
+inexact numerical integration
+\end{itemize}
+
+\noindent
+The lemmas by Strang are the extension of Cea's lemma to the 
+non-conforming setting.
+
+
+\subsubsection{The First Lemma of Strang}
+In the first step, let $V_h \subset V$, but the bilinear-form and the linear-form are replaced by mesh-dependent forms 
+$$
+A_h(.,.): V_h \times V_h \rightarrow \setR
+$$ 
+and 
+$$
+f_h(.) : V_h \rightarrow \setR.
+$$
+We do not assume that $A_h$ and $f_h$ are defined on $V$. 
+We assume that the bilinear-forms $A_h$ are uniformly coercive, i.e.,
+there exists an $\alpha_1$ independent of the mesh-size such that
+$$
+A_h (v_h, v_h) \geq \alpha_1 \, \| v_h \|_V^2 \qquad \forall \, v_h \in V_h
+$$
+The finite element problem is defined as 
+$$
+\mbox{Find } u_h \in V_h: \qquad A_h (u_h, v_h) = f_h (v_h) \qquad \forall \, v_h \in V_h
+$$
+
+\begin{lemma}[First Lemma of Strang] Assume that
+\begin{itemize}
+\item $A(.,.)$ is continuous on $V$
+\item $A_h(.,.)$ is uniformly coercive 
+\end{itemize}
+Then there holds
+\begin{eqnarray*}
+\| u - u_h \| & \leqc & \inf_{v_h \in V_h} \left\{
+        \| u - v_h \| + \sup_{w_h \in V_h} \frac{|A(v_h, w_h) - A_h (v_h, w_h)|}{\| w_h \|} \right\} \\
+        & & 
+        + \sup_{w_h \in V_h} \frac{f(w_h) - f_h (w_h)}{\| w_h \|}
+\end{eqnarray*}
+\end{lemma}     
+{\em Proof:} 
+Choose an arbitrary $v_h \in V_h$, and set $w_h := u_h - v_h$.
+We use the uniform coercivity, and the definitions of $u$ and $u_h$:
+\begin{eqnarray*}
+\alpha_1 \| u_h - v_h \|_V^2 & \leq & A_h (u_h - v_h, u_h - v_h) = A_h (u_h - v_h, w_h) \\
+        & = & A(u-v_h, w_h) + [ A(v_h, w_h) - A_h(v_h, w_h) ] + [ A_h (u_h, w_h) - A(u, w_h)] \\
+        & = & A(u-v_h, w_h) + [ A(v_h, w_h) - A_h(v_h, w_h) ] + [ f_h(w_h) - f(w_h)]
+\end{eqnarray*}
+Divide by $\| u_h - v_h \| = \| w_h \|$, and use the continuity of $A(.,.)$:
+\begin{equation}
+\label{equ_strang1a}
+\| u_h - v_h \| \leqc \| u - v_h \| + \frac{|A(v_h, w_h) - A_h(v_h, w_h)|}{\| w_h  \|} + \frac{ | f(w_h) - f_h(w_h) | } { \| w_h \| }
+\end{equation}
+
+Using the triangle inequality, the error $\| u - u_h \|$ is bounded by
+$$
+\| u - u_h \| \leq \inf_{v_h \in V_h} \| u - v_h \| + \| v_h - u_h \|
+$$
+The combination with (\ref{equ_strang1a}) proves the result. 
+\hfill $\Box$
+
+\bigskip
+
+{\bf Example:} Lumping of the $L_2$ bilinear-form: \newline
+Define the $H^1$ - bilinear-form
+$$
+A(u,v) = \int_\Omega \nabla u \cdot \nabla v + \int_\Omega u v \, dx,
+$$
+and perform Galerkin discretization with $P^1$ triangles.
+The second term leads to a non-diagonal matrix. 
+The vertex integration rule
+$$
+\int_T v \, dx \approx \frac{|T|}{3} \sum_{\alpha = 1}^3 v(x_{T,\alpha})
+$$
+is exact for $v \in P^1$. We apply this integration rule for the term
+$\int u v \, dx$:
+$$
+A_h(u,v) = \int \nabla u \cdot \nabla v + 
+\sum_{T \in {\cal T}} \frac{|T|}{3} \sum_{\alpha = 1}^3 u(x_{T,\alpha}) v(x_{T,\alpha})
+$$
+The bilinear form is now defined only for $u, v \in V_h$.
+The integration is not exact, since $u v \in P^2$ on each triangle.
+
+Inserting the nodal basis $\varphi_i$, we obtain a diagonal matrix for
+the second term:
+$$
+\varphi_i (x_{T,\alpha}) \varphi_j (x_{T,\alpha}) = 
+        \left\{ \begin{array}{cl}
+                1 & \mbox{for } x_i = x_j = x_{T,\alpha} \\
+                0 & \mbox{else}
+        \end{array}
+        \right.
+$$
+
+To apply the first lemma of Strang, we have to verify the uniform coercivity
+\begin{equation}
+\label{equ_uniformell}
+\sum_T \frac{|T|}{3} \sum_{\alpha = 1}^3 |v_h(x_{T,\alpha})|^2 \geq 
+\alpha_1 \sum_T \int_T | v_h |^2 \, dx \qquad \forall \, v_h \in V_h,
+\end{equation}
+which is done by transformation to the reference element.
+The consistency error can be estimated by
+\begin{equation}
+\label{equ_consist}
+| \int_T u_h v_h \, dx - \frac{|T|}{3} \sum_{\alpha=1}^3 u_h(x_\alpha) v_h(x_\alpha) |
+ \leqc h_T^2 \, \| \nabla u_h \|_{L_2(T)} \, \| \nabla v_h \|_{L_2(T)}
+\end{equation}
+Summation over the elements give
+$$
+A(u_h, v_h) - A_h (u_h, v_h) \leqc h^2 \| u_h \|_{H^1(\Omega)} \, \| v_h \|_{H^1(\Omega)}
+$$
+The first lemma of Strang proves that this modification of the bilinear-form
+preserves the order of the discretization error:
+\begin{eqnarray*}
+\| u - u_h \|_{H^1} & \leqc & 
+ \inf_{v_h \in V_h} \left\{
+        \| u - v_h \|_{H^1} + \sup_{w_h \in V_h} \frac{|A(v_h, w_h) - A_h (v_h, w_h)|}{\| w_h \|_{H^1}} \right\} \\
+ & \leqc & 
+        \| u - I_h u \|_{H^1} + \sup_{w_h \in V_h} \frac{|A(I_h u, w_h) - A_h (I_h u, w_h)|}{\| w_h \|_{H^1}} \\
+ & \leqc &  h \, \| u \|_{H^2} + \sup_{w_h \in V_h} \frac{h^2 \, \| I_h u \|_{H^1} \| w_h \|_{H^1}}{\| w_h \|_{H^1}} \\
+ &  \leqc & h \, \| u \|_{H^2}
+\end{eqnarray*}
+
+A diagonal $L_2$ matrix has some advantages:
+\begin{itemize}
+\item It avoids oscillations in boundary layers (exercises!)
+\item In explicit time integration methods for parabolic or hyperbolic
+problems, one has to solve linear equations with the $L_2$-matrix. This
+becomes cheap for diagonal matrices.
+\end{itemize}
+
+\subsubsection{The Second Lemma of Strang}
+
+In the following, we will also skip the requirement $V_h \subset V$. 
+Thus, the norm $\|.\|_V$ cannot be used on $V_h$, and it will be replaced by
+mesh-dependent norms $\|.\|_h$. These norms must be defined for $V + V_h$.
+As well, the mesh-dependent forms $A_h(.,.)$ and $f_h(.)$ are defined 
+on $V + V_h$. We assume 
+\begin{itemize}
+\item uniform coercivity:
+$$
+A_h (v_h, v_h) \geq \alpha_1 \| v_h \|_h^2 \qquad \forall \, v_h \in V_h
+$$
+\item continuity:
+$$
+A_h (u, v_h) \leq \alpha_2 \| u \|_h \| v_h \|_h \qquad \forall \, u \in V + V_h, \; \forall \, v_h \in V_h
+$$
+\end{itemize}
+
+The error can now be measured only in the discrete norm $\| u - u_h \|_{V_h}$.
+\begin{lemma}
+Under the above assumptions there holds
+\begin{equation}
+\label{equ_strang2}
+\| u - u_h \|_h \leqc \inf_{v_h \in V_h} \| u - v_h \|_h +
+         \sup_{w_h \in V_h} \frac{| A_h(u,w_h) - f_h(w_h) |}{\| w_h \|_h}
+\end{equation}
+\end{lemma}
+{\em Remark}: The first term in (\ref{equ_strang2}) is the approximation
+error, the second one is called consistency error. \\
+{\em Proof:} Let $v_h \in V_h$. Again, set $w_h = u_h - v_h$, and
+use the $V_h$-coercivity:
+\begin{eqnarray*}
+\alpha_1 \, \| u_h - v_h \|_h^2 & \leq & A_h (u_h - v_h, u_h - v_h) = A_h (u_h - v_h, w_h) \\
+        & = & A_h (u-v_h, w_h) + [f_h(w_h) - A_h(u,w_h)]
+\end{eqnarray*}
+Again, divide by $\| u_h - v_h\|$, and use continuity of $A_h(.,.)$:
+$$
+\| u_h - v_h \|_h \leqc \| u - v_h \|_h + \frac{A_h(u,w_h) - f_h(w_h)}{\| w_h \|_h}
+$$
+The rest follows from the triangle inequality. \hfill $\Box$
+
+
+\subsubsection{The non-conforming $P^1$ triangle}
+
+The non-conforming $P^1$ triangle is also called the Crouzeix-Raviart element.
+
+The finite element space generated by the non-conforming $P^1$ element
+is
+$$
+V_h^{nc} := \{ v \in L_2 : v_{|T} \in P^1(T), \mbox{and }v \mbox{ is continuous in edge mid-points} \}
+$$
+
+The functions in $V_h^{nc}$ are not continuous across edges, and thus, 
+$V_h^{nc}$ is not a sub-space of $H^1$. We have to extend the bilinear-form and
+the norm in the following way:
+$$
+A_h (u,v) = \sum_{T \in {\cal T}} \int_T \nabla u \nabla v \, dx
+        \qquad \forall \, u, v \in V + V_h^{nc}
+$$
+and
+$$
+\| v \|_h^2 := \sum_{T \in {\cal T}}  \| \nabla v \|_{L_2(T)}^2 \qquad \forall \, v \in V + V_h^{nc}
+$$
+
+
+We consider the Dirichlet-problem with $u = 0$ on $\Gamma_D$. 
+
+
+We will apply the second lemma of Strang.
+
+The continuous $P^1$ finite element space $V_h^c$ is a sub-space of 
+$V_h^{nc}$. Let $I_h : H^2 \rightarrow V_h^c$ be the nodal interpolation
+operator.
+
+To bound the approximation term in (\ref{equ_strang2}), we use the
+inclusion $V_h^c \subset V_h^{nc}$:
+$$
+\inf_{v_h \in V_h^{nc}} \| u - v_h \|_h \leq \| u - I_h u \|_{H^1} \leqc h \, \| u \|_{H^2}
+$$
+
+
+We have to bound the consistency term
+\begin{eqnarray*}
+r(w_h) & = & A_h(u,w_h) - f(w_h) \\
+        & = & \sum_T \int_T \nabla u \nabla w_h - \sum_T \int_T f w_h \, dx \\
+        & = & \sum_T \int_{\partial T} \frac{\partial u}{\partial n} w_h \, ds 
+                - \sum_T \int_T (\Delta u + f) \, w_h \, ds \\
+        & = & \sum_T \int_{\partial T} \frac{\partial u}{\partial n} w_h \, ds 
+\end{eqnarray*}
+
+
+Let $E$ be an edge of the triangle $T$. Define the mean value $\overline{w_h}^E$. 
+If $E$ is an inner edge, then the mean value on the corresponding edge of
+the neighbor element is the same. The normal derivative $\frac{\partial u}{\partial n}$ on the neighbor element is (up to the sign) the same.
+If $E$ is an edge on the Dirichlet boundary, then the mean value is 0.
+This allows to subtract edge mean values:
+
+$$
+r(w_h) = \sum_T \sum_{E \subset T} \int_E \frac{\partial u}{\partial n} (w_h - \overline{w_h}^E) \, ds
+$$
+Since $\int_E w_h - \overline{w_h}^E \, ds = 0$, we may insert the 
+constant function $\frac{\partial I_h u}{\partial n}$ on each edge:
+$$
+r(w_h) = \sum_T \sum_{E \subset T} \int_E 
+        \left(\frac{\partial u}{\partial n} - \frac{\partial I_h u}{\partial n} \right) (w_h - \overline{w_h}^E) \, ds
+$$
+Apply Cauchy-Schwarz on $L_2(E)$:
+$$
+r(w_h) = \sum_T \sum_{E \subset T} \| \nabla (u - I_h u) \|_{L_2(E)} \| w_h - \overline{w_h}^E \|_{L_2(E)}
+$$
+
+To estimate these terms, we transform to the reference element $\widehat T$, 
+where we apply the Bramble Hilbert lemma. Let $T = F_T(\widehat T)$, and set
+$$
+\widehat u = u \circ F_T \qquad \widehat w_h = w_h \circ F_T
+$$
+There hold the scaling estimates
+\begin{eqnarray*}
+| w_h |_{H^1(T)} & \eqc & | \widehat w_h |_{H^1(\widehat T)} \\
+\| w_h - \overline {w_h}^E \|_{L_2(E)} & \eqc & h_E^{1/2} \| \widehat w_h - \overline{\widehat w_h}^{\widehat E} \|_{L_2(\widehat E)} \\
+| u |_{H^2(T)} & \eqc & h_T^{-1} |  \widehat u |_{H^2(\widehat T)} \\
+\| \nabla (u - I_h u) \|_{L_2(E)} & \eqc & h_E^{-1/2} \| \nabla (\widehat u - \widehat I_h \widehat u) \|_{L_2(E)}
+\end{eqnarray*}
+On the reference element, we apply the Bramble Hilbert lemma, once for $w_h$, 
+and once for $u$. The linear operator 
+$$
+L : H^1(\widehat T) \rightarrow L_2(\widehat E) :
+ \widehat w_h \rightarrow  \widehat w_h - \overline {\widehat w_h}^{\widehat E}
+$$
+is bounded on $H^1(\widehat T)$ (trace theorem), and $L w = 0$ for $w \in P_0$,
+thus
+$$
+\| \widehat w_h - \overline{\widehat w_h}^{\widehat E} \|_{L_2(\widehat E)}
+\leqc | \widehat w_h |_{H^1(\widehat T)}
+$$
+Similar for the term in $u$: There is $\| \nabla (u - I_h u) \|_{L_2(E)} \leqc \| u \|_{H^2(T)}$, and $u - I_h u$ vanishes for $u \in P^1$. 
+
+Rescaling to the element $T$ leads to
+\begin{eqnarray*}
+\| w_h - \overline{w_h}^E \|_{L_2(E)} & \leqc & h^{1/2} \, | w_h |_{H^1(T)} \\
+\| \nabla (u - I_h u) \|_{L_2(E)} & \leqc & h^{1/2} \, | u |_{H^2(T)}
+\end{eqnarray*}
+This bounds the consistency term
+$$
+r(w_h) \leqc \sum_T h \, | u |_{H^2(T)} | w_h |_{H^1(T)} \leqc h \, \| u \|_{H^2(\Omega)} \, \| w_h \|_h.
+$$
+The second lemma of Strang gives the error estimate
+$$
+\| u - u_h \| \leqc h \, \| u \|_{H^2}
+$$ 
+
+There are several applications where the non-conforming $P^1$ triangle
+is of advantage:
+\begin{itemize}
+\item
+The $L_2$ matrix is diagonal (exercises)
+\item
+It can be used for the approximation of problems in fluid dynamics
+described by the Navier Stokes equations (see later).
+\item
+The finite element matrix has exactly 5 non-zero entries in each row
+associated with inner edges. That allows simplifications in the matrix
+generation code.
+\end{itemize}
+
+\input{hpfem.tex}
+
+% \newpage
+

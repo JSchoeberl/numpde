@@ -1,0 +1,284 @@
+% \documentclass[12pt]{article}
+% \usepackage{amsmath,amsthm,amssymb,a4wide}
+% \usepackage[german,english]{babel}
+% \usepackage{epsfig}
+% \usepackage{latexsym}
+% \usepackage{amssymb}
+% % \usepackage{theorem}
+% \usepackage{amsthm}
+% % \usepackage{showkeys}
+
+% \newcommand{\setR}{ {\mathbb R} }
+% \newcommand{\setN}{ {\mathbb N} }
+% \newcommand{\setZ}{ {\mathbb Z} }
+% \newcommand{\eps}{\varepsilon}
+
+% \newcommand{\beq}{\begin{equation}}
+% \newcommand{\eeq}{\end{equation}}
+
+% \newcommand{\opdiv}{\operatorname{div}}
+% \newcommand{\opcurl}{\operatorname{curl}}
+% \newcommand{\opdet}{\operatorname{det}}
+% \newcommand{\optr}{\operatorname{tr}}
+% \newcommand{\optrn}{\operatorname{tr}_n}
+% \newcommand{\sfrac}[2]{ { \textstyle \frac{#1}{#2} } }
+
+% \newcommand{\Zh}{\mathrm{Z}_h}
+% \newcommand{\Ih}{\mathrm{I}_l}
+
+% \newcommand{\leqc}{\preceq} 
+% \newcommand{\geqc}{\succeq} 
+% \newcommand{\eqc}{\simeq} 
+% \newcommand{\ul}{\underline}
+
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{definition}[theorem]{Definition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{remark}[theorem]{Remark}
+% \newtheorem{example}[theorem]{Example}
+
+% %
+% %
+% \setlength{\unitlength}{1cm}
+% \sloppy 
+% %
+
+% \title{Space-time formulation of Parabolic Equations}
+% \author{Joachim Sch\"oberl}
+
+% \begin{document}
+% \maketitle
+% \centerline{(supplement to lecture notes Chapter 9, draft version) } 
+
+\section{Space-time formulation of Parabolic Equations}
+
+In the previous section we have discretized in space to obtain an ordinary differential equation, which 
+is solved by some time-stepping method. This approach is known as method of lines.
+Now we formulate a space-time variational problem. This is discretized in time and space
+by a (discontinuous) Galerkin method. We obtain time-slabs which are solved one after another.
+This approach is more flexible, since it allows to use different meshes in space on different time-slabs.
+
+\subsection{Solvability of the continuous problem}
+%
+Let $V \subset H$ be Hilbert spaces, typically $H = L_2(\Omega)$ and $V = H^1(\Omega)$. Duality is defined with respect to $H$.
+For $t \in (0,T)$ we define the familiy $A(t) : V \rightarrow V^\ast$ of uniformely continuous and elliptic operators:
+\begin{enumerate}
+\item[(a)] $\left< A(t) u, u \right> \geq \alpha_1 \| u \|_V^2 $
+\item[(b)] $\left< A(t) u, v \right> \leq \alpha_2 \| u \|_V  \, \| v \|_V$ 
+\end{enumerate}
+We assume that $\left< A(t) u, v \right>$ is integrable with respect to time. We do not assume that $A(t)$ is symmetric.
+We consider the parabolic equation: Find $u : [0,T] \rightarrow V$ such that
+\begin{eqnarray*}
+u^\prime + A u & = & f  \quad \forall \, t \in (0,T) \\
+u(0) & = & u_0
+\end{eqnarray*}
+We define $X = \{ v \in L_2(V) : v^\prime \in L_2(V^\ast) \} $ and $Y = L_2(V)$, with its dual $Y^\ast = L_2(V^\ast)$.
+A variational formulation of is: Find $u \in X$ such that
+\begin{eqnarray} 
+\label{equ_parabolic1}
+\int_0^T \left< u^\prime + A u, v \right> & = & \int_0^T \left< f, v \right>   \qquad \forall \, v \in Y \\
+\label{equ_parabolic2}
+(u(0), v_0)_H & = & (u_0, v_0) \qquad \forall v_0 \in H
+\end{eqnarray}
+
+Adding up both equations leads to the variational problem $B(u,v) = f(v)$ with the bilinear-form
+$B(.,.) : X \times (Y \times H) \rightarrow \setR$:
+$$
+B(u, (v,v_0)) = \int_0^T \left< u^\prime + A u, v \right> + (u(0), v_0)_H
+$$
+and the linear-form $f : Y \times H \rightarrow \setR$:
+$$
+f(v,v_0) = \int_0^T \left< f, v \right> + (u_0, v_0)_H
+$$ 
+We assume that $f \in Y^\ast$ and $u_0 \in H$
+
+\begin{theorem}[Lions] \label{theo_continuous} Problem~(\ref{equ_parabolic1})-(\ref{equ_parabolic2}) is uniquely solvable.
+\end{theorem}
+\begin{proof}
+We apply the theorem by Babu\v{s}ka-Aziz. We observe that all forms are continuous (trace-theorem). 
+We have to verify both inf-sup conditions.
+
+First, we show
+\begin{equation}
+\inf_{u \in X} \sup_{ (v,v_0) \in Y \times H} \frac{B(u,v)} {\| u \|_X  \| (v,v_0) \|_{Y \times H}}  \geq \beta > 0
+\end{equation}
+We fix some $u \in X$ and set (with $A^{-T}$ the inverse of the adjoint operator)
+\begin{eqnarray*}
+v &  := & A^{-T} u^\prime + u \\
+v_0 & := & u(0)
+\end{eqnarray*}
+and obtain
+\begin{eqnarray*}
+B(u,v) & = & \int \left< u^\prime + A u, A^{-T} u^\prime + u \right> \, dt \; + (u(0), u(0))_H \\
+& = & \int \left<A^{-T} u^\prime, u^\prime \right> + \left< A u, u \right> + \left< u^\prime, u \right> + \left< u, u^\prime \right> \, dt \;  + \| u_0 \|_H^2 \\
+& = & \int \left<A^{-T} u^\prime, u^\prime \right> + \left< A u, u \right> + \frac{d}{dt} \| u \|_H^2  + \| u_0 \|_H^2 \\
+& \geq & \alpha_2^{-1}  \| u^\prime \|^2_{L_2(V^\ast)} + \alpha_1 \| u \|^2_{L_2(V)} + \| u(T) \|_H^2 \\
+& \geqc &  \| u \|_X^2
+\end{eqnarray*}
+Since $\| (v,v_0) \|_Y \leqc \| u \|_X$ the first $\inf-\sup$-condition is proven.
+For the other one, we show
+\begin{equation}
+\forall \, 0 \neq (v,v_0) \in Y \times H \; \; \exists \, u \in X  \;  : \;  B(u,v) > 0
+\end{equation}
+We fix some $v, v_0$. We define $u$ by solving the parabolic equation
+$$
+u^\prime + \gamma L u = A^T v, \qquad u(0) = v_0,
+$$
+where $L$ is a symmetric, constant-in-time, continuous and elliptic operator on $V$. 
+The parameter~$\gamma > 0, \gamma = O(1)$ will be fixed later. The equation has a unique solution, which can be constructed by spectral theory.
+If $(v,v_0) \neq 0$, then also $u \neq 0$.
+
+\begin{eqnarray*}
+B(u,v) & = & \int \left< u^\prime + A u, A^{-T} (u^\prime + \gamma L u) \right> + \| v_0\|_H^2 \\
+& = & \int \left< u^\prime, A^{-T} u^\prime\right> + \left< u, u^ \prime\right> + \left< u^\prime, A^{-T } \gamma L u \right> + \gamma \left< u, L u \right> \, dt +  \| v_0 \|_H^2 \\
+& \geq & \int \tfrac{1}{\alpha_2} \| u^\prime \|_{V^\ast}^2 + \tfrac{1}{2} \tfrac{d}{dt} \| u \|_H^2 - \| u^\prime \|_{V^\ast} \| A^{-T} \gamma L u \|_V + \gamma \left< u, L u \right> + \| v_0 \|_{H}^2
+\end{eqnarray*}
+The second term is integrated in time, and we apply Young's inequality for the negative term:
+\begin{eqnarray*}
+B(u,v) & \geq & \int \tfrac{1}{\alpha_2} \| u^\prime \|_{V^\ast}^2  - \tfrac{1}{2\alpha_2}\| u^\prime \|_{V^\ast}^2 - \tfrac{\alpha_2}{2} \| A^{-T} \gamma L u \|_V^2 + \gamma \left< u, L u \right> + \tfrac{1}{2} \| v_0 \|_{H}^2 + \tfrac{1}{2}  \| v(T) \|_H^2 \\
+& \geq &  \int \tfrac{1}{2 \alpha_2} \| u^\prime \|_{V^\ast}^2  - \tfrac{\alpha_2 \gamma^2}{2} \| A^{-T} L \|_{V \rightarrow V}^2  \| u \|_V^2 + \gamma \left< u, L u \right> + \tfrac{1}{2} \| u(0) \|_{H}^2 
+\end{eqnarray*}
+We fix now $\gamma$ sufficiently small such that $\tfrac{\alpha_2 \gamma^2}{2} \| A^{-T} \gamma L \|_{V \rightarrow V}^2  \| u \|_V^2 \leq \gamma \left< u, L u \right>$ to obtain
+$$
+B(u,v) \geqc \| u^\prime \|_{L_2(V^\ast)}^2 + \| u_0 \|_H^2 > 0.
+$$
+\end{proof}
+A similar proof of Lions's theorem is found in Ern + Guermond.
+\subsection{A first time-discretization method}
+We discretize in time, but keep the spatial function space infinit dimensional. 
+A first reasonable attempt is to use $X_h = P^1(V)$, and $Y_h = P^{0,disc}(V)$. 
+Evaluation of $B(.,.)$ leads to
+\begin{eqnarray*}
+B(u_h, v_h) & = & \sum_{j=1}^n \int_{t_{j-1}}^{t_j} \left< u_h^\prime + A u_h , v_h \right> + (u_0, v_h)  \\
+& = & \sum_{j=1}^n \left< u_j - u_{j-1}, v_j \right> + \tfrac{\tau_j}{2} \left<A (u_{j-1} + u_j), v_j \right> + (u_0, v_0)
+\end{eqnarray*}
+Here, the time derivative evaluates to finite differences of point values in $t_j$. Since $u_j \in V$, the duality pairs
+coincide with inner products in $H$. Thus, for every time-step we get the equation
+$$
+u_j - u_{j-1} + \frac{\tau}{2} A (u_j + u_{j-1}) = \tau f_j
+$$
+This is the trapezoidal method (Crank-Nicolson). From numerics for odes we remember it is A-stable, but not L-stable.
+We cannot prove a discrete $\inf-\sup$ condition.
+
+\subsection{Discontinuous Galerkin method}
+
+We give an alternative, formally equivalent variational formulation for the parabolic equation by integration by parts in time
+$$
+\int - \left< u, v^\prime \right> + \left< A u, v \right> + (u(T),v(T))_H - (u(0), v(0))_H = \int  \left< f, v \right> 
+$$ 
+Now, we plug in the given initial condition $u(0) = u_0$:
+$$
+\int - \left< u, v^\prime \right> + \left< A u, v \right> + (u(T),v(T))_H = \int  \left< f, v \right> + (u_0, v(0))_H
+$$
+The higher $H^1$-regularity is now put onto the test-space, which validates point-evaluation at $t=0$ and $t=T$. The trial-space is now only $L_2$, which gives no meaning for $u(T)$. There are two possible remedies, either to introduce a new variable for $u(T)$, or, to restrict the test space:
+\begin{enumerate}
+\item Find $u \in L_2(V)$, $u_T \in H$ such that
+\begin{equation}
+\int - \left< u, v^\prime\right> + \left< A u, v\right>  + (u_T, v(T))_H = \int \left< f, v \right> + (u_0, v(0))_H \quad \forall \, v \in L_2(V) , v^\prime \in L_2(V^\ast)
+\end{equation}
+\item Find $u \in L_2(V)$ such that
+\begin{equation}
+\int - \left< u, v^\prime\right> + \left< A u, v\right>  = \int \left< f, v \right> + (u_0, v(0))_H \quad \forall \, v \in L_2(V) , v^\prime \in L_2(V^\ast), v(T) = 0
+\end{equation}
+\end{enumerate}
+Both problems are well posed (continuity and $\inf-\sup$ conditions, exercise). Now, the initial condition was converted from an essential to a natural boundary condition. 
+
+Next, we integrate back, but we do not substitute the initial condition back:
+$$
+\int \left< u^\prime + A u, v \right> + (u(0), v(0))_H = \int \left< f, v \right> + (u_0, v(0))
+$$
+The initial condition is again a part of the variational formulation. Note that this formulation is fulfilled for $u \in H^1$, and smooth enough test functions providing the trace $v(0)$.
+
+This technique to formulate initial conditions is used in the Discontinuous Galerkin (DG) method. For every time-slab $(t_{j-1}, t_j)$ we define a parabolic equation, where the initial value is the end value of the previous time-slab.
+
+Here, we first define a mesh $\mathcal T = \{t_0, t_1, \ldots t_n\}$, and then the mesh-dependent formulation:
+$$
+\int_{t_{j-1}}^{t_j} \left< u^\prime + A u , v \right>  + (u(t_{j-1}^+), v(t_{j-1}^+))_H = \int_{t_{j-1}}^{t_j}  \left< f, v \right> +  (u(t_{j-1}^-), v(t_{j-1}^+))_H  \qquad \forall \, j \in \{ 1, \ldots n\} 
+$$
+(with the notation $u(t_0^-) := u_0$).
+By using left and right sided limits, we get the $u$ from the current time-slab, and the end-value from the previous time-slab, respectively.
+The variational formulation is valid for the solution $u \in H^1$, and piece-wise regular test-functions on the time-intervals.
+
+The bilinear-form is defined as
+$$
+B(u,v) = \sum_{j=1}^n \int_{t_{j-1}}^{t_j} \left< u^\prime + A u , v \right>  + ([u]_{t_{j-1}}, v(t_{j-1}^+))_H 
+$$
+where the jump is defined as $[u]_{t_j} = u(t_j^+)-u(t_j^-)$, and the special case $[u]_{t_0} = u(t_0^+)$. The solution satisfies
+$$
+B(u,v) =  \int \left< f, v \right> + (u_0, v(0)) \qquad \forall \, \text{p.w. smooth} \, v
+$$
+
+The bilinear-form is defined for discontinuous trial and discontinuous test functions. It allows to define 
+$$
+X_h = Y_h = P^{k,dc} (V)
+$$
+Let us elaborate the case of piece-wise constants in time:
+$$
+\tau \left< A u_j, v_j \right> + ( u_j - u_{j-1}, v_j) = \tau \left<f_j, v_j \right>
+$$
+which leads to the implicit Euler method
+$$
+\frac{u_j - u_{j-1}}{\tau} + A u_j = f_j
+$$
+The imlicit Euler method is $A$ and $L$-stable.
+
+We define the mesh-dependent norms
+\begin{eqnarray*}
+\| u \|_{X_h}^2 &= &\sum_j \| u \|_{L_2(t_{j-1}, t_j, V)}^2 + \| u^\prime \|_{L_2(t_{j-1}, t_j, V^\ast)}^2 + \tfrac{1}{t_j - t_{j-1}} \| [u] _{t_{j-1}} \|_{V^*}^2 \\
+\| v \|_{Y_h}^2 &= &\sum_j \| v \|_{L_2(t_{j-1}, t_j, V)}^2 
+\end{eqnarray*}
+Since $v|_{[t_{j-1}, t_j]}$ is a polynomial, we can bound
+$$
+\| v(t_{j-1}^+) \|_V^2 \leq \frac{c}{t_{j} - t_{j-1}} \| v \|^2_{L_2(t_{j-1}, t_j, V)}, 
+$$
+where the constant $c$ deteriors with the polynomial degree. Thus, the bilinear-form is well defined and continuous on $X_h \times Y_h$.
+
+\begin{theorem}
+The discrete problem is $\inf-\sup$ stable on $X_h \times Y_h$ 
+\end{theorem}
+\begin{proof} We mimic the first $\inf-\sup$ condition in Theorem~\ref{theo_continuous}, where we have set $v = u + A^{-T} u^\prime$. We give the proof for the lowest order case (k=0)
+$$
+v_h := u_h + \tfrac{\gamma}{t_j - t_{j-1}} A(t_{j-1})^{-1}  [u_h]_{j-1},
+$$
+with $\gamma = O(1)$ to be fixed later. Thanks to the discontinuous test-space, this is a valid test-function. 
+
+In the following we skip the subsripts $h$, and set $\tau = t_{j} - t_{j-1}$. 
+There holds
+$$
+\| v \|_{Y_h} \leqc \| u \|_{X_h}.
+$$
+\begin{eqnarray*}
+B(u_h, v_h) & = & \sum_{j=1}^n \int_{t_{j-1}}^{t_j} \left< A u, u + \tfrac{\gamma}{\tau}  A_{j-1}^{-T} [u]_{j-1} \right> + 
+\sum_j ([u]_{j-1}, u + \tfrac{\gamma}{\tau} A_{j-1}^{-1} [u]_{j-1})_H \\
+& = & \int \left< A u, u \right> + \sum_j \int \left< A u, \tfrac{\gamma}{\tau} A^{-T} [u_j]  \right> +
+ \sum_j ( u_j - u_{j-1}, u_j)_H + \sum_j \tfrac{\gamma}{\tau} \| [u]_{t_{j-1}}\|_{A^{-1}} 
+\end{eqnarray*}
+The second term is split by Young's inequality:
+$$
+\int_{t_{j-1}}{t_j} \left< A u, \tfrac{\gamma}{\tau}  A^{1}_{j-1} [u]_{j-1} \right> \leq \int \tfrac{1}{2} \left<A u, u \right> + \tfrac{\gamma^2}{2 \tau^2}  \int \| A^{-1} [u] \|_A 
+$$
+Thus, for sufficiently small $\gamma$ it can be absorbed into the first and last term.
+
+We reorder the summation of the third term:
+\begin{eqnarray*}
+& & (u_1, u_1)^2 - (u_1, u_2) + (u_2, u_2)^2 - (u_2, u_3) + \ldots \\
+& = &\tfrac{1}{2} \| u_1 \|_H^2 + \tfrac{1}{2}  \| u_1 - u_2 \|_H^2 + \ldots
+\end{eqnarray*} 
+
+Thus, we got (for piecewise  constants in time):
+$$
+B(u_h, v_h) \geq \| u \|_{L_2,V}^2 + \sum \| [u]_{t_j} \|_H^2 + \frac{1}{\tau} \| [u] \|_{V^\ast}^2 \geqc \| u_h \|_{X_h}^2 
+$$
+\end{proof}
+
+By stability, we get for the discrete error
+\begin{eqnarray*} 
+\| I_h u - u_h \|_{X_h}  & \leqc & \sup_{v_h}  \frac{B_h(I_h u - u_h, v_h)} {\| v_h \|_{Y_h} )} \\
+ & = & \sup_{v_h}  \frac{B_h(I_h u - u, v_h)} {\| v_h \|_{Y_h} )} \\
+ & = & \sup_{v_h}  \frac{ \sum_j \int \left< u^\prime + A u - (I_h u)^\prime + A I_h u, v_h \right> + \sum_j ( [u]  - [I_h u] , v_h)_H }
+{ \| v_h \|_{L_2(V)} }  \\
+& \leqc & \ldots
+\end{eqnarray*} 
+where the convergence rate depends as usual on the regulariy of the exact solution 
+
+

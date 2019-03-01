@@ -1,0 +1,322 @@
+\chapter{Parabolic partial differential equations}
+
+PDEs involving first order derivatives in time, and an ellitpic differential operator
+in space, are called parabolic PDEs. For example, time dependent heat flow is described
+by a parabolic PDE.
+
+Let $\Omega \subset \setR^d$, and $Q = \Omega \times (0,T)$. Consider the initial-boundary
+value problem
+$$
+\frac{\partial u(x,t)}{\partial t} - \opdiv (a(x) \nabla_x u(x,t)) = f(x,t)  \qquad (x,t) \in Q,
+$$
+with boundary conditions
+\begin{eqnarray*}
+u(x,t) & = & u_D (x,t) \qquad (x,t) \in \Gamma_D \times (0,T), \\
+a(x) \frac{\partial u}{\partial n} & = & g(x,t) \; \; \qquad (x,t) \in \Gamma_N \times (0,T),
+\end{eqnarray*}
+and initial conditions
+$$
+u(x,0) = u_0(x) \qquad x \in \Omega.
+$$
+
+\bigskip
+
+Weak formulation in space: Find $u : [0,T] \rightarrow H_{0,D}^1(\Omega)$ such that
+\begin{eqnarray*}
+\int_\Omega \partial_t u (x,t) v(x) \, dx + 
+\int_\Omega a \nabla u(x,t) \cdot \nabla v(x,t) \, dx & = &
+\int_\Omega f(x,t) v(x,t) \, dx + \int_{\Gamma_N} g(x,t) v(x,t) \, dx \\[1em]
+& &  \forall \, v \in H_{0,D}^1, \; t \in (0,T]
+\end{eqnarray*}
+In abstact form: Find $u : [0,T] \rightarrow V$ s.t.
+$$
+(u^\prime(t), v)_{L_2} + a(u(t), v) = \left< f(t), v \right> \qquad \forall \, v \in V, \, t \in (0,T]
+$$
+In operator form (with $\left<A u,v\right> = a(u,v)$):
+$$
+u^\prime (t) + A u(t) = f(t)  \qquad \in V^\ast
+$$
+\bigskip
+Function spaces:
+$$
+X = L_2( (0,T), V) \qquad X^\ast = L_2((0,T), V^\ast)
+$$
+with norms
+$$
+\| v  \|_X = \left( \int_0^T \| v(t) \|_V^2 \, dt \right)^{1/2}
+\qquad
+\| v  \|_{X^\ast} = \left( \int_0^T \| v(t) \|_{V^\ast}^2 \, dt \right)^{1/2}
+$$
+
+\begin{definition} Let $u \in L_2( (0,T), V)$. It has a weak derivative 
+$w \in L_2((0,T),V^\ast)$ if
+$$
+\int_0^T \varphi(t) \left< w, v \right>_{V^\ast \times V} \, dt = -\int_0^T \varphi^\prime (t) (u,v)_{L_2} \, dt 
+\qquad \forall \, v \in V, \; \forall \, \varphi \in C_0^\infty (0,T)
+$$
+\end{definition}
+
+\begin{definition} 
+$$
+H^1 ((0,T),V;L_2) = \{ v \in L_2((0,T),V) : v^\prime \in L_2((0,T),V^\ast) \}
+$$
+with norm
+$$
+\| v \|_{H^1}^2 = \| v \|_X^2 + \| v^\prime \|_{X^\ast}^2.
+$$
+\end{definition}
+
+This space is a one-dimensional Sobolev space with range in a Hilbert space.
+
+\begin{theorem}[Trace theorem]
+Point evaluation is continuous:
+$$
+\max_{t \in [0,T]} \| v(t) \|_{L_2} \leqc \| v\|_{H^1}
+$$
+\end{theorem}
+This allows the formulation of the initial value $u(0) = u_0$.
+
+\begin{theorem} Assume that $a(.,.)$ is 
+coercive
+$$
+a(u,u) \geq \mu_1 \| u \|_V^2 \quad \forall \, u \in V
+$$
+and continuous
+$$
+a(u,v) \leq \mu_2 \|u \|_V \, \| v\|_V \qquad \forall \, u,v \in V.
+$$ 
+Then, the parabolic problem has a unique solution depending continuously on the 
+right hand side and the initial conditions:
+\begin{eqnarray*}
+ \| u \|_{H^1((0,T),V; L_2)} & \leqc & \| u_0 \|_{L_2} + \| f \|_{L_2((0,T),V^\ast}.
+\end{eqnarray*}
+\end{theorem}
+We only prove stability: Choose test functions $v = u(t)$:
+$$
+(u^\prime(t), u(t))_{L_2} + a(u(t), u(t)) = \left< f(t), u(t) \right>
+$$
+Use that
+$$
+\frac{d}{dt} \| u(t) \|_{L_2}^2 = 2 (u^\prime(t), u(t))_{L_2},
+$$
+and integrate the equation over $(0,T)$:
+\begin{eqnarray*}
+\frac{1}{2} \left\{ \| u(T) \|_{L_2}^2 - \| u_0 \|_{L_2}^2 \right\}
+& = & \int_0^T \left< f(s), u(s) \right> - a(u(s), u(s)) \, ds \\
+& \leq &  \int_0^T \| f(s) \|_{V^\ast} \| u(s) \|_V - \mu_1 \| u(s) \|_V^2 \; ds \\
+& \leq & \| f \|_{X^\ast} \| u \|_X - \mu_1 \| u \|_X^2
+\end{eqnarray*}
+Since $\| u(T) \| \geq 0$, one has
+$$
+\mu_1 \| u \|_X^2 - \| f \|_{X^\ast} \| u \|_X \leq \frac{1}{2} \, \| u_0 \|_{L_2}
+$$
+Solving the quadatic inequality, one obtains the bound
+$$
+\| u \|_X \leq \frac{1}{2\mu_1} \left\{ \| f \|_{X^\ast} + \sqrt{\| f \|_{X^\ast}^2 + 2 \mu_1 \| u_0 \|_{L_2}^2} \right\}
+$$
+The bound $\| u^\prime \|_{L_2((0,T),V^\ast)}$ follows from $u^\prime(t) = f(t) - A u(t)$.
+
+\section{Semi-discretization}
+We start with a discretization in space. Choose a (finite element) sub-space $V_h \subset V$.
+The Galerkin discretiztaion is: Find $u : [0,T] \rightarrow V_h$ such that
+$$
+(u_h^\prime(t), v_h)_{L_2} + a(u_h(t), v_h) = \left<f(t), v_h\right> 
+\qquad \forall \, v_h \in V_h, \; \forall \, t \in (0,T],
+$$
+and initial conditions
+$$
+(u_h(0), v_h)_{L_2} = (u_0, v_h)_{L_2} \qquad \forall \, v_h \in V_h.
+$$
+Choose a basis $\{ \varphi_1, \ldots \varphi_N \}$ of $V_h$. Expand the solution w.r.t. this
+basis:
+$$
+u_h(x,t) = \sum_{i=1}^N u_i(t) \varphi_i(x),
+$$
+and choose test functions $v = \varphi_j$. With the matrices
+$$
+M = \left( (\varphi_j, \varphi_i)_{L_2} \right)_{i,j=1,\ldots, N} \qquad
+A = \left( a(\varphi_j, \varphi_i) \right)_{i,j=1,\ldots, N},
+$$
+and the $t$-dependent vector
+$$
+f(t) = \left( \left<f(t), \varphi_j\right> \right)_{i=1,\ldots,N},
+$$
+one obtains the system of ordinary differential equations (ODEs)
+$$
+M u^\prime (t) + A u(t) = f(t), \qquad u(0) = u_0
+$$
+
+In general, the (mass) matrix $M$ is non-diagonal. In the case of the (inexact) 
+vertex integration rules, or non-conforming $P_1$-elements, $M$ is a diagonal matrix.
+Then, this ODE can be efficiently reduced to explicit form
+$$
+u^\prime(t) + M^{-1} A u(t) = f(t)
+$$
+
+\bigskip
+
+\begin{theorem}
+There holds the error estimate
+$$
+\| u - u_h \|_{H^1((0,T),V;L_2)} \leqc  \| (I-R_h) u \|_{H^1((0,T),V;L_2)},
+$$
+where $R_h$ is the Ritz projector
+$$
+R_h : V \rightarrow V_h : \qquad a(R_h u, v_h) = a(u,v_h) \qquad \forall \, u \in V, \forall \, v_h \in V_h.
+$$
+\end{theorem}
+{\em Proof:} 
+The error is split into two parts:
+$$
+u(t) - u_h(t) = \underbrace{u(t)-R_h u(t)}_{\rho(t)} + \underbrace{R_h u(t) - u_h(t)}_{\Theta_h}
+$$
+The first part, $u(t) - R_h u(t)$ is the elliptic discretization error, which can be bounded by
+Cea's lemma. To bound the second term, we use the properties for the continuous and the
+discrete formulation:
+\begin{eqnarray*}
+\left<f,v_h\right> & = & (u^\prime,v_h) + a(u, v_h) = (u^\prime,v_h) + a(R_h u, v_h) \\
+& = & (u_h^\prime, v_h) + a(u_h, v_h),
+\end{eqnarray*}
+i.e.,
+$$
+(u^\prime - u_h^\prime, v_h) + a(R_h u - u_h, v_h) = 0,
+$$
+or
+$$
+(R_h u^\prime - u_h^\prime, v_h) + a(R_h u - u_h, v_h) = (R_h u^\prime - u^\prime, v_h).
+$$
+With the abbreviations from above we obtain the discrete parabolic equation for $\Theta_h$:
+\begin{eqnarray*}
+(\Theta_h^\prime, v_h) + a (\Theta_h, v_h) & = & (\rho^\prime, v_h)  \\
+\Theta_h(0) & = & (I-R_h) u(0).
+\end{eqnarray*}
+The stability estimate, and the trace theorem bounds
+\begin{eqnarray*}
+\| \Theta_h \|_{H^1((0,T),V;L_2)}
+ & \leqc &  \| (I-R_h) u(0) \|_{L_2(\Omega)} + \| \rho^\prime \|_{L_2((0,T),V^\ast)} \\
+ & \leqc & \| (I-R_h) u \|_{H^1((0,T),V;L_2)}
+\end{eqnarray*}
+\hfill $\Box$
+
+\section{Time integration methods}
+Next, we discuss methods for solving the system of ODEs:
+\begin{eqnarray}
+M u^\prime(t) + A u(t) & = & f(t) \label{equ_ode} \\
+u(0) & = & u_0  \nonumber
+\end{eqnarray}
+We focus on simple time integration rules and the specific properties arising from
+the space-discretization of parabolic PDEs. Let 
+$$
+0 = t_0 < t_1 < t_m = T,
+$$
+a partitioning of the interval $[0,T]$. Define $\tau_j = t_{j+1}-t_j$.
+Integrating (\ref{equ_ode}) over the intervalls leads to
+$$
+M \left\{ u(t_{j+1}) - u(t_j)  \right\} + \int_{t_j}^{t_{j+1}} A u(s) \, ds = \int_{t_j}^{t_{j+1}} f(s) \, ds.
+$$
+
+Next, we replace the integrals by numerical integration rules. The left-sided rectangle rule
+leads to
+$$
+M \{ u(t_{j+1}) - u(t_j) \} + \tau_j A u(t_j) = \tau_j f(t_j)
+$$
+With the notation $u_j = u(t_j)$, this leads to the sequence of linear equations
+$$
+M u_{j+1} = M u_j + \tau_j (f_j - A u_j)
+$$
+In the case of a diagoal $M$-matrix, this is an explicit formulae for the new time step !
+
+Using the right-sided rectangle rule leads to
+$$
+M \{ u_{j+1} - u_j \} + \tau_j A u_{j+1} = \tau_j f_{j+1},
+$$
+or
+$$
+(M + \tau_j A) u_{j+1} = M u_j + \tau_j f_{j+1}.
+$$
+In case of the right-side rule, a linear system must be solve in any case. Thus,
+this method is called an implicit time integration method. These two special cases
+are called the explicit Euler method, and the implicit Euler method. A third simple
+choice is the trapezoidal rule leading to
+$$
+(M + \frac{\tau_j}{2} A) u_{j+1} = M u_j + \frac{\tau_j}{2} (f_j+f_{j+1} - A u_j)
+$$
+It is also an implcit method. Since the trapezoidal integration rule is more accurate,
+we expect a more accurate method for approximating the ODE.
+
+
+
+All single-step time integration methods can be written in the form
+$$
+u_{j+1} = G_j (u_j, f_j),
+$$
+where $G_j$ is linear in both arguments and shall be continuous with bounds
+$$
+\| G_j (u_j, f_j) \|_M \leq L \, \| u_j \|_M + \tau_j \, l \, \| f_j \|_{M^{-1}},
+$$
+with $L \geq 1$.
+\begin{lemma}
+The time integration method fulfills the stability estimate
+\begin{equation}
+\| u_j \|_M \leq L^j \, \| u_0 \|_M + l L^j \sum_{i=0}^{j-1} \tau_i \| f_i \|_{M^{-1}}
+\end{equation}
+\end{lemma}
+
+The explicit Euler method is written as
+$$
+u_{j+1} = (I - \tau M^{-1} A) u + \tau M^{-1} f_j,
+$$
+and has bounds
+\begin{eqnarray*}
+L & = & \max \{ 1, \tau \lambda_{max} (M^{-1} A)-1 \} \eqc \max\{ 1, \frac{\tau}{h^2} \}\\
+l & = & 1
+\end{eqnarray*}
+
+If $\tau > h^2$, the powers $L^j$ become very large. This means that the explicit Euler
+method becomes instable. Thus, for the explicit Euler method, the time-step $\tau$
+must not be greater than $c h^2$.
+
+The implicit Euler method is written as
+$$
+u_{j+1} = (M + \tau A)^{-1} M u_j + \tau (M+\tau A)^{-1} f_j,
+$$
+and has the bounds
+\begin{eqnarray*}
+L & = & 1 \\
+l & = & 1
+\end{eqnarray*}
+The method is stable for any time-step $\tau$. Such a method is called $A$-stable.
+
+\begin{lemma} The time discretization error $e_j := u(t_j) - u_j$ of the
+implicit Euler method satisfies the difference equation
+$$
+M \{ e_{j+1} - e_j \} + \tau A e_{j+1} = d_j,
+$$
+where the $d_j$ satisfy
+$$
+d_j = \int_{t_j}^{t_{j+1}} \{ f(s) - A u(s) \} \, ds - \tau_j \{ f(t_{j+1}) - A u(t_{j+1}) \}.
+$$
+\end{lemma}
+
+\begin{lemma} The  error of the integration rule can be estimated by
+$$
+\| d_j \| \leqc \tau \, \| (f - A u)^\prime \|_{L_\infty} = \tau \, \| u^{\prime \prime} \|_{L_\infty}
+$$
+\end{lemma}
+
+Convergence of the time-discretization method follows from stability plus 
+approximation:
+\begin{theorem} The error of the implicit Euler method satisfies
+$$
+\| u(t_j) - u_j \|_M \leq \sum_{i=0}^j \tau \| d_j \| \leqc \tau \, \| u^{\prime \prime} \|_{L_\infty(0,T)}
+$$
+\end{theorem}
+
+\bigskip
+The trapezoidal rule is $A$-stable, too. It is based on a more accurate integration
+rule, and leads to second order convergence $O(\tau^2)$.
+Convergence of higher order can be obtained by Runge-Kutta methods. 
+
+
+\input{spacetime.tex}
+

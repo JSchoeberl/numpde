@@ -1,0 +1,238 @@
+% \documentclass[12pt]{article}
+% \usepackage{amsmath,amsthm,amssymb,a4wide}
+% \usepackage[german,english]{babel}
+% \usepackage{epsfig}
+% \usepackage{latexsym}
+% \usepackage{amssymb}
+% % \usepackage{theorem}
+% \usepackage{amsthm}
+% % \usepackage{showkeys}
+
+% \newcommand{\setR}{ {\mathbb R} }
+% \newcommand{\setN}{ {\mathbb N} }
+% \newcommand{\setZ}{ {\mathbb Z} }
+% \newcommand{\eps}{\varepsilon}
+
+% \newcommand{\beq}{\begin{equation}}
+% \newcommand{\eeq}{\end{equation}}
+
+% \newcommand{\opdiv}{\operatorname{div}}
+% \newcommand{\opcurl}{\operatorname{curl}}
+% \newcommand{\opdet}{\operatorname{det}}
+% \newcommand{\optr}{\operatorname{tr}}
+% \newcommand{\optrn}{\operatorname{tr}_n}
+% \newcommand{\sfrac}[2]{ { \textstyle \frac{#1}{#2} } }
+
+% \newcommand{\Zh}{\mathrm{Z}_h}
+% \newcommand{\Ih}{\mathrm{I}_l}
+
+% \newcommand{\leqc}{\preceq} 
+% \newcommand{\geqc}{\succeq} 
+% \newcommand{\eqc}{\simeq} 
+% \newcommand{\ul}{\underline}
+
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{definition}[theorem]{Definition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{remark}[theorem]{Remark}
+% \newtheorem{example}[theorem]{Example}
+
+% %
+% %
+% \setlength{\unitlength}{1cm}
+% \sloppy 
+% %
+
+% \title{Proving LBB for the Stokes Equation}
+% \author{Joachim Sch\"oberl}
+
+% \begin{document}
+% \maketitle
+% \centerline{(supplement to lecture notes Chapter 8.1) } 
+
+\subsection{Proving LBB for the Stokes Equation}
+\subsubsection{Stability of the continuous equation}
+
+We consider Stokes equation: find $u \in [H_0^1]^d$ and $p \in L_2^0$ such that
+\begin{equation}
+\begin{array}{ccccll}
+\int \nabla u \cdot \nabla v & + & \int \opdiv v \, p & = & \int f v \quad & \forall \, v \in [H_0^1]^d \\[0.5em]
+\int \opdiv u \, q && & = & 0 & \forall \, q \in L_2^0.
+\end{array}
+\end{equation}
+Solvability follows from Brezzi's theorem. The only non-trivial part is the LBB condition:
+$$
+\sup_{v \in [H_0^1]^d} \frac { \int \opdiv v \, p}  { \| v \|_{H^1}} \geq \beta \| p \|_{L_2}
+\qquad \forall \, p \in L_2^0
+$$ 
+We sketch two different proofs: 
+
+{\em Proof 1: } The LBB condition becomes simple if we skip the Dirichlet conditions:
+$$
+\sup_{v \in [H^1]^d} \frac { \int \opdiv v \, p}  { \| v \|_{H^1}} \geq \beta \| p \|_{L_2}
+\forall \, p \in L_2
+$$
+Take $p \in L_2(\Omega)$, extend it by $0$ to $L_2 (\setR^d)$. Now compute a right-inverse of $\opdiv$ via Fourier transform:
+\begin{eqnarray*}
+\hat p(\xi) & = & {\mathcal F} (p) \\
+\hat u(\xi) & = & \frac{-i\xi}{|\xi|^2} \hat p(\xi) \\
+u(x) & = & {\mathcal F}^{-1} (\hat u ) \\
+\end{eqnarray*}
+Since $\opdiv u = p$ translates to $i \xi \cdot \hat u = \hat p$, we
+found a right-inverse to the divergence. Furthermore, $| u
+|_{H^1(\Omega)} = \| i \xi \hat u\|_{L_2} \leqc \| \hat p \|_{L_2} =
+\| p \|_{L_2}$. We restrict this $u$ to $\Omega$. 
+The $L_2$-part of $\| u \|_{H^1}$ follows from the
+Poincare inequality after subtracting the mean value. 
+
+The technical part is to ensure Dirichlet - boundary conditions. One can build an extension operator ${\mathcal E}$ from $L_2(\setR^d \setminus \Omega)$ onto $\setR^d$, which commutes with the $\opdiv$-operator: $\opdiv {\mathcal E} u = {\mathcal E}^p \opdiv u$, and sets
+$$
+u_{final} := u - {\mathcal E} u
+$$
+This $u$ satisfies $u = 0$ on $\partial \Omega$. Since $\opdiv u = p = 0$ outside of $\Omega$, the correction did not change the divergence inside $\Omega$.
+
+{\em Proof 2: } Directly construct a right-inverse for the $\opdiv$-operator via integration. We assume that $\Omega$ is star-shaped w.r.t. $\omega$, and $a\in \omega$. Extend $p$ by $0$ to $L_2(\setR^d)$:
+$$
+u_a(x) := -(x-a) \int_1^\infty  t^{d-1} p(a + t(x-a)) \, dt\qquad x
+\neq a
+$$
+and $u_a(a) = 0$.
+If $\int_\Omega p = 0$, then $\opdiv u_a = p$. Furthermore, $u = 0$ outside $\Omega$.
+Next, we average over star-points in $\omega$:
+$$
+u := \frac{1}{|\omega|}  \int_\omega u_a \, da
+$$
+There is still $\opdiv u = p$. Now, one can show that $\| u \|_{H^1} \leqc \| p \|_{L_2}$
+
+\subsection{Discrete LBB}
+
+Now, we turn to the discrete system posed on $V_h \subset V$ and $Q_h \subset Q$. 
+The discrete LBB condition follows from the continuous one by
+construction of a Fortin operator (Lemma~99).
+
+\subsubsection{Elements with discontinuous pressure}
+The simplest pair is the non-conforming $P^1$ element, and constant pressure:
+$$
+V_h  = P^{1,nc}, \qquad Q_h = P^{0,dc}
+$$
+We have to extend the $V$-norm and forms by the sum over element-wise norms and forms.
+The Fortin-operator $I_F : V \rightarrow V_h$ is defined via
+$$
+\int_E I_F u = \int_E u \quad \forall \, \text{edges } E
+$$
+It is continuous from $H^1$ to broken $H^1$ (via mapping), and satisfies
+$$
+\int_T \opdiv (I_F u) = \int_{\partial T} (I_F u) \cdot n = \int_{\partial T} u \cdot n = \int_T \opdiv u,
+$$
+and thus
+$$
+b_h(I_F u, q_h) = b(u, q_h) \qquad \forall \, q_h \in Q_h
+$$
+The error estimate follows similar as in the second Lemma by Strang:
+\begin{eqnarray*}
+\lefteqn{\| u - u_h\|_{H^1,nc} + \| p - p_h \|_{L-2}} \\
+& \leqc &\inf_{v_h, q_h} \| u - v_h \|_{H^1,nc} + \| p - q_h\|_{L_2} 
++ \sup_{w_h} \frac{ \sum_T \int \nabla u \nabla w_h   + p \opdiv w_h - f w_h} {\| w_h \|_{H^1,nc} } \\
+& \leqc & c h \, (  \| u \|_{H^2} + \| p \|_{H^1} )
+\end{eqnarray*}
+This convergence rate $O(h)$ is considered to be optimal for these elements.
+
+Next we consider
+$$
+V_h = P^2 \qquad Q_h = P^{0,dc}
+$$
+We would like to define the Fortin operator similar as before:
+$$
+\begin{array}{rcll}
+I_F u(V) & = & u(V)  \quad & \forall \, \text{vertices } V \\[0.5em]
+\int_E I_F u & = & \int_E u \quad & \forall \, \text{edges } E
+\end{array}
+$$
+But, the vertex evaluation is not allowed in $H^1$. We proceed now in two steps: First approximate $u$ in the finite element space via a Cl\'ement operator $\Pi_h$:
+$$
+u_h^1 := \Pi_h u,
+$$
+and modify this $u_h^1$ via a correction term:
+$$
+u_h := I_F u := u_h^1 + I_F^2 (u - u_h^1)
+$$
+The correction operator $I_F^2$ is defined as
+$$
+\begin{array}{rcll}
+I_F^2 u(V) & = & 0  \quad & \forall \, \text{vertices } V, \\[0.5em]
+\int_E I_F^2 u & = & \int_E u \quad & \forall \, \text{edges } E.
+\end{array}
+$$
+It preserves edge-integrals and thus satisfies $b(u - I_F^2 u, q_h) =
+0 \; \forall \, u \; \forall \, q_h$. Furthermore, it is continuous with respect to
+$$
+\| I_F^2 u \|_{H^1} \leqc \| u \|_{H^1} + h^{-1} \| u \|_{L_2}
+$$
+Thus, the combined operator $I_F$ is continuous:
+\begin{eqnarray*}
+\| I_F u \|_{H^1} & \leqc & \| \Pi_h u \|_{H^1} + \| I_F^2 (u-\Pi_h u) \|_{H1} \\
+    & \leqc & \| u \|_{H^1} + \| u - \Pi_h u\|_{H^1} + h^{-1 } \| u - \Pi_h u \|_{L_2} \\
+   & \leqc & \|  u \|_{H^1}
+\end{eqnarray*}
+It also satisfies the constraints:
+$$
+b(u - I_F u, q_h) = b(u - \Pi_h u - I_F^2 (u - \Pi_h u), q_h) = b( (Id - I_F^2)(u - \Pi_h u), q_h) = 0 
+$$
+Error estimates are
+$$
+\| u - u_h \|_{H^1} + \| p  - p_h \|_{L_2} \leqc \inf_{v_h, q_h} \| u - v_h \|_{H^1} + \| p - q_h \|_{L_2} 
+= O(h)
+$$
+Although we approximate $u_h$ with $P^2$-elements, the bad
+approximation of $p$ leads to first order convergence, only. This
+element is considered to be sub-optimal.
+
+A solution is the the pairing
+$$
+V_h = P^{2+} \qquad Q_h = P^{1, nc},
+$$
+where $P^{2+}$ is the second order space enriched with cubic bubbles:
+$$
+P^{2+}({\mathcal T}) = \{ v_h \in H^1 : v_{h|T} \in P^3(T), v_{h|E} \in P^2(E) \}
+$$
+It leads to second order convergence. Since the costs of a method depend mainly on the coupling dofs, the price for the additional bubble is low.
+
+\subsubsection{Elements with continuous pressure}
+Although the pressure $p$ is only in $L_2$, we may approximate it with
+continous elements. The so called mini-elemnet is
+$$
+V_h = P^{1+} \qquad Q_h = P^{1,cont},
+$$
+where $P^{1+}$ is $P^1$ enriched by the cubic bubble. The continuous
+pressure allows integration by parts:
+$$
+\int \opdiv u \, q_h = - \int u \nabla q_h
+$$
+The gradient of $q_h$ is element-wise constant. We thus construct a
+Fortin-operator
+preserving element-wise mean values. Again, we use the Cl\'ement operator
+and a  correction operator:
+$$
+u_h := I_F u = \Pi_h u + I_F^2 (u - \Pi_h u)
+$$
+The correction is now defined as
+$$
+\begin{array}{rcll}
+I_F^2 u & = & 0  \quad & \text{on} \cup E  \\
+\int_T I_F^2 u & = & \int_T u \quad & \forall \, \text{elements } T.
+\end{array}
+$$
+It satisfies $b(u - I_F^2 u, q_h) = 0 \qquad \forall \, u \, \forall
+\, q_h$, and, as above:
+$$
+\| I_F^2 u \|_{H^1} \leqc \| u \|_{H^1} + h^{-1} \| u \|_{L_2}
+$$
+Thus, the combined operator is a Fortin operator.
+This method is $O(h)$ convergent.
+\medskip
+
+Another (essentially) stable pair is $P^2 \times P^{1,cont}$ (the
+popular Taylor Hood element). Its analysis is more involved. 
+It requires the additional assumption that no two edge of one element are
+on the domain boundary. Its convergence rate is $O(h^2)$.
+% \end{document}

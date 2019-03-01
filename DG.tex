@@ -1,0 +1,631 @@
+% \documentclass[12pt]{article}
+% \usepackage{amsmath,amsthm,amssymb,a4wide}
+% \usepackage[german,english]{babel}
+% \usepackage{epsfig}
+% \usepackage{latexsym}
+% \usepackage{amssymb}
+% % \usepackage{theorem}
+% \usepackage{amsthm}
+% % \usepackage{showkeys}
+
+% \newcommand{\setR}{ {\mathbb R} }
+% \newcommand{\setN}{ {\mathbb N} }
+% \newcommand{\setZ}{ {\mathbb Z} }
+% \newcommand{\eps}{\varepsilon}
+
+% \newcommand{\beq}{\begin{equation}}
+% \newcommand{\eeq}{\end{equation}}
+
+% \newcommand{\opdiv}{\operatorname{div}}
+% \newcommand{\opcurl}{\operatorname{curl}}
+% \newcommand{\opdet}{\operatorname{det}}
+% \newcommand{\optr}{\operatorname{tr}}
+% \newcommand{\optrn}{\operatorname{tr}_n}
+% \newcommand{\sfrac}[2]{ { \textstyle \frac{#1}{#2} } }
+
+% \newcommand{\Zh}{\mathrm{Z}_h}
+% \newcommand{\Ih}{\mathrm{I}_l}
+
+% \newcommand{\leqc}{\preceq} 
+% \newcommand{\geqc}{\succeq} 
+% \newcommand{\eqc}{\simeq} 
+% \newcommand{\ul}{\underline}
+
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{definition}[theorem]{Definition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{remark}[theorem]{Remark}
+% \newtheorem{example}[theorem]{Example}
+
+% %
+% %
+% \setlength{\unitlength}{1cm}
+% \sloppy 
+% %
+
+% \title{Discontinuous Galerkin Methods}
+% \author{Joachim Sch\"oberl}
+
+% \begin{document}
+% \maketitle
+
+\chapter{Discontinuous Galerkin Methods}
+Discontinuous Galerkin (DG) methods approximate the solution with
+piecewise functions (polynomials), which are discontinuous across
+element interfaces. Advantages are
+\begin{itemize}
+\item block-diagonal mass matrices which allow cheap explicit
+  time-stepping
+\item upwind techniques for dominant convection
+\item coupling of non-matching meshes
+\item more flexibility for stable mixed methods
+\end{itemize}
+DG methods require more unknowns, and also have a denser stiffness
+matrix. The last disadvantage can be overcome by hybrid DG methods (HDG).
+
+
+\section{Transport equation}
+We consider the first order equation
+$$
+\opdiv (bu) = f  \qquad \text{on}  \; \Omega,
+$$
+where $b$ is the given wind, and $f$ is the given source.
+Boundary conditions are specified
+$$
+u = u_D \qquad \text{on} \; \Gamma_{in},
+$$
+where the inflow boundary is 
+$$
+\Gamma_{in} = \{ x \in \partial \Omega : b \cdot n < 0 \},
+$$
+and the outflow boundary $\Gamma_{out} = \partial \Omega \setminus
+\Gamma_{in}$.
+
+The instationary transport equation
+$$
+\frac{\partial u}{\partial t}  + \opdiv (bu) = f  \qquad \text{on}  \;
+\Omega \times (0,T)
+$$
+with initial conditions $u = u_0$ for $t = 0$ can be considered as
+stationary transport equation in space-time:
+$$
+\opdiv_{x,t} (\tilde b u) = f,
+$$
+where $\tilde b = (b, 1)$. The inflow boundary consists now of the
+lateral boundary $\Gamma_{in} \times (0,T)$ and the bottom
+ boundary  $\Omega \times \{0 \}$, which is an inflow boundary according
+ to $(b, 1) \cdot (0,-1) < 0$.
+
+
+The equation in conservative form leads to a conservation
+principle. Let $V$ be an arbitrary control volume. From the Gau\ss{}
+theorem we get
+$$
+\int_{\partial V} b\cdot n u = \int_V f
+$$
+The total outflow is in balance with the production inside $V$.
+
+
+For stability, we assume $\opdiv b = 0$.  This is a realistic
+assumption, since the wind is often the solution of the
+incompressible Navier Stokes equation.
+
+A variational formulation is
+$$
+\int \opdiv (bu) v = \int f v \qquad \forall v 
+$$
+If we set $v = u$, and use
+$$
+\opdiv (bu) u =  \tfrac{1}{2} \opdiv (b u^2)
+$$
+We obtain
+$$
+\int \opdiv (b u) v = \tfrac{1}{2} \int_{\partial \Omega} b_n u^2 =
+\int f u
+$$
+For $f = 0$ we obtain 
+$$
+\int_{\Gamma_{out}} |b_n| u^2 = \int_{\Gamma_{in}} | b_n | u^2.
+$$
+This inflow-outflow isometrie is a stability argument. For time dependent problems
+(with $b_n = 0$ on $\partial \Omega$), it ensures the conservation of
+$L_2$-norm in time.
+
+\subsection{Solvability}
+
+We assume $b \in L_\infty$ with $\opdiv b = 0$. We consider the problem: find $u \in V$,
+$u = u_D$ on $\Gamma_{in}$ and 
+$$
+B(u,v) = f(v) \qquad \forall \, v \in W
+$$
+with 
+$$
+B(u,v) = \int \opdiv (bu) v \qquad \text{and} \qquad f(v) = \int f v 
+$$
+The space $V$ shall be defined by the (semi)-norm
+$$
+\| u \|_V = \| b \nabla u \|_{L_2}
+$$
+Depending on $b$, it is a norm for $\{ u = 0 \; \text{on} \Gamma_{in}
+\}$. Roughly speaking, if every point in $\Omega$ can be reached by a
+finite trajectory along $b$, then $\| u \|_{L_2} \leqc \| u \|_V$, by
+Friedrichs inequality. It does not hold if $b$ has vortices. Then
+$\| \cdot \|_V$ is only a semi-norm. Note, for space-time problems
+$\tilde b$ cannot have vortices. For theory, we will assume that
+$$
+\| u \|_{L_2} \leqc \| u \|_V \qquad \forall \, u = 0 \; \text{on} \; \Gamma_{in}
+$$
+
+The test space is
+$$
+W  = L_2
+$$
+The forms $B(.,.)$ and $f(.)$ are continuous. The $\inf-\sup$
+conditions is trivial:
+$$
+\sup_v \frac{B(u,v)} { \| v \|_{L_2}} \underbrace{ \geq }_{v := b
+ \nabla u} \frac { \int (b \nabla u)^2 } { \| b \nabla u
+  \| } = \| b \nabla u\|_{L_2}
+$$
+
+
+\section{Discontinuous Galerkin Discretization}
+A DG method is a combination of finite volume methods and
+finite element methods.
+We start with a triangulation $\{ T \}$. On every element we multiply
+the equation by a test-function:
+$$
+\int_T b \nabla u v = \int_T f v  \qquad \forall \, v
+$$
+We integrate by parts:
+$$
+-\int_T b u \nabla v + \int_{\partial T} b_n u v = \int_T f v  
+$$ 
+On the element-boundary we replace $b_n u$ by its up-wind limit $b_n
+u^{up}$. On the element inflow boundary $\partial T_{in} = \{ x \in \partial T
+: b n_T < 0 \}$, the upwind value is the value from the neighbour
+element, while on the element outflow boundary it is the value from
+the current element $T$. For elements on the domain inflow boundary,
+the upwind value is taken as the boundary value $u_D$.
+For the continuous solution there holds
+$$
+-\int_T b u \nabla v + \int_{\partial T} b_n u^{up} v = \int_T f v 
+$$ 
+Now we integrate back:
+$$
+\int_T b \nabla u v + \int_{\partial T} b_n (u^{up}-u) v = \int_T f v 
+$$ 
+On the outflow boundary, the boundary integral cancels out, on the
+inflow boundary we can write it as a jump term $[u] = u^{up} - u$:
+$$
+\int_T b \nabla u v + \int_{\partial T_{in}} b_n [u] v = \int_T f v 
+$$
+We define the DG bilinear-form
+$$
+B^{DG} (u,v) = \sum_T \left\{ \int_T b \nabla u v + \int_{\partial
+  T_{in}} b_n 
+[u] v \right\}.
+$$
+The true solution is consistent with 
+$$
+B^{DG} (u,v) = f(v)  \qquad \forall \, v \; \text{piece-wise continuous}.
+$$
+
+We define DG finite element spaces:
+$$
+V_h := W_h := \{ v \in L_2 : v |_T \in P^k \} 
+$$
+The DG formulation is: find $u_h \in V_h$ such that
+$$
+B^{DG} (u_h, v_h) = f(v_h)  \qquad \forall \, v_h \in W_h
+$$
+For the discontinuous space, the jump-term is important. If we use 
+continous spaces, the jump-term disappears.
+The discrete norms are defined as 
+\begin{eqnarray*}
+\| u_h \|_{V_h}^2 & := & \sum_T \| b \nabla u \|_{L_2(T)}^2 +
+  \sum_E \tfrac{1}{h} \| b_n [u] \|_{L_2(E)}^2  \\
+\| v_h \|_{W_h} & = & \| v_h \|_{L_2}
+\end{eqnarray*}
+The part with the jump-term mimics the derivative as kind of finite
+difference term across edges.
+
+We prove solvability of the discrete problem by showing a discrete
+$\inf-\sup$ condition.  But, in general, one order in $h$ is lost due to a
+mesh-dependent $\inf-\sup$ constant. This factor shows up in the
+general error estimate by consistency and stability. It can be avoided
+in 1D, and on special meshes. 
+
+\begin{theorem} There holds the discrete $\inf-\sup$ condition
+$$
+\sup_{v_h} \frac{B(u_h, v_h)}{ \| v_h \|_{W_h}}  \geqc h \, \| u_h \|_{V_h}
+$$
+\end{theorem}
+\begin{proof}
+We take two different test-functions: $v_1 = u_h$ and $v_2 := b \cdot
+\nabla_T u$, and combine them properly. The second test-function would not be possible in the
+standard $C^0$ finite element space.
+
+There holds (dropping sub-scripts $h$):
+\begin{eqnarray*}
+B(u_h, v_1) & = & B(u_h, u_h) = \sum_T \int_T b \nabla u \, u + \int_{\partial T_{in}}
+  b_n [u] u \\
+& = & \sum_T \frac{1}{2} \int_{\partial T} b_n u^2 + \int_{\partial T_{in}}
+  b_n [u] u 
+\end{eqnarray*}
+
+We reorder the terms edge-by-edge. On the edge $E$ we get
+contributions from two elements: On the inflow-boundary of the
+down-wind element we get
+\begin{eqnarray*}
+\tfrac{1}{2} \int_E b_n (u^d)^2 + \int_E b_n (u^u - u^d) u^d = \int_E
+  |b_n| \left( \tfrac{1}{2} (u^d)^2 - u^u u^d \right)
+\end{eqnarray*}
+We used that $b\cdot n$ is negative on the inflow boundary. From the
+up-wind element we get on its outflow-boundary:
+$$
+\int_E \tfrac{1}{2} |b_n| \, (u^u)^2 
+$$
+Summing up, we have the square
+$$
+\int_E \tfrac{1}{2} | b_n |  (u^u  - u^d)^2,
+$$
+and summing over elements we get the non-negative term
+$$
+B(u_h, u_h) = \tfrac{1}{2} \sum_E \int_E |b_n| [u]^2.
+$$
+An extra treatment of edges on the whole domain boundary gives that
+the jump must be  replaced by the function values on $\partial u$.
+
+We plug in the second test function $v_2$:
+\begin{eqnarray*}
+B(u_h, v_2) & = & \sum_T \int_T (b \nabla u)^2 +
+                  \int_{\partial {T_{in}}} b_n [u] \, b \nabla u 
+\end{eqnarray*}
+We use Young's inequality to bound the second term from below:
+$$
+B(u_h, v_2) \geq \sum_T \int_T (b \nabla u)^2 - \frac{1}{2
+  \gamma} \| b_n  [u] \|^2_{\partial L_2(T_{in})} - \frac{\gamma}{2}  \| b
+\nabla u\|_{L_2(\partial T_{in})}^2
+$$
+By the choice $\gamma \eqc h$ and a inverse trace inequality (which
+needs smoothness assumptions onto $b$) we can bound the last term by the first
+one on the right hand. Thus
+$$
+B(u_h, v_2) \geqc \sum_T \int_T (b \nabla u)^2 - \sum_E \frac{1}{h}  \| [u] \|^2_{L_2(E),b_n} 
+$$
+Finally, we set
+$$
+v_h = \frac{1}{h}  v_1 + v_2
+$$
+to obtain 
+$$
+B(u_h, v_h)  \geqc   \sum_T \int_T (b \nabla u)^2 + \sum_E \frac{1}{h}
+\| [u] \|^2_{L_2(E),b_n}    \eqc  \| u_h \|^2_{V_h}.
+$$
+But, for this choice we get
+$$
+\| v_h \|_{W_h} \leqc h^{-1} \| u_h \|_{V_h},
+$$
+and thus the $h$-dependent $\inf-\sup$-{\it constant}.
+\end{proof}
+
+\newpage
+
+
+\section{Nitsche's method for Dirichlet boundary conditions}
+
+We build in Dirichlet b.c. in a weak sense. In constrast to a mixed
+method, we obtain a positive definit matrix.
+
+We consider the equation 
+$$
+-\Delta u = f \qquad \text{and} \qquad u = u_D \; \text{on}
+\; \partial \Omega.
+$$
+A diffusion coefficient, or mixed boundary conditions are possible as
+well. We multiply with testfunctions, integrate and integrate by
+parts:
+$$
+\int_\Omega \nabla u  \nabla v -\int  \partial_n u v = \int f v \qquad \forall \, v  
+$$ 
+We do not restrict test functions to $v = 0$. To obtain a symmetric
+bilinear-form, we add a consistent term
+$$
+\int_\Omega \nabla u  \nabla v -\int_{\partial \Omega}   \partial_n u v - \int_{\partial \Omega} \partial_n v
+u = \int f v  - \int_{\partial \Omega}  \partial_n v u_D \qquad \forall \, v  
+$$
+Finally, to obtain stability (as proven below), we add the so called
+stabilization term
+$$
+\int_\Omega \nabla u  \nabla v -\int_{\partial \Omega}   \partial_n u v - \int_{\partial \Omega} \partial_n v 
+u + \frac{\alpha}{h} \int u v = \int f v  - \int_{\partial 
+  \Omega}  \partial_n v u_D   + \frac{\alpha}{h} \int u_D v    \qquad \forall \, v  
+$$
+These are the forms of Nitsche's method:
+\begin{eqnarray*}
+A(u,v) & = & \int_\Omega \nabla u  \nabla v -\int_{\partial \Omega}   \partial_n u v - \int_{\partial \Omega} \partial_n v 
+u + \frac{\alpha}{h} \int_{\partial \Omega}  u v \\
+f(v) & = & \int_\Omega f v  - \int_{\partial 
+  \Omega}  \partial_n v u_D   + \frac{\alpha}{h} \int_{\partial \Omega}  u_D v
+\end{eqnarray*}
+$A(.,.)$ is not defined for $u,v \in H^1$, but it requires also well
+defined normal derivatives. This is satisfied for the  flux $\nabla u \in
+H(\opdiv)$ of the solution, and finite element test functions $v$.
+
+We define the Nitsche norm:
+$$
+\| u \|^2_{1,h} := \| \nabla u \|_{L_2}^2 + \tfrac{1}{h} \| u
+\|_{L_2(\partial \Omega)}^2
+$$
+\begin{lemma} If $\alpha = O(p^2)$ is chosen sufficiently large, then
+  $A(.,.)$ is elliptic on the finite element space:
+$$
+A(u_h, u_h) \geqc \| u_h \|^2_{1,h}  \quad \forall \, u_h \in V_h
+$$
+\end{lemma}
+\begin{proof} On one element there holds the inverse trace inequality
+$$
+\| u_h \|_{L_2(\partial T)}^2 \leq  c \, \frac{p^2}{h} \| u_h \|_{L_2}^2
+\qquad \forall \, u_h \in P^p(T)
+$$
+The $h$-factor is shown by transformation to the reference element,
+the $p$-factor (polynomial order) is proven by expansion in terms of orthogonal
+polynomials. Using the element-wise estimate for all edges on the
+domain boundary, we obtain
+\begin{equation}
+\| u_h \|_{L_2(\partial \Omega)}^2 \leq c \, \frac{p^2}{h} \| u \|_{L_2(\Omega)}^2
+\end{equation}
+Evaluating the bilinear-form, and applying Young's inequality for the
+mixed term we get
+\begin{eqnarray*}
+A(u_h, u_h) & = & \| \nabla u_h \|^2_{L_2} - 2 \int_{\partial
+                  \Omega}  \partial_n u u + \frac{\alpha}{h}
+                  \| u \|_{L_2(\partial \Omega)}^2 \\
+& \geq & \| \nabla u_h \|^2_{L_2} 
+         - \tfrac{1}{\gamma} \| n\cdot \nabla u_h \|_{L_2(\partial
+         \Omega)} ^2 
+      - \gamma \| u \|_{L_2(\partial \Omega)}^2 + \frac{\alpha}{h}
+                  \| u \|_{L_2(\partial \Omega)}^2 
+\end{eqnarray*}
+The inverse trace inequality applied to $\nabla u_h$ gives
+$$
+\| n \cdot \nabla u_h \|_{\partial \Omega} \leq \| \nabla u_h
+\|_{\partial \Omega}
+ \leq c \frac{p^2}{h} \| \nabla u_h \|_\Omega
+$$
+By choosing 
+$$
+\gamma > c \frac{p^2}{h} \qquad \text{and} \qquad \gamma \leq
+\frac{\alpha}{h}
+$$
+we can absorb the negative terms into the positive ones. Therefore it
+is necessary to choose 
+$$
+\alpha > c p^2
+$$
+\end{proof}
+
+For the error analysis we apply the discrete stability and
+consistency:
+\begin{eqnarray*}
+\| u_h - I_h u\|_{1,h} & \leqc & \sup_{v_h}  \frac{ A(u_h - I_h u,
+                                 v_h)  }{ \| v_h \|_{1,h}} \\
+& = & \sup_{v_h}  \frac{ A(u - I_h u,
+                                 v_h)  }{ \| v_h \|_{1,h}} 
+\end{eqnarray*}
+We cannot argue with continuity of $A(.,.)$ on $H^1$ (which is not
+true), but we can estimate the interpolation error $u - I_hu$ for all four
+terms of $A(u_h - I_h u, v_h)$.
+
+\subsection{Nitsche's method for interface conditions}
+We give now a variational formulation for interface conditions $u_1 =
+u_2$, $\partial_{n_1} u_1 + \partial_{n_2}) u_2 = 0$ on the interface
+$\gamma$ separating $\Omega_1$ and $\Omega_2$. Boundary conditions on
+ the outer boundary are treated as usual. Integration by parts on the
+ sub-domains leads to
+$$
+\int_{\Omega_1} \nabla u \nabla v - \int_\gamma \partial_{n_1} u_1 v_1  + 
+\int_{\Omega_2} \nabla u \nabla v - \int_\gamma \partial_{n_2} u_2 v_2 =
+\int f v
+$$
+We define the mean value
+$$
+\{ \partial_{n_1} u \} = \tfrac{1}{2} ( \partial_{n_1} u_1
++ \partial_{n_2} u_2 )
+$$
+and jump 
+$$
+[v] = v_1 - v_2.
+$$
+Using continuity of the normal flux (taking the orientation into
+account) we get
+$$
+\sum_i \int_{\Omega_i} \nabla u \nabla v - \int_{\gamma}
+\{ \partial_{n_1} u \}  [v] = 
+\int f v.  
+$$ 
+Note that both terms, mean of normal derivative and jump, change sign
+if we exchange the enumeration of sub-domains.
+
+We procede as before and add consistent symmetry and stabilization
+terms:
+
+$$
+\sum_i \int_{\Omega_i} \nabla u \nabla v - 
+\int_{\gamma} \{ \partial_{n_1} u \}  [v] -
+\int_{\gamma} \{ \partial_{n_1} v \}  [u] +
+\frac{\alpha}{h} \int_{\gamma} [u ] [v] =
+\int f v. 
+$$
+The variational formulation  is consistent on the solution, and
+elliptic on  $V_h$, which is proven as before. This approach is an alternative to the
+mixed method (mortar method), since it leads to positive definite
+matrices (called also gluing method). 
+
+\section{DG for second order equations}
+Nitsche's method for interface conditions can be applied
+element-by-element. This is the (independently developed)
+Discontinuous Galerkin (DG) method. Precisely, it's called SIP-DG
+(symmetric interior penalty)  DG:
+$$
+A(u,v) = \sum_T \left\{ \int_T \nabla u \nabla v
+  - \tfrac{1}{2} \int_{\partial_T} \partial_n u [v]  
+- \tfrac{1}{2} \int_{\partial_T} \partial_n v [u] 
+  +  \tfrac{\alpha}{h} \int_{\partial_T} [u] [v] \right\}
+$$
+(and proper treatment of integrals on the domain boundary). The
+factor $\tfrac{1}{2}$ is coming from splitting the consistent terms to
+the two elements on the edge.
+
+Convergence analysis similar to Nitsche's method.
+
+
+Beside the SIP-DG, also different version are in use: The NIP-DG
+(non-symmetric interior penalty) DG:
+$$
+A(u,v) = \sum_T \left\{ \int_T \nabla u \nabla v
+  - \tfrac{1}{2} \int_{\partial_T} \partial_n u [v]  
++ \tfrac{1}{2} \int_{\partial_T} \partial_n v [u] 
+  +  \tfrac{\alpha}{h} \int_{\partial_T} [u] [v] \right\}
+$$
+The term formerly responsible for symmetry is added with a different
+sign. The variational problem is still consistent on the true
+solution. The advantage of the NIP-DG is that
+$$
+A(u,u) = \sum_T \| \nabla u \|^2_{L_2(T)} + \tfrac{\alpha}{h} \| [u]
+\|_{L_2(\partial T}^2,
+$$
+i.e. $A(.,.)$ is elliptic in any case $\alpha > 0$. The disadvantage
+is that $A(.,.)$ is not consistent for the dual problem, i.e. the
+Aubin-Nitsche trick cannot be applied. It is popular for
+convection-diffusion problems, where the bi-form is non-symmetric
+anyway. The IIP-DG (incomplete) skips the third term
+completely. Advantages are not known to the author.
+
+\subsection{Hybrid DG}
+One disadvantage of DG - methods is that the number of degrees of
+freedom is much higher than a continuous Galerkin method on the same
+mesh. Even worse, the number of non-zero entries per row in the system
+matrix is higher. The second disadvantage can be overcome by hybrid DG
+methods: One adds additional variables $\hat u$, $\hat v$ on the inter-element facets (edges in 2D,
+faces in 3D). The derivation is very similar:
+$$
+\sum_T \int_T \nabla u \nabla v - \int_{\partial T} \partial_n u v = \sum_T f  
+v  \qquad \forall \, v \in P^k(T), \forall \, T  
+$$ 
+Using continuity of the normal flux, we may add $\sum_T \int_{\partial
+  T} \partial_n u \hat v$ with a single-valued test-function on the
+facets:
+$$
+\sum_T \int_T \nabla u \nabla v - \int_{\partial T} \partial_n u
+(v-\hat v) = \sum_T f 
+v  \qquad \forall \, v \in P^k(T), \forall \, T 
+$$
+Again, we smuggle in consistent terms for symmetry and coercivity:
+$$
+\sum_T \int_T \nabla u \nabla v
+ - \int_{\partial T} \partial_n u (v-\hat v) 
+ - \int_{\partial T} \partial_n v (u-\hat u) 
+ + \frac{\alpha}{h} \int_{\partial T}  (u-\hat u) (v-\hat v) 
+= \sum_T f 
+v  \qquad \forall \, v \in P^k(T), \forall \, T 
+$$
+The jump between neighbouring elements is now replaced by the
+difference of element-values and facet values. The natural norm is
+$$
+\| u, \hat u\|^2 = \sum_T \| \nabla u \|^2 + \tfrac{1}{h}  \| u - \hat
+u \|_{\partial T}
+$$
+The HDG methods allows for static condensation of internal variables
+which results in a global system for the edge-unknowns, only.
+
+The lowest order method uses $P^1(T)$ and $P^1(E)$, and we get $O(h)$
+convergence. When comparing with the non-conforming $P^1$-method, HDG
+has more unknowns on the edges, but the same order of convergence. The
+Lehrenfeld-trick is to smuggle in a projector:
+$$
+\sum_T \int_T \nabla u \nabla v
+ - \int_{\partial T} \partial_n u (v-\hat v) 
+ - \int_{\partial T} \partial_n v (u-\hat u) 
+ + \frac{\alpha}{h} \int_{\partial T}  P^{k-1}(u-\hat u) (v-\hat v) 
+= \sum_T f 
+v  \qquad \forall \, v \in P^k(T), \forall \, T 
+$$
+This allows to reduce the order on edges by one, while maintaining the
+order of convergence.
+
+\subsection{Bassi-Rebay DG}
+%
+One disadvantage of IP-DG is the necessary penalty term with $\alpha$
+sufficiently large. For well-shaped meshes $\alpha=5 p^2$ is usually
+enough. But, for real problems the element deformation may become large,
+and then a fixed $\alpha$ is not feasible. Setting $\alpha$ too large
+has a negative effect for iterative solvers. 
+
+An alternative is to replace the penalty term by
+$$
+\| [u] \|_{BR}^2 := \sup_{\sigma_h \in [P^{k-1}]^d } \frac{ ([u],
+  n\cdot \sigma_h)_{L_2(\partial T)}^2 }{ \| \sigma_h \|_{L_2(T)}^2}
+$$
+It can be implemented by solving a local problem with
+$L_2$-bilinear-form.
+
+In the coercivity proof, the {\it bad } term is now estimated as
+$$
+\int_{\partial T}  n \cdot \nabla u_h  \, [u_h]  \leq \sup_{\sigma_h }
+\frac{ \int_{\partial T}  n \cdot \sigma_h  \, [u_h]  } { \| \sigma_h \|
+  }  \, \| \nabla u_h \| \leq \| \nabla u_h \| \, \| [u] \|_{BR}
+$$
+The BR-norm scales like the IP - norm (in $h$ and $p$), but the
+(typically unknown) constant in the inverse trace inequality can be avoided.
+
+\subsection{Matching integration rules}
+Another method to avoid  guessing the sufficiently large $\alpha$ is
+to use integration rules, such the the integration points for the
+boundary integral are a sub-set of the integration points of the
+volume term. Now, Young's inegality can be applied for the numerical
+integrals. The $\tfrac{\alpha}{h}$ factor is now replace by the
+largest relative scaling of weights for the boundary integrals and
+volume integrals. The pro is the simplicity, the con is the need of
+numerical integration rules which need more points.
+
+\subsection{(Hybrid) DG for Stokes and Navier-Stokes}
+%
+DG or HDG methods allow the construction of numercal methods for
+incompressible flows, which
+obtain exactly divergence free discrete velocities. We discretize
+Stokes's equation as follows:
+$$
+V_h = BDM^k \qquad Q_h = P^{k-1,dc},
+$$
+and the bilinear-forms
+$$
+a(u_h, v_h) = a^{DG} (u_h, v_h)
+$$
+and
+$$
+b(u_h, q_h) = \int \opdiv u_h \, q_h.
+$$
+Since the space $V_h$ is not conforming for $H^1$, the DG - technique
+is applied. The $b(.,.)$ bilinear-form is well defined for the
+$H(\opdiv)$-conforming finite element space $V_h$. There holds
+$$
+\opdiv V_h = Q_h,
+$$
+and thus the discrete divergence free condition
+$$
+\int \opdiv u_h q_h = 0 \; \quad \forall q_h
+$$
+implies
+$$
+\| \opdiv u_h \|_{L_2}^2 = \int \opdiv u_h \underbrace {\opdiv
+  u_h}_{\in Q_h} = 0.
+$$
+Hybridizing the method leads to facet variables for the tangential
+components, only. This method can be applied to the Navier Stokes
+equations. Here, the exact divergence-free discrete solution leads to
+a stable method for the nonlinear transport term (References: Master
+thesis Christoph Lehrenfeld: HDG for Navier Stokes, h-version LBB, 
+Master thesis Philip Lederer: p-robust LBB for triangular elements).
+

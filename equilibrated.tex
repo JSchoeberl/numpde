@@ -1,0 +1,221 @@
+% \documentclass[12pt]{article}
+% \usepackage{amsmath,amsthm,amssymb,a4wide}
+% \usepackage[german,english]{babel}
+% \usepackage{epsfig}
+% \usepackage{latexsym}
+% \usepackage{amssymb}
+% % \usepackage{theorem}
+% \usepackage{amsthm}
+% % \usepackage{showkeys}
+
+% \newcommand{\setR}{ {\mathbb R} }
+% \newcommand{\setN}{ {\mathbb N} }
+% \newcommand{\setZ}{ {\mathbb Z} }
+% \newcommand{\eps}{\varepsilon}
+
+% \newcommand{\beq}{\begin{equation}}
+% \newcommand{\eeq}{\end{equation}}
+
+% \newcommand{\opdiv}{\operatorname{div}}
+% \newcommand{\opcurl}{\operatorname{curl}}
+% \newcommand{\opdet}{\operatorname{det}}
+% \newcommand{\optr}{\operatorname{tr}}
+% \newcommand{\optrn}{\operatorname{tr}_n}
+% \newcommand{\sfrac}[2]{ { \textstyle \frac{#1}{#2} } }
+
+% \newcommand{\Zh}{\mathrm{Z}_h}
+% \newcommand{\Ih}{\mathrm{I}_l}
+
+% \newcommand{\leqc}{\preceq} 
+% \newcommand{\geqc}{\succeq} 
+% \newcommand{\eqc}{\simeq} 
+% \newcommand{\ul}{\underline}
+
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{definition}[theorem]{Definition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{remark}[theorem]{Remark}
+% \newtheorem{example}[theorem]{Example}
+
+% %
+% %
+% \setlength{\unitlength}{1cm}
+% \sloppy 
+% %
+
+% \title{Equilibrated Residual Error Estimates}
+% \author{Joachim Sch\"oberl}
+
+% \begin{document}
+% \maketitle
+
+\section{Equilibrated Residual Error Estimates}
+
+\subsection{General framework}
+Equilibrated residual error estimators provide upper bounds for the discretization error in energy norm without any generic constant.
+We consider the standard problem: find $u \in V := H_0^1(\Omega)$ such that
+$$
+\int_\Omega \lambda \nabla u \cdot \nabla v = \int_\Omega f v \qquad \forall \, v \in V
+$$
+The left hand side defines the bilinear-form $A(\cdot, \cdot)$, the right hand side the linear-form $f(\cdot)$. We define a finite element sub-space $V_h \subset V$ of order $k$, and the finite element solution
+$$
+\text{find } u_h \in V_h: \quad A(u_h, v_h) = f(v_h) \qquad \forall \, v_h \in V_h.
+$$
+We assume that $f$ is element-wise polynomial of order $k-1$, and $\lambda$ is element-wise constant and positive.
+
+\qquad
+
+The residual $r(\cdot) \in V^*$ is 
+$$
+r(v) = f(v) - A(u_h, v) \qquad v \in V
+$$
+Since 
+$$
+\| u - u_h \|_A = \sup_{v \in V} \frac{A(u-u_h, v)}{\| v \|_A} = 
+ \sup_{v \in V} \frac { r(v) }{\| v \|_A},
+$$
+we aim in estimating $\|r \|$ in the norm dual to $\| \cdot \|_A$, which is essentially the $H^{-1}$-norm. In general, the direct evaluation of this norm is not feasible.
+Using the structure of the problem, we can represent the residual as
+$$
+r(v) = \sum_{T \in \mathcal{T}} \int_T r_T v + \sum_{E \in \mathcal{E}} \int_E r_E v,
+$$
+where $r_T$ and $r_E$ are given asgiven as
+$$
+r_T = f_T + \opdiv \lambda_T \nabla u_{h|T}  \qquad \text{and} \qquad
+r_E = \left[  \lambda \frac{\partial u_h} {\partial n}  \right]_E
+$$
+The element-residual $r_T$ is a polynomial of order $k-1$ on the element $T$, and the edge residual (the normal jump) is a polynomial of order $k-1$ on the edge $E$. 
+
+The {\em residual error estimator} estimates the residual in terms of weighted $L_2$-norms:
+$$
+\| r \|^2 \eqc \eta^{res}(u_h, f)^2 := \sum_T \frac{ h_T^2}{\lambda_T}  \| r_T \|_{L_2(T)}^2 + \sum_E \frac{ h_E }{\lambda_E} \| r_E \|_{L_2(E)}^2
+$$
+Here, $\lambda_E$ is some averaging of the coefficients on the two elements containing the edge~$E$. The equivalence holds with constants depending on the shape of elements, the relative jump of the coefficient, and the polynomial order $k$.
+
+
+The {\em equilibrated residual error estimator} $\eta^{er}$ is defined in terms of the same data $r_T$ and $r_E$. It satisfies
+\begin{eqnarray*}
+\| u - u_h \|_A & \leq & \eta^{er} \qquad \text{reliable with constant 1} \\
+\| u - u_h \|_A & \geq & c \, \eta^{er} \qquad \text{efficient with a generic constant $c$} \\
+\end{eqnarray*}
+The lower bound depends on the shape of elements and the coefficient $\lambda$, but is robust with respect to the polynomial order $k$.
+
+The main idea is the following: Instead of calculating the $H^{-1}$-norm of $r$, we compute a lifting $\sigma^\Delta$ such that $\opdiv \sigma^\Delta = r$, and calculate the $L_2$-norm of $\sigma^\Delta$. Since $r$ is not a regular function, the equation must be posed in distributional form:
+$$
+\int_\Omega \sigma^\Delta \cdot \nabla \varphi = - r(\varphi) \qquad \forall \, \varphi \in V
+$$
+Then, the residual can be estimated without envolving any generic constant:
+\begin{eqnarray*}
+\| r \|_{A^\ast} & = & \sup_{v \in V} \frac{r(v)}{\| v \|_A} = \sup_v \frac{\int \sigma^\Delta \cdot \nabla v }{\|v \|_A} \\
+&= & \sup_v \frac{\int \lambda^{-1/2} \sigma^\Delta \cdot \lambda^{1/2} \nabla v }{\|v \|_A}
+\leq \sup_v \frac{\sqrt{\int \lambda^{-1} |\sigma^\Delta|^2}  \sqrt{ \int \lambda |\nabla v|^2 } }{\|v \|_A}
+= \| \sigma^\Delta \|_{L_2, 1/\lambda}
+\end{eqnarray*}
+The norm $\| \sigma^\Delta \| := \int \lambda^{-1} | \sigma^\Delta|^2$ can be evaluated easily. 
+
+Remark: The flux-postprocessing $\sigma := \lambda \nabla u_h + \sigma^\Delta$ provides a flux $\sigma \in H(\opdiv)$ such that $\opdiv \sigma = f$, i.e. the flux is in exact equilibrium with the source $f$. Thus the name.
+
+\subsection{Computation of the lifting $\| \sigma^\Delta \|$}
+
+The residual is a functional of the form
+$$
+r(v) = \sum_T (r_T, v)_{L_2(T)} + \sum_E (r_E, v)_{L_2(E)},
+$$
+where $r_T$ and $r_E$ are polynomials of order $k-1$. We search for $\sigma^\Delta$ which is element-wise a vector-valued polynomial of order $k$, and not continuous across edges. Element-wise integration by parts gives
+$$
+\int_\Omega \sigma \cdot \nabla \varphi = -\sum_T \int_T \opdiv \sigma_{|T} \varphi + \sum_E \int_E [\sigma \cdot n]_E \varphi.
+$$
+Thus $\opdiv \sigma = r$ in distributional sense reads as
+$$
+\opdiv \sigma{|T} = r_T \qquad \text{and} \qquad [\sigma \cdot n]_E = -r_E
+$$
+for all elements $T$ and edges $E$. We could now pose the problem 
+$$
+\min_{ \sigma \in P^k({\mathcal T})^2 \atop \opdiv \sigma = r} \| \sigma \|_{L_2, 1/\lambda}
+$$
+We minimize the weighted-$L_2$ norm since we want to find the smallest possible upper bound for the error. This is already a computable approach. 
+But, the problem is global, and its solution is of comparable cost as the solution of the original finite element system.  The existence of a $\sigma$ such that $\opdiv \, \sigma = r$ also needs a proof.
+
+We want to localize the construction of the flux. Local problems are associated with vertex-patches $\omega_V = \cup_{T : V \in T} T$. We proceed in two steps:
+\begin{enumerate}
+\item localization of the residual: $r = \sum_V r^V$
+\item local liftings: find $\sigma^V$ such that $\opdiv \sigma^V = r^V$ on the vertex patch
+\end{enumerate}
+Then, for $\sigma := \sum \sigma^V$ there holds $\opdiv \sigma = r$
+
+The localization is given by multiplication of the $P^1$ vertex basis functions (hat-functions) $\phi_V$:
+$$
+r^V(v) := r( \phi_V v)
+$$
+Since $\sum_V \phi_V = 1$, there holds $\sum r^V(\cdot) = r(\cdot)$. The localized residual has the same structure of element and edge terms:
+$$
+r^V(v) = \sum_{T \subset \omega_V} (r_T^V, v)_{L_2(T)} + \sum_{E \subset \omega_V} (r_E^V, v)_{L_2(E)},
+$$
+with 
+$$
+r_T^V = \phi_V r_T \qquad \text{and} \qquad r_E^V = \phi_V r_E
+$$
+The local residual vanishes on constants on the patch:
+$$
+r^V(1) = r(\phi_V \, 1) = A(u-u_h, \phi_V) = 0
+$$
+The last equality follows from the Galerkin-orthogonality. 
+
+We give an explicit construction of the lifting $\sigma^V$ in terms of the Brezzi-Douglas-Marini (BDM) element. The $k^{th}$ order BDM element on a triangle is given by $V_T = [P^k]^2$ and the degrees of freedom:
+\begin{enumerate}
+\item[(i)] $\int_E \sigma\cdot n \, q_i$  with $q_i$ a basis for $ P^k(E)$
+\item[(ii)] $\int_T \opdiv \sigma \, q_i$  with $q_i$ a basis for $ P^{k-1}(T) \cap L_2^0(T)$
+\item[(iii)] $\int_T \sigma \cdot \opcurl q_i$  with $q_i$ a basis for $ P_0^{k+1}(T)$
+\end{enumerate}
+Exercise: Show that these dofs are unisolvent. Count dimensions, and prove that $[ \forall i: \psi_i(\sigma) =0 ] \Rightarrow \sigma = 0$.
+
+
+Now, we give an explicit construction of equilibrated fluxes on a vertex patch. Label elements $T_1, T_2, \ldots T_n$ in a counter-clock-wise order. Edge $E_i$ is the  common edge between triangle $T_{i-1}$ and $T_i$ (with identifying $T_0 = T_n$). We define $\sigma$ by specifying the dofs of the BDM element:
+\begin{enumerate}
+\item
+Start on $T_1$. We set $\sigma_n = -r^V_{E_1}$ on edge $E_1$. On the edge on the patch-boundary we set $\sigma_n = 0$, and on $E_2$ we set $\sigma_n = const$ such that $\int_{\partial T_1} \sigma_n = \int_{T_1} r^V_T$. We use the dofs of type (ii) to specify 
+$\int_T \opdiv \sigma \, q = \int_T r_T^V q \; \forall q \in P^{k-1} \cap L_2^0(T)$. Together with get $\opdiv \sigma = r_T$. Dofs of type (iii) are not needed, and set 0. There holds
+$$
+\int_{E_2} \sigma_n = \int_{T_1} r^V_T - \int_{E_1} \sigma_n = \int_{T_1} r^V_{T_1} + \int_{E_1} r^V_{E_1}
+$$
+\item Continue with element $T_2$. On edge $E_2$ common with $T_1$ set $\sigma_n$ such that $[\sigma \cdot n]_{E_2} = r_{E_2}$. Otherwise, proceed as on $T_1$. Thus
+$$
+\int_{E_3} \sigma_n = \int_{T_1} r^V_{T_1} + \int_{E_1} r^V_{E_1} +\int_{T_2} r^V_{T_2} + \int_{E_2} r^V_{E_2} 
+$$
+\item Continue to element $T_n$. Observe that on $T_n$:
+$$
+\int_{E_1} \sigma_n = \sum_{i=1}^n \int_{T_i} r^V_{T_i} + \sum_{i=1}^n \int_{E_i} r^V_{E_i} = 0,
+$$
+which follows from $r^V(1) = 0$. Thus, also $[\sigma \cdot n]_{E_1} = r_{E_1}^V$ is satisfied.
+\end{enumerate}
+
+This explicit construction proves the existence of an equilibrated flux. Instead of this explicit construction, one may solve a local constrained optimization problem
+$$
+\min_{\sigma^V : \opdiv \sigma^V = r^V} \| \sigma \|_{L_2, \lambda^{-1}}
+$$
+This applies also for 3D. Furthoer notes
+\begin{itemize}
+\item mixed boundary conditions are possible
+\item the efficiency for the h-FEM is shown by scaling arguments, and equivalence to the residual error estimator
+\item efficiency is also proven to be robust with respect to polynomial order $k$, examples show overestimation less than 1.5
+\end{itemize}
+
+
+\bigskip \noindent 
+{\bf Literature:}
+\begin{enumerate}
+\item 
+D. Braess and J. Sch\"oberl.
+\newblock  Equilibrated Residual Error Estimator for Maxwell's
+Equations.
+\newblock {\em Mathematics of Computation}, Vol 77(262), 651-672, 2008
+\item 
+D. Braess, V. Pillwein and J. Sch\"oberl: 
+\newblock Equilibrated Residual Error Estimates are p-Robust. Computer
+\newblock {\em Methods in Applied Mechanics and Engineering.} Vol 198,
+1189-1197, 2009
+\end{enumerate}
+
+
+
+% \end{document}

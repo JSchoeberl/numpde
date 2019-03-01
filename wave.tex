@@ -1,0 +1,251 @@
+% \documentclass[12pt]{article}
+% \usepackage{amsmath,amsthm,amssymb,a4wide}
+% \usepackage[german,english]{babel}
+% \usepackage{epsfig}
+% \usepackage{latexsym}
+% \usepackage{amssymb}
+% % \usepackage{theorem}
+% \usepackage{amsthm}
+% % \usepackage{showkeys}
+
+% \newcommand{\setR}{ {\mathbb R} }
+% \newcommand{\setN}{ {\mathbb N} }
+% \newcommand{\setZ}{ {\mathbb Z} }
+% \newcommand{\eps}{\varepsilon}
+
+% \newcommand{\beq}{\begin{equation}}
+% \newcommand{\eeq}{\end{equation}}
+
+% \newcommand{\opdiv}{\operatorname{div}}
+% \newcommand{\opcurl}{\operatorname{curl}}
+% \newcommand{\opdet}{\operatorname{det}}
+% \newcommand{\optr}{\operatorname{tr}}
+% \newcommand{\optrn}{\operatorname{tr}_n}
+% \newcommand{\sfrac}[2]{ { \textstyle \frac{#1}{#2} } }
+
+% \newcommand{\Zh}{\mathrm{Z}_h}
+% \newcommand{\Ih}{\mathrm{I}_l}
+
+% \newcommand{\leqc}{\preceq} 
+% \newcommand{\geqc}{\succeq} 
+% \newcommand{\eqc}{\simeq} 
+% \newcommand{\ul}{\underline}
+
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{definition}[theorem]{Definition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{remark}[theorem]{Remark}
+% \newtheorem{example}[theorem]{Example}
+
+% %
+% %
+% \setlength{\unitlength}{1cm}
+% \sloppy 
+% %
+
+% \title{Time-stepping methods for wave equations}
+% \author{Joachim Sch\"oberl}
+
+% \begin{document}
+% \maketitle
+
+\chapter{Second order hyperbolic equations: wave equations}
+We consider  equations second order in time
+$$
+\ddot u + A u = f
+$$
+with initial conditions
+$$
+u(0) = u_0 \qquad \text{and}  \quad \dot u(0) = v_0,
+$$
+with a symmetric, elliptic operator $A$. 
+
+\section{Examples}
+\begin{itemize}
+\item scalar wave equation (acoustic waves)
+$$
+\frac{\partial^2 u}{\partial t^2} - \Delta u = f
+$$
+\item electromagnetic wave equation: 
+\begin{eqnarray*}
+\mu \frac{\partial H}{\partial t} & = & -\opcurl E \\
+\varepsilon \frac{\partial E}{\partial t} & = & \opcurl H
+\end{eqnarray*}
+with the magnetic field $H$ and the electric field $E$, and material parameters permeability $\mu$ and permittivity $\varepsilon$. By differentiating the first equation in space, and the second on in time, we obtain
+$$
+\varepsilon \frac{\partial^2 E}{\partial t^2} + \opcurl \frac{1}{\mu} \opcurl E = 0
+$$
+\item elastic waves: We consider the hyperelastic elastic energy
+$$
+J(u) = \int_\Omega W(C(u)) - f u 
+$$
+A body is in equilibrium, if $J^\prime = 0$. If not, then $J^\prime \in V^\ast$ acts as an accelerating force. Newton's law is
+$$
+\rho \ddot u = - J^\prime (u),
+$$
+in variational form
+$$
+\int \rho \ddot u v + \left< J^\prime(u), v \right> = 0 \qquad  \forall \, v
+$$
+In non-linear elasticity we have $J^\prime(u) = \opdiv P - f$, where $P$ is the first Piola-Kirchhoff stress tensor. In linearized elasticity we obtain
+$$
+\int \rho \ddot u v + \int D \eps(u) : \eps(v) = \int f v 
+$$
+\end{itemize}
+
+We observe conservation of energy in the following sense for elasticity, and similar for the other cases. We define
+the kinetic energy as $\tfrac{1}{2} \| \dot u \|_\rho^2$ and the potential energy as $J(u)$. Then
+$$
+\frac{d}{dt} \left\{   \tfrac{1}{2} \| \dot u \|_\rho^2 + J(u) \right\} = (\dot u, \ddot u)_\rho + \left< J^\prime(u), \dot u\right> = 0
+$$
+For the linear equation set $J(u) = \tfrac{1}{2} \left< A u, u \right> - \left< f , u \right>$
+
+\section{Time-stepping methods for wave equations}
+
+We consider the method of lines, where we first discretize in space, and then apply some time-stepping method for the ODE.
+In principal, one can reduce the second order ODE to a first order system, and apply some Runge-Kutta method for it. This will in general require the solution of linear systems of twice the size. In addition, the structure (symmetric and positive definite) may be lost, which makes it difficult to solve.  
+
+We consider two approaches specially taylored for wave equations.
+\begin{itemize}
+\item[(a)] for the second order equation
+\item[(b)] for first order systems
+\end{itemize}
+
+\subsection{The Newmark time-stepping method}
+We consider the ordinary differential equation
+$$
+M \ddot u + K u = f
+$$
+We consider single-step methods: From given state $u_n \approx u(t_n)$ and velocity $\dot u_n \approx \dot u(t_n)$ we compute $u_{n+1}$ and $\dot u_{n+1}$. The acceleration $\ddot u_n = M^{-1} (f_n - K u_n)$ follows from the equation.
+
+The Newmark method is based on a Taylor expansion for $u$ and $\dot u$, where second order derivatives are approximated from old and new accelerations. The real parameters $\beta$ and $\gamma$ will be fixed later, $\tau$ is the time-step:
+\begin{eqnarray}
+\label{equ_newstate}
+u_{n+1} & = & u_n + \tau \dot u_n + \tau^2 \left[  (\tfrac{1}{2} - \beta) \ddot u_n + \beta \ddot u_{n+1}  \right] \\
+\label{equ_newvel}
+\dot u_{n+1} & = & \dot u_n + \tau \left[   (1-\gamma) \ddot u_n + \gamma \ddot u_{n+1} \right]
+\end{eqnarray}
+Inserting the formula for $u_{n+1}$ into $M \ddot u + K u = f$ at time
+$t_{n+1}$ we obtain
+$$
+M \ddot u_{n+1} + K \left( u_n + \tau \dot u_n + \tau^2 \left[  (\tfrac{1}{2} - \beta) \ddot u_n + \beta \ddot u_{n+1}  \right] \right) = f_{n+1}
+$$
+Now we keep unknows left and put known variables to the right:
+$$
+\left[ M + \beta \tau^2 K \right] \ddot u_{n+1} = f_{n+1} - K \left( u_n + \tau \dot u_n + \tau^2 (\tfrac{1}{2} - \beta) \ddot u_n \right)
+$$
+The Newmark method requires to solve one linear system with the spd matrix $M + \tau^2 \beta K$, for which efficient direct or iterative methods are available. After computing the new acceleration, the new state $u_{n+1}$ and velocity $\dot u_{n+1}$ are computed from the explicit formulas (\ref{equ_newstate}) and (\ref{equ_newvel}).
+
+\medskip
+
+The Newmark method satisfies a discrete energy conservation. See [Steen Krenk: "Energy conservation in Newmark based time integration algorithms" in {\it Compute methods in applied mechanics and engineering}, 2006, pp 6110-6124] for the
+calculations and various extensions:
+$$
+\left[ \tfrac{1}{2} \dot u M \dot u + \tfrac{1}{2} u^T K_{eq} u \right]_n^{n+1} = -(\gamma - \tfrac{1}{2})  (u_{n+1} - u_n) K_{eq} (u_{n+1} - u_n)
+$$
+where 
+$$
+K_{eq} = K + (\beta - \tfrac{1}{2} \gamma) \tau^2 K M^{-1} K,
+$$
+and the notation $[E ]_a^b := E(b) - E(a)$. Here, the right hand side $f$ is skipped. From this, we get the conservation of a modified energy with the so called {\it equivalent} stiffness matrix $K_{eq}$. Depending on the parameter $\gamma$ we get
+\begin{itemize}
+\item $\gamma = \tfrac{1}{2}$:  conservation 
+\item $\gamma > \tfrac{1}{2}$:  damping
+\item $\gamma < \tfrac{1}{2}$:  growth of energy (unstable)
+\end{itemize}
+If $K_{eq}$ is positive definite, then this conservation proves stability. This is unconditionally true if $\beta \geq \tfrac{1}{2} \gamma$ (the method is called unconditionally stable). If $\beta < \tfrac{1}{2} \gamma$, the allowed time step is limited by 
+$$
+\tau^2 \leq \lambda_{max}(M^{-1}K)^{-1} \frac{1}{\tfrac{1}{2} \gamma - \beta}.
+$$
+For second order problems we have $\lambda_{max}(M^{-1}K) \eqc h^{-2}$, and thus $\tau \leqc h$ which is a reasonable choice also for accuracy.
+
+Choices for $\beta$ and $\gamma$ of particular interests are:
+\begin{itemize}
+\item
+$\gamma = \tfrac{1}{2}, \beta = \tfrac{1}{4}$: unconditionally stable, conservation of original energy ($K_{eq} = K$)
+\item
+$\gamma = \tfrac{1}{2}, \beta = 0$: conditionally stable. We have to solve 
+$$
+M \ddot u_{n+1} = f_{n+1} - K (u_n + \tau_n \dot u_n + \tfrac{\tau^2}{2} \ddot u_n)
+$$
+which is explicit iff $M$ is cheaply invertible (mass lumping, DG).
+\end{itemize}
+
+
+\subsection{Methods for the first order system}
+We reduce the wave equation
+$$
+\ddot u - \Delta u = f
+$$
+to a first order system of pdes. We introduce  $\sigma = \int_0^t \nabla u$. Then
+\begin{eqnarray*}
+\dot \sigma & = & \nabla u \\
+\dot u - \opdiv \sigma & = & \tilde f
+\end{eqnarray*}
+with the integrated source $\tilde f = \int_0^t f$. In the following we skip the source $f$.
+
+A mixed variational formulation in $H(\opdiv) \times L_2$, for
+given initial conditions $u(0)$ and $\sigma(0)$, is:
+\begin{eqnarray*}
+(\dot \sigma, \tau) & = & - (u, \opdiv \tau) \qquad \forall \, \tau \\
+(\dot u, v) & = & (v, \opdiv \sigma) \qquad \forall \, v
+\end{eqnarray*}
+After space discretization we obtain the ode system
+$$
+\left( \begin{array}{cc}
+ M_\sigma  & 0 \\
+0 & M_u 
+\end{array} \right) 
+\left( \begin{array}{c} \dot \sigma \\ \dot u \end{array} \right) = 
+\left( \begin{array}{cc}
+0 & -B^T \\
+B & 0
+\end{array} \right) 
+\left( \begin{array}{c} \sigma \\ u \end{array} \right) 
+$$
+We get a similar struture from the Maxwell system:
+\begin{eqnarray*}
+(\mu \dot H, \tilde H) & = & (\opcurl E, \tilde H)  \qquad \forall \, \tilde H \\
+(\eps \dot E, \tilde E) & = & -(\opcurl \tilde E, H) \qquad \forall \, \tilde E
+\end{eqnarray*}
+
+Conservation of energy is now seen from
+\begin{eqnarray*}
+% \lefteqn{ 
+\frac{d}{dt} \left[  \tfrac{1}{2}  \sigma^T M_\sigma \sigma + \tfrac{1}{2} u^T M_u u \right] 
+& = & \sigma^T M_\sigma \dot \sigma + u^T M_u \dot u = -\sigma^T B^T u + u^T B \sigma = 0
+\end{eqnarray*}
+
+A basis transformation with $M^{1/2}$ leads to the transformed system (the transformed $B$ is called $B$ again):
+$$
+\left( \begin{array}{c} \dot \sigma \\ \dot u \end{array} \right) = 
+\left( \begin{array}{cc}
+0 & -B^T \\
+B & 0
+\end{array} \right) 
+\left( \begin{array}{c} \sigma \\ u \end{array} \right) 
+$$
+The matrix is skew-symmetric, and thus the eigenvalues are imaginary. They are contained in $i \left[ -\rho(B), \rho(B) \right]$, where the spectral radious $\rho(B) \eqc h^{-1}$ for the first order operator. Using Runge-Kutta methods, we need methods such that $i \left[ -\tau \rho(B), \tau \rho(B) \right]$ is in the stability region. For large systems, explicit methods ($M$ cheaply invertible !) are often preferred. While the stability region for the explicit Euler and improved Euler method do not included an interval on the imaginary axis, the RK4 method does.
+
+Methods taylored for the skew-symmetric (Hamiltonian) structure are symplectic methods: The symplectic Euler method is
+\begin{eqnarray*}
+M_\sigma  \frac{\sigma_{n+1} - \sigma_n}{\tau} & =  & - B^T u_n \\
+M_u \frac{u_{n+1} - u_n}{\tau} & = & B \sigma_{n+1}
+\end{eqnarray*}
+For updating the second variable, the new value of the first variable is used. For the analysis, we can reduce the large system to $2 \times 2$ systems, where $\beta$ are singular values of $M^{-1/2}_\sigma B M^{-1/2}_u$:
+$$
+\dot \sigma = -\beta u \qquad \dot u = \beta \sigma
+$$
+The symplectic Euler method can be written as
+$$
+\left( \begin{array}{c} \sigma_{n+1} \\ u_{n+1} \end{array} \right) = 
+\underbrace{
+\left( \begin{array}{cc} 1 & 0 \\ \tau \beta & 1 \end{array} \right) 
+\left( \begin{array}{cc} 1 & -\tau \beta \\ 0 & 1 \end{array} \right) 
+}_{T = \left( \begin{array}{cc} 1 & -\tau \beta \\ \tau \beta & 1 - (\tau \beta)^2  \end{array} \right) }
+\left( \begin{array}{c} \sigma_{n} \\ u_{n} \end{array} \right) 
+$$
+The eigenvalues of $T$ satisfy $\lambda_1 \lambda_2 = \operatorname{det} (T) = 1$, and iff $\tau \beta \leq \sqrt{2}$ they are conjugate complex, and thus $|\lambda_1| = | \lambda_2 | = 1$. Thus, the discrete solution is oscillating without damping or growth.
+
+Again, diagonal mass matrices $M_u$ and $M_{\sigma}$ render explicit methods efficient.
+

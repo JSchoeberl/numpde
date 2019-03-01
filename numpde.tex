@@ -1,0 +1,110 @@
+\documentclass[12pt]{book}
+\usepackage{amsmath,amsthm,amssymb,a4wide}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+% \usepackage{theorem}
+\usepackage{amsthm}
+% \usepackage{showkeys}
+
+\newcommand{\setR}{ {\mathbb R} }
+\newcommand{\setN}{ {\mathbb N} }
+\newcommand{\setZ}{ {\mathbb Z} }
+\newcommand{\eps}{\varepsilon}
+
+\newcommand{\beq}{\begin{equation}}
+\newcommand{\eeq}{\end{equation}}
+
+\newcommand{\opdiv}{\operatorname{div}}
+\newcommand{\opcurl}{\operatorname{curl}}
+\newcommand{\opdet}{\operatorname{det}}
+\newcommand{\optr}{\operatorname{tr}}
+\newcommand{\optrn}{\operatorname{tr}_n}
+\newcommand{\sfrac}[2]{ { \textstyle \frac{#1}{#2} } }
+
+\newcommand{\Zh}{\mathrm{Z}_h}
+\newcommand{\Ih}{\mathrm{I}_l}
+
+\newcommand{\leqc}{\preceq} 
+\newcommand{\geqc}{\succeq} 
+\newcommand{\eqc}{\simeq} 
+\newcommand{\ul}{\underline}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+%
+%
+\setlength{\unitlength}{1cm}
+\sloppy
+%
+
+\title{Numerical Methods for \\ Partial Differential Equations}
+\author{Joachim Sch\"oberl}
+
+\begin{document}
+\maketitle 
+
+
+\tableofcontents
+
+\input{intro}
+\input{abstracttheory}
+\input{sobolev}
+\input{preciseweak}
+\input{fem}
+\input{solvers}
+\input{mixed}
+\input{DG}
+\input{applications}
+
+\input{parabolic}
+% \input{hyperbolic}
+\input{wave}
+\input{conslaw}
+
+\end{document}
+
+
+
+
+\begin{itemize}
+\section{Finite Volume methods (28.1.) }
+
+Motivation, M matrices
+
+\section{Discontinuous Galerkin methods (30.1.) }
+
+ABCM paper
+
+\section{Nonlinear problems  (4.2.) }
+
+Monotone Newton
+
+\section{Boundary element methods  (6.2.) }
+integral equations, fast multipole expansion.
+
+\section{Parabolic problems (11.2.), (13.2.)}
+
+\section{Hyperbolic problems (18.2.), (20.2.) }
+
+\end{document}
+
+
+
+
+
+es fehlt noch:
+
+Finite Volume method, DG
+
+BEM
+
+nonlinear
+
+parabolic/hyperbolic
+
+

@@ -1,0 +1,284 @@
+% \documentclass[12pt]{article}
+% \usepackage{amsmath,amsthm,amssymb,a4wide}
+% \usepackage[german,english]{babel}
+% \usepackage{epsfig}
+% \usepackage{latexsym}
+% \usepackage{amssymb}
+% % \usepackage{theorem}
+% \usepackage{amsthm}
+% % \usepackage{showkeys}
+
+% \newcommand{\setR}{ {\mathbb R} }
+% \newcommand{\setN}{ {\mathbb N} }
+% \newcommand{\setZ}{ {\mathbb Z} }
+% \newcommand{\eps}{\varepsilon}
+
+% \newcommand{\beq}{\begin{equation}}
+% \newcommand{\eeq}{\end{equation}}
+
+% \newcommand{\opdiv}{\operatorname{div}}
+% \newcommand{\opcurl}{\operatorname{curl}}
+% \newcommand{\opdet}{\operatorname{det}}
+% \newcommand{\optr}{\operatorname{tr}}
+% \newcommand{\optrn}{\operatorname{tr}_n}
+% \newcommand{\sfrac}[2]{ { \textstyle \frac{#1}{#2} } }
+
+% \newcommand{\Zh}{\mathrm{Z}_h}
+% \newcommand{\Ih}{\mathrm{I}_l}
+
+% \newcommand{\leqc}{\preceq} 
+% \newcommand{\geqc}{\succeq} 
+% \newcommand{\eqc}{\simeq} 
+% \newcommand{\ul}{\underline}
+
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{definition}[theorem]{Definition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{remark}[theorem]{Remark}
+% \newtheorem{example}[theorem]{Example}
+
+% %
+% %
+% \setlength{\unitlength}{1cm}
+% \sloppy 
+% %
+
+% \title{Hyperbolic Conservation Laws}
+% \author{Joachim Sch\"oberl}
+
+% \begin{document}
+% \maketitle
+
+\chapter{Hyperbolic Conservation Laws}
+
+
+We consider the equation
+$$
+\frac{\partial u}{\partial t} + \opdiv f(u) = 0
+$$
+in space dimension $n$, with the state $u \in \setR^m$, and the 
+flux $f : \setR^m \rightarrow \setR^{m \times n}$.  
+We need initial conditions $u(x,0) = u_0(x)$, and proper boundary conditions.
+\medskip 
+
+\noindent
+Examples:
+\begin{itemize}
+\item Transport equation $m = 1$, $n \in \{ 1, 2, 3, \ldots \}$. 
+$$
+f(u) = b^T u
+$$
+with $b \in \setR^n$ the given wind.
+
+\item Burgers' equation $m = 1$, $n = 1$
+$$
+f(u) = \tfrac{1}{2} u^2
+$$
+Burgers' equation is a typical model problem to study effects of
+non-linear conservation laws.
+
+\item Wave equation in $\setR^n$:  $u = (p, v_1, \ldots v_n)$, here $m
+  = n+1$:
+$$
+f(p,u) = \left( \begin{array}{ccc}
+   u_1 & \cdots & u_n \\
+  p & & \\
+  & \ddots & \\
+  & & p
+  \end{array} \right)
+$$
+
+\item Euler equations (model for compressible flows) in $\setR^n$: $m
+  = n+2$, state $u = (\rho, m_1, \ldots, m_n, E)$,
+  with density $\rho$, momentum $m = \rho v$, and energy. The flux
+  function is 
+$$
+f = \left( \begin{array}{c} \rho v \\  
+   \rho v \otimes v + p I \\
+   (E + p) v   \end{array} \right)
+$$
+with the internal energy $e = E/\rho - \tfrac{1}{2} |v|^2$
+(proportional to temperature), and state equation $p = p(\rho,
+e)$. Equations are conservation of mass, momentum and energy.
+\end{itemize}
+
+
+\section{A little theory}
+
+Set $n = 1$, $m = 1$. We assume that $f$ is convex,
+i.e. $f^\prime$ is strictly monotone increasing. For linear fluxes $f = b u$, the solution
+is the traveling wave
+$$
+u(x,t) = u_0(x-bt).
+$$
+It is constant along the characteristic lines $x(t) = x_0 + bt$.
+
+\medskip
+
+For smooth fluxes $f$, the solution is constant along characteristic lines
+$x(t) = x_0 + f^\prime (u_0(x_0)) t$:
+$$
+u(x(t), t) = u_0(x_0)
+$$
+proof:
+$$
+0 = \frac{d}{dt} u(x(t), t) = \frac{\partial u}{\partial t} +
+        \frac{d x}{dt} \frac{\partial u}{\partial x} \\
+ =  \frac{\partial u}{\partial t} + f^\prime(u) \frac{\partial
+       u}{\partial x} 
+= f_t + (f(u))_x
+$$
+The smooth solution exists as long as characteristic lines don't
+intersect.
+
+Example: Burgers equation. The velocity of the characteristic is
+$f^\prime(u) = (\tfrac{1}{2} u^2)^\prime = u$, i.e. the solution itself.
+
+\subsection{Weak solutions and the Rankine-Hugoniot relation}
+%
+If characteristic lines intersect, the solution forms a shock. the
+Rankine-Hugoniot relation is a equation for the speed of the shock. 
+
+We assume the solution is piecewise smooth.
+To have meaningful discontinuous solutions, we have to consider weak
+solutions in space-time:
+$$
+\int_{\Omega \times (0,T)} u \varphi_t + f(u) \nabla \varphi = 0 \qquad
+\forall \varphi \in C_0^\infty 
+$$
+(initial condition is skipped here, easily covered by non-vanishing
+test-functions for $t=0$).
+
+The weak form states that for $F = (f, u)$ there holds 
+$$
+\opdiv_{x,t} F = 0 
+$$
+in weak senses. Thus, $F \in H(\opdiv)$.  This requires that $F \cdot
+n$ is continuous across discontinuities. Let $s(t)$ the position
+of the shock. The normal vector satisfies
+$$
+n \sim (1, -s^\prime)
+$$
+Thus, $[F \cdot n] = 0$ reads as
+$$
+f(u_l) - u_l s^\prime = f(u_r) - u_r s^\prime
+$$
+and we get the Rankine-Hugoniot relation
+$$
+s^\prime = \frac{f(u_l) - f(u_r)}{u_l - u_r} 
+$$
+
+Example Burgers: The speed of the shocks is
+$$
+s^\prime = \frac{ \tfrac{1}{2} u_l^2 - \tfrac{1}{2} u_r^2}  {u_l -
+  u_r} = \frac{u_l + u_r}{2}
+$$
+
+\subsection{Expansion fans}
+Assume $u(x+) > u(x-)$, then, due to convexity of the flux there is
+also $f^\prime(u(x+)) > f^\prime(u(x-))$.
+The speed on the right is higher than on the left. Here, all
+monotone increasing functions (between $u(x-)$ and $u(x+)$), 
+constant along lines $x + f^\prime(u) t$ are weak solutions.
+
+Another conditions is necessary to pick the meaningful physical
+solution. Two choices are
+
+{\em Viscosity solutions}. Consider the regularized equation
+$$
+u_t^{\eps} + f(u^{\eps})_x - \eps u_{xx}^{\eps}= 0
+$$
+The limit (if existent)  $\lim_{\eps \rightarrow 0} u^\eps$ is called
+viscosity solution.
+
+{\em Entropy solutions}. We define some quantity $E(u)$ called
+entropy, where, for physical reasons, the total amount should not
+increase:
+$$
+\frac{d}{dt} \int_\Omega E(u) \leq 0 
+$$
+To localize it, we define the entropy flux $F$ such that
+$$
+F^\prime = E^\prime f^\prime
+$$
+If the solution is smooth, then
+$$
+E(u)_t + F(u)_x = E^\prime u_t + F^\prime u_x = E^\prime ( u_t +
+f^\prime u_x) = 0
+$$
+Thus
+$$
+\frac{d}{dt} \int_{\Omega} E(u) = \int_\Omega E(u)_t = -\int_\Omega
+F(u)_x = -\int_{\partial \Omega} F(u) \cdot n
+$$
+No entropy changes for smooth solutions with isolated boundary.  But,
+this is not true for discontinuous solutions. 
+
+We pose the entropy decrease $E(u)_t + F(u)_x \leq 0$ in weak sense:
+$$
+- \int_{\Omega \times (0,T)}  E(u) \varphi_t + F(u) \nabla \varphi \leq 0
+\qquad \forall \, \varphi \in C_0^\infty, \varphi \geq 0
+$$
+Similar to the Rankine-Hugoniot relation we integrate back on smooth
+regions in space-time
+$$
+\sum_{( \Omega\times (0,T))_i}  \int \big( \underbrace{E(u)_t + \opdiv
+  F(u)}_{= 0} \big) \varphi - 
+\int_\gamma \big(  [E(u)] s^\prime - [F(u)]  \big) \varphi \leq 0
+\qquad \forall \, \varphi \geq 0
+$$
+Example Burgers:
+Choose the entropy $E(u) = u^2$. Then 
+$$
+F(u) = \int E^\prime f^\prime = \int 2 u u = \frac{2}{3} u^3
+$$
+Calculating 
+\begin{eqnarray*}
+[E] s^\prime - [F] & = & (u_r^2 - u_l^2) \frac{u_r + u_l}{2} +
+                         \frac{2}{3} (u_r^3 - u _l^3) = \ldots \\ 
+& = & -(u_r - u_l) \frac{(u_r-u_l)^2}{6}
+\end{eqnarray*}
+Now, posing the non-negative condition for $[E] s^\prime - [F]$ we
+allow jumps only for $u_r < u_l$. 
+
+\section{Numerical Methods}
+
+The natural methods for conservation laws are finite volume /
+discontinuous Galerkin methods:
+$$
+\int_T \frac{\partial u}{\partial t}  v - f(u) \nabla v +
+\int_{\partial T} g (u_l, u_r) v = 0 \qquad \forall \, T \; \forall \,
+v \in P^k(T)
+$$
+Here, $g$ is the numerical flux on the element boundary, calculated
+from left- and right sided states. For continuous $u = u_l = u_r$, it satisfies
+$$
+g(u, u) = f(u) n 
+$$
+Otherwise, up-wind like fluxes (many different choices !) are
+used.
+
+Finite volume methods can be designed such that entropy is
+non-increasing, often the calculations are technical. They are also
+used to prove the existence of solutions. 
+
+Higher order methods do not satisfy the maximum principle, which may
+lead to problems for non-linear equations (Euler: divide by
+$\rho$). Here, {\em limiters} are used: If the solution produces
+oscillations, it is smoothed (somehow). E.g., switch back to a finite
+volume method.
+
+\medskip
+
+Recent development (by Guermond+Pasquetti+Popov) is the so-called
+{\em entropy viscosity method}: If the entropy relation is violated,
+artificial viscosity is switched on. Ideally, this happens only close
+to shocks.
+
+\medskip
+
+Space-time methods include special mesh-generation related to the
+finite speed of propagation (front tracking methods,  tent-pitching
+methods). [Gopalakrishnan, Sch\"oberl, Wintersteiger 2016, master thesis Wintersteiger].
+
+% \end{document}
