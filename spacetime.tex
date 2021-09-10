@@ -73,7 +73,7 @@ u^\prime + A u & = & f  \quad \forall \, t \in (0,T) \\
 u(0) & = & u_0
 \end{eqnarray*}
 We define $X = \{ v \in L_2(V) : v^\prime \in L_2(V^\ast) \} $ and $Y = L_2(V)$, with its dual $Y^\ast = L_2(V^\ast)$.
-A variational formulation of is: Find $u \in X$ such that
+A variational formulation is: Find $u \in X$ such that
 \begin{eqnarray} 
 \label{equ_parabolic1}
 \int_0^T \left< u^\prime + A u, v \right> & = & \int_0^T \left< f, v \right>   \qquad \forall \, v \in Y \\
@@ -110,12 +110,12 @@ v_0 & := & u(0)
 and obtain
 \begin{eqnarray*}
 B(u,v) & = & \int \left< u^\prime + A u, A^{-T} u^\prime + u \right> \, dt \; + (u(0), u(0))_H \\
-& = & \int \left<A^{-T} u^\prime, u^\prime \right> + \left< A u, u \right> + \left< u^\prime, u \right> + \left< u, u^\prime \right> \, dt \;  + \| u_0 \|_H^2 \\
-& = & \int \left<A^{-T} u^\prime, u^\prime \right> + \left< A u, u \right> + \frac{d}{dt} \| u \|_H^2  + \| u_0 \|_H^2 \\
+& = & \int \left<A^{-1} u^\prime, u^\prime \right> + \left< A u, u \right> + \left< u^\prime, u \right> + \left< u, u^\prime \right> \, dt \;  + \| u_0 \|_H^2 \\
+& = & \int \left<A^{-1} u^\prime, u^\prime \right> + \left< A u, u \right> + \frac{d}{dt} \| u \|_H^2  + \| u_0 \|_H^2 \\
 & \geq & \alpha_2^{-1}  \| u^\prime \|^2_{L_2(V^\ast)} + \alpha_1 \| u \|^2_{L_2(V)} + \| u(T) \|_H^2 \\
 & \geqc &  \| u \|_X^2
 \end{eqnarray*}
-Since $\| (v,v_0) \|_Y \leqc \| u \|_X$ the first $\inf-\sup$-condition is proven.
+Since $\| (v,v_0) \|_{Y \times H} \leqc \| u \|_X$ the first $\inf-\sup$-condition is proven.
 For the other one, we show
 \begin{equation}
 \forall \, 0 \neq (v,v_0) \in Y \times H \; \; \exists \, u \in X  \;  : \;  B(u,v) > 0
@@ -149,7 +149,7 @@ We discretize in time, but keep the spatial function space infinit dimensional.
 A first reasonable attempt is to use $X_h = P^1(V)$, and $Y_h = P^{0,disc}(V)$. 
 Evaluation of $B(.,.)$ leads to
 \begin{eqnarray*}
-B(u_h, v_h) & = & \sum_{j=1}^n \int_{t_{j-1}}^{t_j} \left< u_h^\prime + A u_h , v_h \right> + (u_0, v_h)  \\
+B(u_h, v_h) & = & \sum_{j=1}^n \int_{t_{j-1}}^{t_j} \left< u_h^\prime + A u_h , v_h \right> + (u_h(0), v_h(0))  \\
 & = & \sum_{j=1}^n \left< u_j - u_{j-1}, v_j \right> + \tfrac{\tau_j}{2} \left<A (u_{j-1} + u_j), v_j \right> + (u_0, v_0)
 \end{eqnarray*}
 Here, the time derivative evaluates to finite differences of point values in $t_j$. Since $u_j \in V$, the duality pairs

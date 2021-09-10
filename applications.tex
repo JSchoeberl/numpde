@@ -361,7 +361,7 @@ The semi-discretization in this space leads to two decoupled problems. The first
 describes the longitudinal displacement: Find $U \in H^1(I)$ such that
 $$
 (2 \mu + \lambda) t \, \int_0^1 U^\prime \tilde U^\prime \, dx = 
-t \int_0^1 f_x \tilde U^\prime \, dx \qquad \forall \, U^\prime \in H^1(I).
+t \int_0^1 f_x \tilde U \, dx \qquad \forall \, \tilde U \in H^1(I).
 $$
 The small thickness parameter $t$ cancels out. It is a simple second order problem
 for the longitudinal displacement.
@@ -446,8 +446,9 @@ of $p$ in weak form
 leads to the bigger system: Find $(w,\beta) \in V$ and $p \in Q$ such that
 \begin{equation} \label{equ_timo_mixed}
 \begin{array}{ccccll}
-\int \beta^\prime \tilde \beta^\prime \, dx & + & \int (\tilde w^\prime - \beta) p \, dx & = &
-\int \tilde f \tilde w \, dx \qquad & \forall \, (w,\beta) \in V  \\[0.5em]
+\int \beta^\prime \tilde \beta^\prime \, dx & + & \int (\tilde
+                                                  w^\prime - \tilde \beta) p \, dx & = &
+\int \tilde f \tilde w \, dx \qquad & \forall \, (\tilde w, \tilde \beta) \in V  \\[0.5em]
 \int (w^\prime - \beta) \tilde p \, dx & - & t^2 \int p \, \tilde p \, dx & = & 0 & 
 \forall \, \tilde p \in Q.
 \end{array}

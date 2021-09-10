@@ -85,7 +85,7 @@ with the boundary conditions
 \begin{array}{rcll}
 u & = & u_D \qquad & \mbox{on } \Gamma_D, \\
 \frac{\partial u}{\partial n} & = & g \qquad & \mbox{on } \Gamma_N, \\
-\frac{\partial u}{\partial n} + \alpha u & = & g \qquad & \mbox{on} \Gamma_R.
+\frac{\partial u}{\partial n} + \alpha u & = & g \qquad & \mbox{on } \Gamma_R.
 \end{array}
 \end{equation}
 %
@@ -238,7 +238,7 @@ $$
 u_j = u_h (x_j) = u_D(x_j) \qquad \forall \, x_j \in \Gamma_D
 $$
 The others have to be determined from the variational equation (\ref{equ_fem}).
-It is equivalent to fulfill (\ref{equ_fem}) for the whole space $\{ v_h \in V_h : v_h(x) = 0 \; \forall \; x_j \in {\cal N}_D \}$, or just for its basis 
+It is equivalent to fulfill (\ref{equ_fem}) for the whole space $\{ v_h \in V_h : v_h(x_j) = 0 \; \forall \; x_j \in {\cal N}_D \}$, or just for its basis 
 $\{ \varphi_i : x_i \in {\cal N}_f\}$ associated to the free nodes:
 \begin{quote}
 \begin{equation}
@@ -259,7 +259,7 @@ f_j & := & \int f \varphi_j \, dx + \int_{\Gamma_N+\Gamma_R} g \varphi_j \, ds.
 According to Dirichlet- and free nodes they are splitted as
 $$
 A = \left( \begin{array}{cc}
-        A_{DD} & A_{DD} \\
+        A_{DD} & A_{Df} \\
         A_{fD} & A_{ff} 
         \end{array} \right)
 \qquad \text{and} \qquad

@@ -130,7 +130,7 @@ b_h(I_F u, q_h) = b(u, q_h) \qquad \forall \, q_h \in Q_h
 $$
 The error estimate follows similar as in the second Lemma by Strang:
 \begin{eqnarray*}
-\lefteqn{\| u - u_h\|_{H^1,nc} + \| p - p_h \|_{L-2}} \\
+\lefteqn{\| u - u_h\|_{H^1,nc} + \| p - p_h \|_{L_2}} \\
 & \leqc &\inf_{v_h, q_h} \| u - v_h \|_{H^1,nc} + \| p - q_h\|_{L_2} 
 + \sup_{w_h} \frac{ \sum_T \int \nabla u \nabla w_h   + p \opdiv w_h - f w_h} {\| w_h \|_{H^1,nc} } \\
 & \leqc & c h \, (  \| u \|_{H^2} + \| p \|_{H^1} )
@@ -199,7 +199,7 @@ It leads to second order convergence. Since the costs of a method depend mainly 
 
 \subsubsection{Elements with continuous pressure}
 Although the pressure $p$ is only in $L_2$, we may approximate it with
-continous elements. The so called mini-elemnet is
+continuous elements. The so called mini-element is
 $$
 V_h = P^{1+} \qquad Q_h = P^{1,cont},
 $$

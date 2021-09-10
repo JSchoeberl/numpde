@@ -17,7 +17,7 @@ D^\alpha =
         \left( \frac{\partial}{\partial x_n} \right)^{\alpha_d}.
 $$
 %
-For a function $u \in C^(\Omega)$, the support is defined as 
+For a function $u \in C(\Omega)$, the support is defined as 
 $$
 \operatorname{supp} \{ u \} := \overline{ \{ x \in \Omega : u(x) \neq 0 \} }.
 $$
@@ -208,7 +208,7 @@ we can bound
 \begin{eqnarray*}
 u(0) & = & \left(1 - \frac{x}{h} \right) u(x) |_{x=0} = 
         - \int_0^h \left\{ \left(1-\frac{x}{h} \right) u(x) \right\}^\prime \, dx \\
-        & = & \int_0^h  \frac{-1}{h} u(x) + \left(1-\frac{x}{h} \right) u^\prime(x)  \, dx \\
+        & = & -\int_0^h  \frac{-1}{h} u(x) + \left(1-\frac{x}{h} \right) u^\prime(x)  \, dx \\
         & \leq & \left\| \frac{1}{h} \right\|_{L_2} \| u \|_{L_2} + 
                 \left\| 1-\frac{x}{h} \right\|_{L_2} \| u^\prime \|_{L_2} \\
         & \eqc & h^{-1/2} \| u \|_{L_2(0,h)} + h^{1/2} \| u^\prime \|_{L_2(0,h)}.
@@ -489,8 +489,8 @@ $$
 $$
 and 
 $$
-\int_{S_i \setminus \Omega} | \nabla_{\hat x} E u |^2 \, dx \leq 
-        c \int_{S_i \cup \Omega} | \nabla u |^2 \, dx
+\int_{S_i \setminus \Omega} | \nabla_{\hat x} E u |^2 \, d \hat x \leq 
+        c \int_{S_i \cap \Omega} | \nabla u |^2 \, dx
 $$
 These estimates prove that $E$ is a bounded operator into $H^1$ on the
 sub-domains $S_i \setminus \Omega$. The construction 
@@ -499,7 +499,7 @@ continuous across $\partial \Omega$, and also across the individual $S_i$.
 By Theorem~\ref{theo_subdomainh1}, $E u $ belongs
 to $H^1 (\widetilde \Omega)$, and
 $$
-\| \nabla E u \|_{L_2(\Omega)}^2 = 
+\| \nabla E u \|_{L_2(\widetilde \Omega)}^2 = 
 \| \nabla u \|_{\Omega}^2 + \sum_{i=1}^M \| \nabla u \|_{S_i \setminus \Omega}^2 \leq c \| \nabla u \|_{L_2(\Omega)}^2,
 $$
 By density, we get the result for $H^1(\Omega)$. Let $u_j  \in C^1(\overline \Omega) \rightarrow  u$, than $u_j$ is Cauchy, $E u_j$ is Cauchy in $H^1(\widetilde \Omega)$, and thus converges to $u \in H^1(\widetilde \Omega)$.
@@ -595,7 +595,7 @@ Let $V_1 \subset V_0$ be two Hilbert spaces, such that $V_1$ is dense
 in $V_0$, and the embedding operator $id : V_1 \rightarrow V_0$
 is compact. We can pose the eigen-value problem: Find $z \in V_1$, $\lambda \in \setR$ such that
 $$
-(z, v)_{V_1} = \lambda (z, v)_{V_0} \qquad \forall \, v \in V.
+(z, v)_{V_1} = \lambda (z, v)_{V_0} \qquad \forall \, v \in V_1.
 $$
 There exists a sequence of eigen-pairs $(z_k, \lambda_k)$ such that $\lambda_k
 \rightarrow \infty$. The $z_k$ form an orthonormal basis in $V_0$, and
@@ -619,7 +619,7 @@ $$
 $$
 If $u \in V_1$, then 
 $$
-\| u \|_{V_1}^2 = (\sum_k u_k z_k, \sum_l u_l z_l)_{V_0} = 
+\| u \|_{V_1}^2 = (\sum_k u_k z_k, \sum_l u_l z_l)_{V_1} = 
         \sum_{k,l} u_k u_l (z_k,z_l)_{V_1} = 
         \sum_{k,l} u_k u_l \lambda_k (z_k,z_l)_{V_0} = 
         \sum_k u_k^2 \lambda_k
@@ -826,7 +826,7 @@ Now, we bound
         & \leqc & \| u \|_B^2 + \| u \|_A^2
 \end{eqnarray*}
 
-3. Define $B(u,v) = (P_{V_1}^\bot u, P_{V_1^\bot u})_V$. Then $A(.,.)+B(.,.)$
+3. Define $B(u,v) = (P_{V_1}^\bot u, P_{V_1}^\bot u)_V$. Then $A(.,.)+B(.,.)$
 is an inner product: $A(u,u)+B(u,u) = 0$ implies that $u \in V_0$ and $u \in V_1$, thus $u = \{ 0 \}$. From 2. there follows that $A(.,.)+B(.,.)$ is
 equivalent to $(.,.)_V$. The result follows from reducing the equivalence 
 to $V_1$.
@@ -883,7 +883,7 @@ $$
 \begin{theorem} [Poincar\'e inequality]
 There holds
 $$
-\| v \|_{H^1(\Omega)}^2 \leq \| \nabla v \|_{L_2}^2 + (\int_\Omega v \, dx)^2
+\| v \|_{H^1(\Omega)}^2 \leqc \| \nabla v \|_{L_2}^2 + (\int_\Omega v \, dx)^2
 $$
 \end{theorem}
 {\em Proof:} $B(u,v) := (\int_\Omega u \, dx) (\int_\Omega v \, dx)$ is
@@ -919,7 +919,7 @@ $$
 \end{theorem}
 {\em Proof:} The embedding $H^k \rightarrow H^{k-1}$ is compact. 
 The $V$-continuous, symmetric and non-negative bilinear form
-$A(u,v) = \sum_{\alpha : | \alpha | = k} (\partial^\alpha u, \partial^\alpha v)$ has the kernel $P^{p-1}$. Decompose $\| u \|_{H^k}^2 = \| u \|_{H^{k-1}}^2 + A(u,u)$. By Theorem~\ref{theo_tartar}, 1, there holds
+$A(u,v) = \sum_{\alpha : | \alpha | = k} (\partial^\alpha u, \partial^\alpha v)$ has the kernel $P^{k-1}$. Decompose $\| u \|_{H^k}^2 = \| u \|_{H^{k-1}}^2 + A(u,u)$. By Theorem~\ref{theo_tartar}, 1, there holds
 $$
 \| u \|_A \eqc \inf_{v \in V_0} \| u - v \|_{H^k}
 $$

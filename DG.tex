@@ -146,7 +146,7 @@ The space $V$ shall be defined by the (semi)-norm
 $$
 \| u \|_V = \| b \nabla u \|_{L_2}
 $$
-Depending on $b$, it is a norm for $\{ u = 0 \; \text{on} \Gamma_{in}
+Depending on $b$, it is a norm for $\{ u = 0 \; \text{on} \; \Gamma_{in}
 \}$. Roughly speaking, if every point in $\Omega$ can be reached by a
 finite trajectory along $b$, then $\| u \|_{L_2} \leqc \| u \|_V$, by
 Friedrichs inequality. It does not hold if $b$ has vortices. Then
@@ -420,7 +420,7 @@ terms of $A(u_h - I_h u, v_h)$.
 
 \subsection{Nitsche's method for interface conditions}
 We give now a variational formulation for interface conditions $u_1 =
-u_2$, $\partial_{n_1} u_1 + \partial_{n_2}) u_2 = 0$ on the interface
+u_2$, $\partial_{n_1} u_1 + \partial_{n_2} u_2 = 0$ on the interface
 $\gamma$ separating $\Omega_1$ and $\Omega_2$. Boundary conditions on
  the outer boundary are treated as usual. Integration by parts on the
  sub-domains leads to
@@ -494,7 +494,7 @@ sign. The variational problem is still consistent on the true
 solution. The advantage of the NIP-DG is that
 $$
 A(u,u) = \sum_T \| \nabla u \|^2_{L_2(T)} + \tfrac{\alpha}{h} \| [u]
-\|_{L_2(\partial T}^2,
+\|_{L_2(\partial T)}^2,
 $$
 i.e. $A(.,.)$ is elliptic in any case $\alpha > 0$. The disadvantage
 is that $A(.,.)$ is not consistent for the dual problem, i.e. the
@@ -582,10 +582,10 @@ The BR-norm scales like the IP - norm (in $h$ and $p$), but the
 
 \subsection{Matching integration rules}
 Another method to avoid  guessing the sufficiently large $\alpha$ is
-to use integration rules, such the the integration points for the
+to use integration rules, such that the integration points for the
 boundary integral are a sub-set of the integration points of the
-volume term. Now, Young's inegality can be applied for the numerical
-integrals. The $\tfrac{\alpha}{h}$ factor is now replace by the
+volume term. Now, Young's inequality can be applied for the numerical
+integrals. The $\tfrac{\alpha}{h}$ factor is now replaced by the
 largest relative scaling of weights for the boundary integrals and
 volume integrals. The pro is the simplicity, the con is the need of
 numerical integration rules which need more points.

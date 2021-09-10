@@ -80,7 +80,7 @@ structure as the first term in the second equation. This can be obtained
 by integration by parts applied to either one of them. The interesting
 case is to integrate by parts in the first line to obtain:
 $$
-\int_\Omega a \sigma \tau \, dx + \int_\Omega \opdiv \, \tau \, u \, dx
+\int_\Omega (a^{-1} \sigma) \cdot \tau \, dx + \int_\Omega \opdiv \, \tau \, u \, dx
 -\int_{\Gamma_D} \tau_n \, u \, ds - \int_{\Gamma_N} \tau_n \, u \, ds = 0.
 $$
 Here, we make use of the boundary conditions. On the Dirichlet boundary,
@@ -644,7 +644,8 @@ $$
 $$
 is defined by
 $$
-\sigma (F (\hat x)) = (\opdet F^\prime)^{-1} F^\prime \sigma (x).
+\sigma (F (\hat x)) = (\opdet F^\prime)^{-1} F^\prime \hat \sigma
+(\hat x).
 $$
 \end{definition}
 
@@ -724,7 +725,7 @@ $$
 Assume that the finite element spaces fulfill the discrete stability
 condition
 \begin{equation}\label{equ_discreteinfsup}
-\inf_{v \in V_h, q \in Q_h } \sup_{u \in V_h, p \in Q_h} \frac{B((u,p),(v,q))}{ ( \|v\|_V+\|q\|) (\|u\|_V+\|p\|_Q)} \geq \beta.
+\inf_{v \in V_h, q \in Q_h } \sup_{u \in V_h, p \in Q_h} \frac{B((u,p),(v,q))}{ ( \|v\|_V+\|q\|_Q) (\|u\|_V+\|p\|_Q)} \geq \beta.
 \end{equation}
 Then the discretization error is bounded by the best-approximation error
 $$
@@ -741,7 +742,7 @@ discrete stability ! Usually, one checks the conditions of Brezzi
 on the discrete level to prove stability of $B(.,.)$ on the discrete
 levels. The continuity of $a(.,.)$ and $b(.,.)$ are inherited from the
 continuous levels. The stability conditions have to be checked separately.
-The discretet kernel ellipticity
+The discrete kernel ellipticity
 \begin{equation}
 a(v_h,v_h) \geqc \| v_h \|_V^2 \qquad \forall \, v_h \in V_{0h} = \{ v_h \in V_h : b(v_h,q_h) = 0 \; \forall \, q_h \in Q_h \},
 \end{equation}
@@ -799,7 +800,7 @@ such that
 \begin{array}{ccccll}
 \int_\Omega (a^{-1} \sigma_h) \cdot \tau_h \, dx & + & 
 \int_\Omega \opdiv \, \tau_h  \, u_h \, dx & = & \int_{\Gamma_D} u_D \tau _n \, ds \qquad & \forall \, \tau_h \in V_h \\
-\int_\Omega \opdiv \, \sigma_h \, v_h \, dx & & & = & - \int f v_h \, dx \qquad & \forall \, v_h \in Q_h.
+\int_\Omega \opdiv \, \sigma_h \, v_h \, dx & & & = & - \int_\Omega f v_h \, dx \qquad & \forall \, v_h \in Q_h.
 \end{array}
 \end{equation}
 %
@@ -858,8 +859,8 @@ it fulfills the discrete inf-sup condition.
 
 \hfill $\Box$
 
-\begin{theorem}[A priori estimate] The mixed finite element methods for 
-the fluxes satisfies the error estimates
+\begin{theorem}[A priori estimate] The mixed finite element method for 
+the flux satisfies the error estimates
 \begin{equation}
 \label{equ_apriorifluxes}
 \| \sigma - \sigma_h \|_{L_2} + \| \opdiv (\sigma - \sigma_h) \|_{L_2} +

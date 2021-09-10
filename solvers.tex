@@ -561,7 +561,7 @@ relaxation parameters for the best $k$-step approximation.
 
 
 
-Let $p_0, p_1, \ldots$ be a finite sequence of $A$-orthogonal vectos, and set 
+Let $p_0, p_1, \ldots$ be a finite sequence of $A$-orthogonal vectors, and set 
 $$
 V_k = \mbox{span} \{ p_0, \ldots p_{k-1} \}
 $$
@@ -698,7 +698,7 @@ Krylov space. Thus, it can be bounded by the Chebyshev method leading to that ra
 \bigskip
 
 The conjugate gradient iteration is stopped as soon as a convergence 
-criterion is fulfilled. Ideally, on wants to reduce the error in the energy
+criterion is fulfilled. Ideally, one wants to reduce the error in the energy
 norm by a factor $\eps$:
 $$
 \| u - u_k \|_A \leq \eps \, \| u - u_0 \|_A
@@ -708,7 +708,7 @@ $$
 \| u - u_k \|_A^2 = \| A^{-1} (f - A u_k) \|_A^2 = \| A^{-1} d_k \|_A^2
 = d_k^T A^{-1} d_k
 $$
-If $C$ is a good approxiamtion to $A$, then also $C^{-1}$ is one to $A^{-1}$. 
+If $C$ is a good approximation to $A$, then also $C^{-1}$ is one to $A^{-1}$. 
 The error can be approximated by 
 $$
 d_k^T C^{-1} d_k.
@@ -745,7 +745,7 @@ framework. For this, define the Galerkin isomorphism
 $$
 G : \setR^N \rightarrow V_h : \underline u \rightarrow u = \sum u_i \varphi_i,
 $$
-where $\varphi_i$ are the fe besis functions. Its dual is 
+where $\varphi_i$ are the fe basis functions. Its dual is 
 $$
 G^\ast : V_h^\ast \rightarrow \setR^N : d(\cdot) \rightarrow (d(\varphi_i))_{i=1,\ldots, N}.
 $$

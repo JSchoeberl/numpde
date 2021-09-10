@@ -71,7 +71,7 @@ $$
 \mu \frac{\partial H}{\partial t} & = & -\opcurl E \\
 \varepsilon \frac{\partial E}{\partial t} & = & \opcurl H
 \end{eqnarray*}
-with the magnetic field $H$ and the electric field $E$, and material parameters permeability $\mu$ and permittivity $\varepsilon$. By differentiating the first equation in space, and the second on in time, we obtain
+with the magnetic field $H$ and the electric field $E$, and material parameters permeability $\mu$ and permittivity $\varepsilon$. By differentiating the first equation in space, and the second one in time, we obtain
 $$
 \varepsilon \frac{\partial^2 E}{\partial t^2} + \opcurl \frac{1}{\mu} \opcurl E = 0
 $$
@@ -225,7 +225,7 @@ B & 0
 \end{array} \right) 
 \left( \begin{array}{c} \sigma \\ u \end{array} \right) 
 $$
-The matrix is skew-symmetric, and thus the eigenvalues are imaginary. They are contained in $i \left[ -\rho(B), \rho(B) \right]$, where the spectral radious $\rho(B) \eqc h^{-1}$ for the first order operator. Using Runge-Kutta methods, we need methods such that $i \left[ -\tau \rho(B), \tau \rho(B) \right]$ is in the stability region. For large systems, explicit methods ($M$ cheaply invertible !) are often preferred. While the stability region for the explicit Euler and improved Euler method do not included an interval on the imaginary axis, the RK4 method does.
+The matrix is skew-symmetric, and thus the eigenvalues are imaginary. They are contained in $i \left[ -\rho(B), \rho(B) \right]$, where the spectral radious $\rho(B) \eqc h^{-1}$ for the first order operator. Using Runge-Kutta methods, we need methods such that $i \left[ -\tau \rho(B), \tau \rho(B) \right]$ is in the stability region. For large systems, explicit methods ($M$ cheaply invertible !) are often preferred. While the stability region for the explicit Euler and improved Euler method do not include an interval on the imaginary axis, the RK4 method does.
 
 Methods taylored for the skew-symmetric (Hamiltonian) structure are symplectic methods: The symplectic Euler method is
 \begin{eqnarray*}

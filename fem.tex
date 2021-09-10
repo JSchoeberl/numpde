@@ -194,7 +194,7 @@ $$
 On each element, one defines the $N_T \times N_T$ {\bf element matrix}  and 
 {\bf element vector} in terms of the local basis on $T$:
 $$
-A_{T,\alpha \beta} = A_T (\varphi^T_\alpha, \varphi^T_\beta)
+A_{T,\alpha \beta} = A_T (\varphi^T_\beta, \varphi^T_\alpha)
 \qquad \qquad
 \underline{f}_{T,\alpha} = \underline{f}_T (\varphi^T_\alpha)
 $$
@@ -219,7 +219,7 @@ Namely,
 \end{eqnarray*}
 and
 \begin{eqnarray*}
-A_{ij} & = & \sum_{T \in \cal T} A(\varphi_i|_T, \varphi_j|_T) = 
+A_{ji} & = & \sum_{T \in \cal T} A(\varphi_i|_T, \varphi_j|_T) = 
          \sum_{T \in \cal T} A (\sum_\alpha C_{T,i\alpha} \varphi_T^\alpha,
                                       \sum_\beta C_{T,j\beta} \varphi_T^\beta) \\
         & = & \sum_{T \in \cal T} \sum_\alpha \sum_\beta C_{T,i\alpha} A_{T,\alpha \beta} C_{T,j\beta}
@@ -241,7 +241,7 @@ $$
 \sum_{i \in \gamma_D} A_{ji} u_i + \sum_{i \in \gamma_f} A_{ji} u_i = f_j
 \qquad \forall \, j \in \gamma_f
 $$
-Inserting $u_i = u_D(x_i)$ for $i \in \gamma_i$ results in the reduced system
+Inserting $u_i = u_D(x_D)$ for $i \in \gamma_i$ results in the reduced system
 $$
 \sum_{i \in \gamma_f} A_{ji} u_i = f_j - \sum_{i \in \gamma_D} A_{ji} u_D(x_i)
 $$
@@ -257,7 +257,7 @@ Galerkin approximation in the finite element sub-space $V_h$. Cea's Lemma
 bounds the finite element error $u - u_h$ by the 
 best approximation error 
 $$
-\| u - u_h \|_V \leq C \inf_{v \in V_h} \| u - v_h \|_V.
+\| u - u_h \|_V \leq C \inf_{v_h \in V_h} \| u - v_h \|_V.
 $$
 The constant factor $C$ is the ratio of the continuity bound and the
 coercivity bound of the bilinear form $A(.,.)$.
@@ -343,7 +343,7 @@ from $H^m$ to $H^1$:
         =  \| v \|_{H^1} + \| \sum_{\alpha} \psi_\alpha(v) \varphi_\alpha \|_{H^1}
  \\
 & \leq & \| v \|_{H^1} + \sum_\alpha \| \varphi_\alpha \|_{H^1} | \psi_\alpha(v) | \\
-& \leq & \| v \|_{H^m}
+& \leqc & \| v \|_{H^m}
 \end{eqnarray*}
 The last step used that for $H^m$, with $m > d/2$, point evaluation is continuous.
 Now, let $v \in P^k(T)$. Since $P^k \subset V_T$, and $I_T$ is a projection on $V_T$, 
@@ -359,11 +359,11 @@ functions from the elements $T$ to the reference element $\widehat T$.
 \begin{theorem} Let ${\cal T}$ be a shape regular triangulation of $\Omega$.
 Let $V_{\cal T}$ be a $C^0$-regular finite element space such that all local spaces contain $P^1$. Then there holds
 $$
-\| v - I_{\cal T} v \|_{L_2(\Omega)} \leqc  \left\{ \sum_{T \in {\cal T}} h_T^4 | v |_{H^2(T)^2} \right\}^{1/2} \qquad \forall \, v \in H^2(\Omega)
+\| v - I_{\cal T} v \|_{L_2(\Omega)} \leqc  \left\{ \sum_{T \in {\cal T}} h_T^4 | v |_{H^2(T)}^2 \right\}^{1/2} \qquad \forall \, v \in H^2(\Omega)
 $$
 $$
-| v - I_{\cal T} v |_{H^1(\Omega)}^2 \leq 
-C \left\{ \sum_{T \in {\cal T}} h_T^2  \, | v |_{H^2(T)^2} \right\} \qquad \forall \, v \in H^2(\Omega)
+| v - I_{\cal T} v |_{H^1(\Omega)} \leq 
+\left\{ \sum_{T \in {\cal T}} h_T^2  \, | v |_{H^2(T)}^2 \right\}^{1/2} \qquad \forall \, v \in H^2(\Omega)
 $$
 \end{theorem}
 
@@ -378,16 +378,16 @@ On the reference element $\widehat T$ we apply the Bramble-Hilbert lemma.
 Then, we transform back to the individual elements:
 \begin{eqnarray*}
 | v - I_{\cal T} v |_{H^1(\Omega)}^2 & \leqc & 
-        \sum_{T \in {\cal T}} (\det B_T) \| B_T^{-1}  \|^2 | v_T \circ F_T | _{H^m (\widehat T)}^2 \\
+        \sum_{T \in {\cal T}} (\det B_T) \| B_T^{-1}  \|^2 | v_T \circ F_T | _{H^2 (\widehat T)}^2 \\
   & \leqc &  \sum_{T \in {\cal T}} (\det B_T) \, \| B_T^{-1} \|^2 \, (\det B_T^{-1}) \, \| B_T \|^4  \; | v_T |_{H^2 (T)}^2 \\
-        & \eqc & \sum_{T \in {\cal T}} h_T^2 \| v_T \|_{H^2 (T)}^2.
+        & \eqc & \sum_{T \in {\cal T}} h_T^2 \| v \|_{H^2 (T)}^2.
 \end{eqnarray*}
 \hfill $\Box$
 
 
 \bigskip
 
-A triangulation is called ${\bf quasi-uniform}$, is all elements are essentially of the
+A triangulation is called ${\bf quasi-uniform}$, if all elements are essentially of the
 same size, i.e., there exists one global $h$ such that
 $$
 h \eqc h_T \qquad \forall \, T \in {\cal T}.
@@ -469,7 +469,7 @@ $$
 $$
 and, after dividing one factor
 $$
-\| u - u_h \|_{L_2} \leqc h \| u - u_h \|_{H^1} \leqc h^2 \| u \|_{H^2}.
+\| u - u_h \|_{L_2} \leqc h \| u - u_h \|_{H^1} \leqc h^2 | u |_{H^2}.
 $$
 \hfill $\Box$
 \bigskip
@@ -538,7 +538,7 @@ $$
 $$
 Moving the term $\frac{1}{2} \| u - u_h \|$ to the left, we obtain
 $$
-\| u - u_h \|_V^2 \leqc \| u - I_h u \|_V^2 \leqc h \, \| u \|_{H^2}
+\| u - u_h \|_V^2 \leqc \| u - I_h u \|_V^2 \leqc h \, | u |_{H^2}
 $$
 \hfill $\Box$
 
@@ -554,11 +554,11 @@ order are used:
 \end{itemize}
 Then there holds
 $$
-h^{-1} \| u - I_h u \|_{L_2} + \| u  - I_h u \|_{H^1} \leqc h^{\min\{ m-1,k\} } \| u \|_{H^m}
+h^{-1} \| u - I_h u \|_{L_2} + \| u  - I_h u \|_{H^1} \leqc h^{\min\{ m-1,p\} } \| u \|_{H^m}
 $$
 \end{theorem}
 
-The proof is analogous to the case $m=2$ and $k=1$. The constants in
+The proof is analogous to the case $m=2$ and $p=1$. The constants in
 the estimates depend on the Sobolev index $m$ and on the polynomial
 order $p$. Nodal interpolation is instable (i.e., the constant grow
 with $p$) for increasing order $p$. There exist better choices to
@@ -751,7 +751,7 @@ We define the vertex patch of all elements connected with the vertex $x$
 $$
 \omega_x = \bigcup_{T : x \in T} T,
 $$
-the edge patch consisting of all elemenets connected with the edge $E$
+the edge patch consisting of all elements connected with the edge $E$
 $$
 \omega_E = \bigcup_{T : E \cap T \neq \emptyset} T,
 $$
@@ -765,7 +765,7 @@ $$
 I_h v = \sum_{x_i \in {\cal V}} v(x_i) \varphi_i,
 $$
 where $\varphi_i$ are the nodal basis functions.
-Now, we replace the nodal value $v(x_i)$ be a local mean value.
+Now, we replace the nodal value $v(x_i)$ by a local mean value.
 
 \begin{definition}[Cl\'ement quasi-interpolation operator] For each vertex $x$,let $\overline{v}^{\omega_x}$ be the mean value of $v$ on the patch $\omega_x$, i.e.,
 $$
@@ -816,7 +816,7 @@ $$
 $$
 
 The estimate for the edge term is similar. One needs the scaling of integrals
-form the reference edge $\widehat E$ to $E$:
+from the reference edge $\widehat E$ to $E$:
 $$
 \| v \|_{L_2(E)} = h_E^{1/2} \| v \circ F \|_{L_2(\hat E)}
 $$
@@ -844,14 +844,14 @@ the definitions of $A(.,.)$ and $f(.)$:
 
 \begin{eqnarray*}
 A(u-u_h, v-\Pi_h v) & = & f(v-\Pi_h v) - A(u_h, v - \Pi_h v) \\
-        & = & \int_{\Omega} f v \, dx - \int_\Omega \nabla u_h \nabla (v - \Pi_h v) \, dx \\
-        & = & \sum_{T \in \cal T} \int_{T} f v \, dx - \sum_{T \in \cal T} \int_T \nabla u_h \nabla (v - \Pi_h v) \, dx
+        & = & \int_{\Omega} f (v-\Pi_h v) \, dx - \int_\Omega \nabla u_h \nabla (v - \Pi_h v) \, dx \\
+        & = & \sum_{T \in \cal T} \int_{T} f (v-\Pi_h v) \, dx - \sum_{T \in \cal T} \int_T \nabla u_h \nabla (v - \Pi_h v) \, dx
 \end{eqnarray*}
 On each $T$, the finite element function $u_h$ is a polynomial. This allows 
 integration by  parts on each element:
 \begin{eqnarray*}
 A(u-u_h, v-\Pi_h v) 
-        & = & \sum_{T \in \cal T} \int_{T} f v \, dx - \sum_{T \in \cal T} 
+        & = & \sum_{T \in \cal T} \int_{T} f (v-\Pi_h v) \, dx - \sum_{T \in \cal T} 
  \left\{ -\int_T \Delta u_h (v - \Pi_h v) \, dx + \int_{\partial T} \frac{\partial u_h}{\partial n} (v - \Pi_h v) \, ds \right\}
 \end{eqnarray*}
 All inner edges $E$ have contributions from normal derivatives from their two adjacent triangles $T_{E,1}$ and $T_{E,2}$. On boundary edges, $v-\Pi_h v$ vanishes.

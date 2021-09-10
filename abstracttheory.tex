@@ -251,16 +251,16 @@ A projector is called {\bf orthogonal}, if $(Pu,v) = (u,Pv)$.
 projectors.
 \end{lemma}
 \noindent
-{\em Proof:} For $u \in S$ there holds $P u = u$. Since $P u \in S$, there holds $P^2 u = P u$. It is orthogonal since
+{\em Proof:} For $u \in S$ there holds $P_S u = u$. Since $P_S u \in S$, there holds $P_S^2 u = P_S u$. It is orthogonal since
 $$
-(Pu,v) = (Pu,v-Pv+Pv) = (\underbrace{P u}_{\in S}, \underbrace{v-Pv}_{\in S^\bot}) + (Pu,Pv) = (Pu,Pv).
+(P_Su,v) = (P_Su,v-P_Sv+P_Sv) = (\underbrace{P_S u}_{\in S}, \underbrace{v-P_Sv}_{\in S^\bot}) + (P_Su,P_Sv) = (P_Su,P_Sv).
 $$
-With the same argument there holds $(u,Pv) = (Pu,Pv)$.
+With the same argument there holds $(u,P_Sv) = (P_Su,P_Sv)$.
 The co-projector $P_S^\bot = I - P_S$ is a projector since
 $$
 (I-P_S)^2 = I - 2 P_S + P_S^2 = I - P_S.
 $$
-It is orthogonal since $((I-P_S) u,v) = (u,v)-(P_su,v) =
+It is orthogonal since $((I-P_S) u,v) = (u,v)-(P_Su,v) =
         (u,v)-(u,P_Sv) = (u,(I-P_S)v)$
 \hfill $\Box$
 
@@ -315,7 +315,7 @@ $$
 $$
 and
 $$
-\| u \| = \frac{l(z)}{\|z\|^2}  \|z\| = \frac{l(z)}{\|z\|} \leq \| l \|_{V^\ast}.
+\| u_l \| = \frac{l(z)}{\|z\|^2}  \|z\| = \frac{l(z)}{\|z\|} \leq \| l \|_{V^\ast}.
 $$
 % \hfill $\Box$
 
@@ -572,7 +572,6 @@ holds true also for the infimum in $V_h$.
 \bigskip
 If $A(\cdot,\cdot)$ is additionally symmetric, then it is an inner product. In this
 case, the coercivity and continuity properties are equivalent to
-to
 $$
 \alpha_1 \| u \|_V^2 \leq A(u,u) \leq \alpha_2 \, \| u \|_V^2
 \qquad \forall \, u \in V.
@@ -726,10 +725,10 @@ can skip the second condition.
 
 \begin{theorem} \label{theo_approxinfsup}
 Assume that $B(\cdot,\cdot)$ is continuous with bound $\beta_2$, and 
-$B(\cdot,\cdot)$ fulfills the discrete inf-sup condition with bound $\beta_1$. 
+$B(\cdot,\cdot)$ fulfills the discrete inf-sup condition with bound $\beta_{1h}$. 
 Then there holds the quasi-optimal error estimate
 \begin{equation}
-\| u - u_h \| \leq (1 + \beta_2 / \beta_1) \inf_{v_h \in V_h} \| u - v_h \|
+\| u - u_h \| \leq (1 + \beta_2 / \beta_{1h}) \inf_{v_h \in V_h} \| u - v_h \|
 \end{equation}
 \end{theorem}
 \noindent

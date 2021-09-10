@@ -112,7 +112,7 @@ $$
 \medskip
 
 \begin{theorem} \label{theo_mixeddiscretenorms}
-The dual-mixed discrete problem satisfies Brezzi's conditons with respect to $L_2$ and discrete $H^1$-norms.
+The dual-mixed discrete problem satisfies Brezzi's conditions with respect to $L_2$ and discrete $H^1$-norms.
 \end{theorem}
 \begin{proof} The $a(.,.)$ bilinear-form is continuous and coercive on $(V_h, \| \cdot \|_{L_2})$. 
 Now we show continuity of $b(.,.)$ on the finite element spaces. We integrate by parts on the elements, and rearrange boundary terms:
@@ -126,10 +126,10 @@ n_E) - v(x-t n_E)$. Thus, $\sigma_h n_E [v]$ is independent of
 the direction of the normal vector.
 Next we apply Cauchy-Schwarz, and use that $h \| \sigma_h \cdot n \|_{L_2(E)}^2 \leqc \| \sigma_h \|_{L_2(T)}$ for some $E \subset T$ (scaling and equivalence of norms on finite dimensional spaces):
 \begin{eqnarray*}
-b(\sigma_h, v_h) & \leq & \sum_T \| \sigma_h \|_{L_2(T)} \, \| \nabla v_h \|_{L_2(T)}  + \sum_{E \subset \Omega}  h^{1/2} \| \sigma \|_{L_2(E)} \, h^{-1/2} \| [v_h]\|_{L_2(E)}   + \sum_{E \subset \Gamma_D} ...  \\
+b(\sigma_h, v_h) & \leq & \sum_T \| \sigma_h \|_{L_2(T)} \, \| \nabla v_h \|_{L_2(T)}  + \sum_{E \subset \Omega}  h^{1/2} \| \sigma_h \|_{L_2(E)} \, h^{-1/2} \| [v_h]\|_{L_2(E)}   + \sum_{E \subset \Gamma_D} ...  \\
 & \leqc &  \| \sigma_h \|_{L_2(\Omega)}  \|  v_h \|_{H^1,h}
 \end{eqnarray*}
-The linear-forms are continous with norms $h^{-1/2} \| u_D \|_{L_2(\Gamma_D)}$ and $\| f \|_{L_2(\Omega)}$, respectively.
+The linear-forms are continuous with norms $h^{-1/2} \| u_D \|_{L_2(\Gamma_D)}$ and $\| f \|_{L_2(\Omega)}$, respectively.
 
 Finally, we show the LBB - condition: Given an $v_h \in Q_h$, we define $\sigma_h$ as follows:
 \begin{eqnarray*}
@@ -194,7 +194,7 @@ $$
 $$
 For the third one we use that $\opdiv V_h \subset Q_h$:
 $$
-\int \underbrace{ \opdiv \tau_h}_{\in V_h}   \underbrace{ (P_h  u - u) }_{V_h^\bot}
+\int \underbrace{ \opdiv \tau_h}_{\in Q_h}   \underbrace{ (P_h  u - u) }_{Q_h^\bot}
 $$
 Thus, the right hand side of equation (\ref{equ_invsubsuperproof}) can be estimated by $\| \sigma - I_h \sigma \|_{L_2}$. Finally, an application of the
  triangle inequality proves the result.
