@@ -89,7 +89,13 @@ The technical part is to ensure Dirichlet - boundary conditions. One can build a
 $$
 u_{final} := u - {\mathcal E} u
 $$
-This $u$ satisfies $u = 0$ on $\partial \Omega$. Since $\opdiv u = p = 0$ outside of $\Omega$, the correction did not change the divergence inside $\Omega$.
+This $u$ satisfies $u = 0$ on $\partial \Omega$. Since $\opdiv u = p =
+0$ outside of $\Omega$, the correction did not change the divergence
+inside $\Omega$.
+A self-contained  proof is given in J. Bramble: {\em A proof of the
+  inf-sup condition for the Stokes equation on Lipschitz domains},
+Mathematical Models and Methods in Applied Sciences, Vol 13, pp
+361-371 (2003).
 
 {\em Proof 2: } Directly construct a right-inverse for the $\opdiv$-operator via integration. We assume that $\Omega$ is star-shaped w.r.t. $\omega$, and $a\in \omega$. Extend $p$ by $0$ to $L_2(\setR^d)$:
 $$
@@ -102,7 +108,12 @@ Next, we average over star-points in $\omega$:
 $$
 u := \frac{1}{|\omega|}  \int_\omega u_a \, da
 $$
-There is still $\opdiv u = p$. Now, one can show that $\| u \|_{H^1} \leqc \| p \|_{L_2}$
+There is still $\opdiv u = p$. Now, one can show that $\| u \|_{H^1}
+\leqc \| p \|_{L_2}$. See M. Costabel and A.McIntosh: {\em On
+  Bogovski\u{i} and regularized Poincar\'e integral operators for de Rham
+  complexes
+  on Lipschitz domains}, Mathematische Zeitschrift 265, 297-320 (2010).
+
 
 \subsection{Discrete LBB}
 

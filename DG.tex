@@ -120,14 +120,14 @@ $$
 $$
 We obtain
 $$
-\int \opdiv (b u) v = \tfrac{1}{2} \int_{\partial \Omega} b_n u^2 =
+\int \opdiv (b u) u = \tfrac{1}{2} \int_{\partial \Omega} b_n u^2 =
 \int f u
 $$
 For $f = 0$ we obtain 
 $$
 \int_{\Gamma_{out}} |b_n| u^2 = \int_{\Gamma_{in}} | b_n | u^2.
 $$
-This inflow-outflow isometrie is a stability argument. For time dependent problems
+This inflow-outflow isometry is a stability argument. For time dependent problems
 (with $b_n = 0$ on $\partial \Omega$), it ensures the conservation of
 $L_2$-norm in time.
 
@@ -149,7 +149,7 @@ $$
 Depending on $b$, it is a norm for $\{ u = 0 \; \text{on} \; \Gamma_{in}
 \}$. Roughly speaking, if every point in $\Omega$ can be reached by a
 finite trajectory along $b$, then $\| u \|_{L_2} \leqc \| u \|_V$, by
-Friedrichs inequality. It does not hold if $b$ has vortices. Then
+Friedrichs' inequality. It does not hold if $b$ has vortices. Then
 $\| \cdot \|_V$ is only a semi-norm. Note, for space-time problems
 $\tilde b$ cannot have vortices. For theory, we will assume that
 $$
@@ -275,7 +275,7 @@ $$
 B(u_h, u_h) = \tfrac{1}{2} \sum_E \int_E |b_n| [u]^2.
 $$
 An extra treatment of edges on the whole domain boundary gives that
-the jump must be  replaced by the function values on $\partial u$.
+the jump must be  replaced by the function values on $\partial \Omega$.
 
 We plug in the second test function $v_2$:
 \begin{eqnarray*}
