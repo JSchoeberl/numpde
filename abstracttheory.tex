@@ -171,7 +171,7 @@ with respect to the norm $\| T \|_{V \rightarrow W}$. Then, the operator can be 
 \begin{definition} A bounded linear operator $T : V \rightarrow W$ is called {\bf compact} if for every bounded sequence $(u_n) \in V^\setN$, the sequence $(T u_n)$ contains a convergent sub-sequence.
 \end{definition}
 
-\begin{lemma} Let $V, W$ be Hilbert spaces. An operator is
+\begin{lemma} Let $V, W$ be Hilbert spaces. A linear operator $T : V \rightarrow W$ is
   compact if and only if there exists a complete orthogonal system
   $(u_n)$ for $(\operatorname{ker} T)^\bot$ and values $\lambda_n \rightarrow 0$ such that
 $$
@@ -179,7 +179,7 @@ $$
 $$
 This is the eigensystem of the operator $K : V \rightarrow V^\ast : u \mapsto (T u, T \cdot)_W$.
 \end{lemma}
-\begin{proof} (sketch) There exists an maximizing element of $\frac{ (Tv, Tv)_W } { (v,v)_V }$.
+\begin{proof} (sketch) There exists a maximizing element of $\frac{ (Tv, Tv)_W } { (v,v)_V }$.
 Scale it to $\| v \|_V = 1 $ and call it $u_1$, and $\lambda_1 = \frac{ (Tu_1, Tu_1)_W } { (u_1,u_1)_V }$. Repeat the procedure on the $V$-complement of $u_1$ to generate $u_2$, and so on. 
 \end{proof}
 
@@ -203,10 +203,16 @@ $$
 \end{theorem}
 \noindent
 {\em Proof:} Let $d := \inf_{v \in S} \| u - v\|$, and let $(v_n)$ be
-a minimizing sequence such that $\| u - v_n \| \rightarrow d$. 
+a minimizing sequence such that $\| u - v_n \| \rightarrow d$.
+
+\begin{center}
+\includegraphics[height=4cm]{pictures/project}
+\end{center}
+
+
 We first check that there holds
 $$
-\| v_n - v_m \|^2 = 2 \, \| v_n - u \|^2 + 2 \, \| v_m - u \|^2 - 4 \,  \| 1/2(v_n+v_m) - u \|^2.
+\| v_n - v_m \|^2 = 2 \, \| v_n - u \|^2 + 2 \, \| v_m - u \|^2 - 4 \,  \| \tfrac{1}{2}(v_n+v_m) - u \|^2.
 $$
 Since $1/2 (v_n+v_m) \in S$, there holds $\| 1/2 (v_n+v_m) - u \| \geq d$.
 We proof that $(v_n)$ is a Cauchy sequence:

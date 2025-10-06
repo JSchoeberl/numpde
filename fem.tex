@@ -49,20 +49,20 @@ It is a projection.
 
 Two finite elements $(T,V_T, \Psi_T)$ and 
 $(\widehat T, V_{\widehat T}, \Psi_{\widehat T})$ are called 
-{\em equivalent} if there exists an invertible function $F$ such that
+{\em equivalent} if there exists an invertible function $\Phi$ such that
 \begin{itemize}
-\item $T = F (\widehat T)$
-\item $V_T = \{ \hat v \circ F^{-1} : \hat v \in V_{\widehat T} \}$
+\item $T = \Phi (\widehat T)$
+\item $V_T = \{ \hat v \circ \Phi^{-1} : \hat v \in V_{\widehat T} \}$
 % \item $\Psi_T = \{ \psi_{\widehat T} (. \circ F) \}$
-\item $\Psi_T = \{ \psi^T_i : V_T \rightarrow \setR : v \rightarrow \psi^{\hat T}_i (v \circ F) \}$
+\item $\Psi_T = \{ \psi^T_i : V_T \rightarrow \setR : v \rightarrow \psi^{\hat T}_i (v \circ \Phi) \}$
 \end{itemize}
-Two elements are called affine equivalent, if $F$ is an affine-linear function.
+Two elements are called affine equivalent, if $\Phi$ is an affine-linear function.
 
 Lagrangian finite elements defined above are equivalent. The Hermite elements are not equivalent.
 
 Two finite elements are called interpolation equivalent if there holds
 $$
-I_T (v) \circ F = I_{\widehat T} (v \circ F)
+I_T (v) \circ \Phi = I_{\widehat T} (v \circ \Phi)
 $$
 
 \begin{lemma} Equivalent elements are interpolation equivalent
@@ -75,7 +75,8 @@ $\Omega$ is the subdivision of a domain $\Omega$ into closed triangles $T_i$
 such that $\overline \Omega = \cup T_i$ and $T_i \cap T_j$ is 
 \begin{itemize}
 \item either empty
-\item or an common edge of $T_i$ and $T_j$
+\item or a common vertex of $T_i$ and $T_j$
+\item or a common edge of $T_i$ and $T_j$
 \item or $T_i = T_j$ in the case $i = j$.
 \end{itemize}
 %
@@ -87,8 +88,8 @@ A finite element complex $\{ (T, V_T, \Psi_T) \}$ is a set of finite elements
 defined on the geometric elements of the triangulation ${\cal T}$.
 
 It is convenient to construct finite element complexes such that all
-its finite elements are affine equivalent to one {\em reference finite element} $(\widehat T, \hat V_T, \hat \Psi_T)$. The transformation $F_T$ is such that
-$T = F_T (\widehat T)$.
+its finite elements are affine equivalent to one {\em reference finite element} $(\widehat T, \hat V_T, \hat \Psi_T)$. The transformation $\Phi_T$ is such that
+$T = \Phi_T (\widehat T)$.
 
 
 Examples: linear reference line segment on $(0,1)$.
@@ -272,28 +273,28 @@ In the following, we will bound the interpolation error.
 
 
 \begin{lemma} Let $\widehat T$ and $T$ be $d$-dimensional domains related
-by the invertible affine linear transformation $F_T : \widehat T \rightarrow T $ 
+by the invertible affine linear transformation $\Phi_T : \widehat T \rightarrow T $ 
 $$
-F_T (x) = a + B x,
+\Phi_T (x) = a + B x,
 $$
 where $a \in \setR^d$ and $B$ is a regular matrix in $\setR^{d\times d}$.
 Then there holds:
 \begin{equation}
-\| u \circ F_T \|_{L_2(\widehat T)} = (\det B)^{-1/2} \, \| u  \|_{L_2(T)}
+\| u \circ \Phi_T \|_{L_2(\widehat T)} = (\det B)^{-1/2} \, \| u  \|_{L_2(T)}
 \end{equation}
 %
 \begin{equation}
 \frac{\partial}{\partial x_{i_m}} \ldots 
-\frac{\partial}{\partial x_{i_1}} \left( u \circ F_T \right) = 
+\frac{\partial}{\partial x_{i_1}} \left( u \circ \Phi_T \right) = 
 \sum_{j_m = 1}^d \ldots \sum_{j_1=1}^d 
 \left(
 \frac{\partial}{\partial x_{j_m}} \ldots 
-\frac{\partial}{\partial x_{j_1}} u \right) \circ F_T \; \;
+\frac{\partial}{\partial x_{j_1}} u \right) \circ \Phi_T \; \;
 B_{j_m,i_m} \ldots B_{j_1, i_1}
 \end{equation}
 %
 \begin{equation}
-| u \circ F |_{H^m(\widehat T)} \leqc (\det B)^{-1/2} \| B \|^m  \, | u |_{H^m(T)}
+| u \circ \Phi |_{H^m(\widehat T)} \leqc (\det B)^{-1/2} \| B \|^m  \, | u |_{H^m(T)}
 \end{equation}
 \end{lemma}
 

@@ -636,15 +636,17 @@ $\int_{e} \sigma \cdot n \, ds \neq \int_{\hat e} \hat \sigma \cdot \hat n \, ds
 
 The Piola transformation is the remedy:
 \begin{definition}[Piola Transformation]
-Let $F : \widehat T \rightarrow T$ be the mapping from the reference element
-$\widehat T$ to the element $T$. Let $\hat \sigma \in L_2(\widehat T)$. Then, the 
+Let $\Phi : \widehat T \rightarrow T$ be the mapping from the reference element
+$\widehat T$ to the element $T$, and $F = \Phi^\prime$
+and $J = \opdet F$
+Let $\hat \sigma \in L_2(\widehat T)$. Then, the 
 Piola transformation 
 $$
 \sigma = {\cal P} \{ \hat \sigma \}
 $$
 is defined by
 $$
-\sigma (F (\hat x)) = (\opdet F^\prime)^{-1} F^\prime \hat \sigma
+\sigma (\Phi (\hat x)) = J^{-1} F \hat \sigma
 (\hat x).
 $$
 \end{definition}
@@ -653,7 +655,7 @@ The Piola transformation satisfies:
 \begin{lemma} Let $\hat \sigma \in H(\opdiv, \widehat T)$, and 
 $\sigma = {\cal P} \{ \hat \sigma \}$. Then there holds
 $$
-(\opdiv \, \sigma) (F (\hat x)) = (\det F^\prime)^{-1} \opdiv \, \hat \sigma
+(\opdiv \, \sigma) (\Phi (\hat x)) = J^{-1} \opdiv \, \hat \sigma
 $$
 Let $\hat e$ be an edge of the reference element, and $e = F (\hat e)$.
 Then
@@ -665,10 +667,10 @@ $$
 and $\varphi(F(\hat x)) = \widehat \varphi (x)$. Then there holds
 \begin{eqnarray*}
 \int_T \opdiv \, \sigma \, \varphi \, dx & = & \int_T \sigma \cdot \nabla \varphi \, dx  \\
-& = & \int_{\widehat T} \left[ (\opdet F^\prime)^{-1} F^\prime \sigma \right] \cdot \left[ (F^\prime)^{-T} \nabla \hat \varphi \right] (\opdet F^\prime) \, d \hat x \\
+& = & \int_{\widehat T} \left[ J^{-1} F \sigma \right] \cdot \left[ F^{-T} \nabla \hat \varphi \right] J \, d \hat x \\
 & = & \int_{\widehat T} \hat \sigma \nabla \hat \varphi \, d \hat x 
 = \int_{\widehat T} \opdiv \hat \sigma \, \hat \varphi \, d \hat x \\
-& = & \int_T (\opdet F^\prime)^{-1} \, (\opdiv \hat \sigma) \varphi \, dx.
+& = & \int_T J^{-1} \, (\opdiv \hat \sigma) \varphi \, dx.
 \end{eqnarray*}
 Since $C_0^\infty$ is dense in $L_2(T)$, there follows the first claim.
 To prove the second one, we show that
