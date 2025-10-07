@@ -57,7 +57,9 @@ $$
 A linear form~$l$ is called bounded if the norm is finite.
 The vector space of all bounded linear forms on $V$ is called the 
 dual space~$V^\ast$.
+Instead of $l(v)$, we will often write $\left< l , v \right>_{V^\ast \times V}$.
 \end{definition}
+
 \noindent
 An example for a bounded linear form is 
 $l(\cdot) : L_2 \rightarrow \setR : v \rightarrow \int v \, dx$.
@@ -77,7 +79,7 @@ called an {\bf inner product} if it satisfies
 \item$A(v,v) \geq 0 \; \forall  \, v \in V$
 \item$A(v,v) = 0 \Leftrightarrow v = 0$
 \end{itemize}
-Often, is is denoted as $(\cdot,\cdot)_A$, $(\cdot,\cdot)_V$, or simply $(\cdot,\cdot)$.
+Often, it is denoted as $(\cdot,\cdot)_A$, $(\cdot,\cdot)_V$, or simply $(\cdot,\cdot)$.
 \end{definition}
 \noindent
 An example on $\setR^n$ is $u^T A v$, where $A$ is a symmetric and positive
@@ -150,7 +152,7 @@ An example is the differential operator on the according space $\frac{d}{dx} : (
 \end{lemma}
 \begin{proof} Let $v_n \rightarrow v$, i.e. $\| v_n - v \|_V \rightarrow 0$.  
 Then $\| T v_n - T v \| \leq \| T \|_{V \rightarrow W } \| v_n - v \|_V$ converges to 0,
-i.e. $T v_n \rightarrow T v$. Thus $T$ is continuous.
+i.e. $T v_n \rightarrow T v$. Thus, $T$ is continuous.
 \end{proof}
 
 \begin{definition} A {\bf dense subspace} $S$ of $V$ is such that every element of $V$ 
@@ -163,7 +165,9 @@ $$
 and let $W$ be a complete space. Let $T : S \rightarrow W$ be a bounded linear operator 
 with respect to the norm $\| T \|_{V \rightarrow W}$. Then, the operator can be uniquely extended onto $V$.
 \end{lemma}
-\begin{proof} Let $u \in V$, and let $v_n$ be a sequence such that $v_n \rightarrow u$. Thus, $v_n$ is Cauchy. $T v_n$ is a well defined sequence in $W$. Since $T$ is continuous, $T v_n$ is also Cauchy. Since $W$ is complete, there exists a limit $w$ such that $T v_n \rightarrow w$. The limit is independent of the sequence, and thus $T u$ can be defined as the limit $w$.
+\begin{proof} Let $u \in V$, and let $v_n$ be a sequence in $S$ such that $v_n \rightarrow u$. 
+Thus, $v_n$ is Cauchy. $T v_n$ is a well defined sequence in $W$. Since $T$ is continuous, $T v_n$ is also Cauchy. 
+Since $W$ is complete, there exists a limit $w$ such that $T v_n \rightarrow w$. The limit is independent of the sequence, and thus $T u$ can be defined as the limit $w$.
 \end{proof}
 
 
@@ -186,8 +190,8 @@ Scale it to $\| v \|_V = 1 $ and call it $u_1$, and $\lambda_1 = \frac{ (Tu_1, T
 
 \section{Projection onto subspaces}
 
-In the Euklidean space $\setR^2$ one can project orthogonally onto a
-line through the origin, i.e., onto a sub-space. The same geometric
+In the Euclidean space $\setR^2$ one can project orthogonally onto a
+line through the origin, i.e., onto a subspace. The same geometric
 operation can be defined for closed subspaces of Hilbert spaces.
 
 \begin{theorem} \label{theo_proj}
@@ -214,7 +218,7 @@ We first check that there holds
 $$
 \| v_n - v_m \|^2 = 2 \, \| v_n - u \|^2 + 2 \, \| v_m - u \|^2 - 4 \,  \| \tfrac{1}{2}(v_n+v_m) - u \|^2.
 $$
-Since $1/2 (v_n+v_m) \in S$, there holds $\| 1/2 (v_n+v_m) - u \| \geq d$.
+Since $\tfrac{1}{2} (v_n+v_m) \in S$, there holds $\| \tfrac{1}{2} (v_n+v_m) - u \| \geq d$.
 We proof that $(v_n)$ is a Cauchy sequence:
 Fix $\eps > 0$, choose $N \in \setN$ such that for $n > N$ there holds
 $\| u - v_n \|^2 \leq d^2 + \eps^2$. Thus for all $n,m > N$ there holds
@@ -335,7 +339,7 @@ $$
 f(v) := \int_\Omega f v \, dx
 $$
 The bilinear form is non-negative, and $A(u,u) = 0$ implies $u = 0$.
-Thus $A(\cdot,\cdot)$ is an inner product, and provides the
+Thus, $A(\cdot,\cdot)$ is an inner product, and provides the
 norm $\|v\|_A := A(v,v)^{1/2}$. The normed vector space $(C^1, \|.\|_A)$
 is not complete. Define
 $$
