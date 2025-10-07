@@ -1,0 +1,73 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{1. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{23. Oktober 2015}
+\end{center}
+\begin{enumerate}
+
+
+
+\item Sei $V$ ein Hilbertraum, 
+$$A: V \times V \rightarrow \mathbb{R} $$
+eine stetige, elliptische und symmetrische Bilinearform, 
+$$ f: V \rightarrow \mathbb{R}$$ eine stetige Linearform auf $V$ sowie $J(v):= \frac{1}{2}A(v,v)-f(v) $. Weiters sei $V_0 \subset V$ ein linearer Teilraum, $g \in V$ und $V_g = g + V_0$. 
+\\
+Zeigen Sie: $J$ nimmt sein Minimum \"uber $V_g$ genau dann bei $u \in V_g$ an, wenn f\"ur $u\in V_g\,$ $A(u,v)=f(v) \quad \forall v\in V_0$ gilt. Muss dazu $V_0$ abgeschlossen sein?
+\vspace{15pt}
+
+
+
+\item Sei $V$ ein Hilbertraum sowie $A: V \rightarrow V$ ein linearer, beschr\"ankter sowie selbstadjungierter Operator. \\ Zeigen Sie ohne allgemeine Spektraltheorie zu verwenden:\\
+$$ \| A\| := \sup\limits_{v \in V \atop v\neq 0} \frac{\|Av \|}{\| v \|} = \sup\limits_{v\in V\atop v\neq 0} \frac{|(Av,v)|}{\|v\|^2}$$
+\vspace{15pt}
+
+
+
+\item Sei $T_\sigma:l_2 \rightarrow l_2$ ein linearer Operator mit $(T_\sigma x)_n = \sigma_n x_n$, wobei $\sigma\in \mathbb{R}^{\mathbb{N}}$ mit $\sigma_n\rightarrow 0$.
+\\ Zeigen Sie, dass $T$ kompakt ist.
+\vspace{15pt}
+
+
+\item L\"osen Sie die Poissongleichung $-\Delta u = 1$ mit
+  Dirichlet-Randbedingungen $u=0$ auf dem ``L-shape'' Gebiet $\Omega =
+  (0,2)^2 \setminus [1,2]^2$ mit NGSolve. Plotten Sie die partiellen
+  Ableitungen. Sch\"atzen Sie f\"ur $p=1 \ldots 8$ den $L_2$-Fehler und den
+  $H^1$-Fehler, indem Sie mit einer FEM-L\"osung h\"oherer Ordnung
+  vergleichen (z.B. $p+2$). 
+
+\end{enumerate}
+\end{document}
+

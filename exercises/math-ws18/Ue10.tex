@@ -1,0 +1,94 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+% \newcommand{\det}{\text{det}}
+
+\begin{document}
+\begin{center}
+\textbf{10. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{11. J\"anner 2019}
+\end{center}
+
+
+\begin{enumerate}
+
+\item Es seinen $A$ und $M$ SPD-Matrizen. Zeigen Sie: Die Eigenpaare von $A u = \lambda M u$ sind genau die kritischen Punkte vom Rayleigh-Quotienten
+  $$
+  r(u) = \frac{u^T A u }{u^T M u}
+  $$
+Das vorkonditionierte Gradientenverfahren zur Bestimmung des kleinsten
+EW ist wie folgt: Sei $C \approx A$ ein Vorkonditionierer, und $u^0$ ein zuf\"alliger Startwert.
+\begin{eqnarray*}
+  w^k & := & C^{-1} \nabla r (u^k) \\
+  u^{k+1} & :=& \operatorname{arg}\min_{v \in \operatorname{span} \{u^k,
+    w^k \}}  r(v)
+\end{eqnarray*}
+Geben Sie explizite (implementierbare) Formeln f\"ur $w^k$ und $u^{k+1}$ an.   
+
+\item Implementieren Sie das Gradientenverfahren f\"ur
+  Eigenwertprobleme in NGSolve. Bestimmen
+  Sie den kleinsten EW von $-\Delta u = \lambda u$ auf $\Omega =
+  (0,1)^2$ mit Dirichlet-Randbedingungen $u = 0$ auf $\partial
+  \Omega$. Testen Sie gute und schlechte Vorkonditionierer.
+
+
+\item Implementieren Sie einen low-order/high-order Vorkonditionierer
+  in NGSolve: Verwenden Sie lokale Bl\"ocke mit allen Freiheitsgraden
+  in den Vertex-patches, und zus\"atzlich den globalen Teilraum der $p=1$
+  Basisfunktionen. Untersuchen Sie experimentell die Abh\"angigkeit
+  der Konditionszahl von Netzfeinheit und Polynomgrad f\"ur die
+  Laplacegleichung am Einheitsquadrat.
+
+\item Es sei $\Omega = (0,1)^2$ und $V = H_0^1(\Omega)$. Es sei
+  $A(u,v) = \int \lambda \nabla u \, \nabla v$ mit 
+  $$
+  \lambda(x) = \left\{ \begin{array} {cl}
+                         \lambda_a  & (x,y) \in (0.2, 0.4) \times (0.3, 0.5)
+                         \\
+                         \lambda_b  & (x,y) \in (0.6, 0.8) \times (0.5, 0.7)
+                         \\
+                         1 & \text{sonst}
+                             \end{array}
+                             \right.
+  $$
+und $f(v) = \int_\Omega v$. Testen Sie den low-order/high-order
+Vorkonditionierer, und einen Vorkonditionierer mit nur lokalen
+Bl\"ocken. Variieren Sie die Parameter $\lambda_a$ und $\lambda_b$ im
+Bereich von mindestens $10^{-6} \ldots 10^6$. Bestimmen Sie die
+Eigenwerte von $C^{-1} A$, als auch die ben\"otigten
+CG-Iterationen. Vergleichen Sie mit dem Beispiel vom Skript S 106.
+
+\end{enumerate}
+\end{document}
+
+ 

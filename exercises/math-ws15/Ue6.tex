@@ -1,0 +1,102 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+% \newcommand{\det}{\text{det}}
+
+\begin{document}
+\begin{center}
+\textbf{6. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{4. Dezember 2015}
+\end{center}
+\begin{enumerate}
+\item
+
+Sei $\widehat T \subset \R{d}$ und $F : \widehat T \rightarrow T$ ein
+Diffeomorphismus. Die Piola - Transformation ${\mathcal P}$ ist wie
+folgt definiert: F\"ur $\hat v \in [L_2(\widehat T)]^d$ ist die Piola
+- Transformierte $v \in [L_2(T)]^d$
+$$
+v := {\mathcal P} (\hat v) := (\det F^\prime)^{-1} F^\prime \hat v  \circ F^{-1}
+$$
+Zeigen Sie daf\"ur (die Divergenz existiere im passenden Sinne):
+$$
+\text{div} \, v =   (\det F^\prime)^{-1}  \text{div} \hat v \circ F^{-1}
+$$
+Hinweis: a) Sie zeigen dies f\"ur glatte Funktionen und
+benutzen klassische Ableitungen, oder b) Sie verwenden die Divergenz im
+schwachen Sinn. Wir sind mit $d = 2$ zufrieden.
+
+\item
+Finden Sie die kanonische Basis  f\"ur folgendes 1D Element: 
+\begin{itemize}
+\item $T = [-1,1]$
+\item $V_T = P^k$
+\item $\Psi = \{ \psi_0 : v \mapsto v(-1), \psi_1 : v \mapsto v(1),  \psi_j : v \mapsto \int_{-1}^1 v^\prime(x) P_{j-1}(x)  dx,  \; j = 2, \ldots, k \}$ 
+\end {itemize}
+Verwenden Sie dazu die {\em Integrierten Legendrepolynome} $L_i(x) :=
+\int_{-1}^x P_{i-1}(s) \, \text{ds}$ f\"ur $i \geq 1$.
+
+Interpretieren Sie den kanonischen Interpolationsoperator.
+
+
+\item Das Beispiel aus \"Ubung 5.5 hat eine zylinder-symmetrische
+  L\"osung, d.h. $u(x,y,z) = \tilde u(r,z)$.  L\"osen Sie es unter Verwendung von Zylinderkoordinaten.
+Bestimmen Sie dazu eine Variationsformulierung auf zwei Arten:
+\begin{enumerate}
+\item starten Sie vom Laplace-Operator in Zylinderkoordinaten, und
+  leiten dazu eine symmetrische VF her
+\item setzen Sie in die 3D VF eine rotationssymmetrische L\"osung und
+  Testfunktionen ein.
+\end{enumerate}
+Was ist der nat\"urliche Hilbertraum ?
+L\"osen Sie das Beispiel mit FEM, und vergleichen Sie die Ergebnisse mit den Rechnungen von \"U 5.5.
+
+\item Zeigen oder widerlegen Sie folgende Spur-Absch\"atzung:
+$$
+|u(0)|^2 \leq c \, \int_0^1 x \, u^\prime(x)^2 \, \text{dx} + \int_0^1
+x \, u(x)^2 \, \text{dx}
+$$
+Diskutieren Sie m\"ogliche Randbedingungen der schwachen Formulierung
+am Symmetrierand bei Verwendung von Zylinderkoordinaten.
+
+\item 
+MyLittle-NGSolve: Implementieren und testen Sie Viereckselemente
+(engl. Quadrilateral) nach der Vorlage f\"ur
+Dreieckselemente. Generierung von gemischten Netzen (trigs und quads) in Netgen: Ab
+26. Nov \"uber Python: {\tt GenerateMesh(maxh=...,
+  quad\_dominated=True)}. Sonst \"uber Menu: Load Geometry *.in2d -file, Meshing
+  Options: quad-dominated.
+
+\end{enumerate}
+\end{document}
+

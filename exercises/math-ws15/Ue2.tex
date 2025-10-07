@@ -1,0 +1,131 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{2. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{30. Oktober 2015}
+\end{center}
+\begin{enumerate}
+
+
+
+
+
+
+
+
+\item Sei $V$ ein Hilbertraum, $f$ eine stetige Linearform und $A$ eine stetige, symmetrische und elliptische Bilinearform. Sei $u$ die L\"osung des Variationsproblems
+$$A(u,v) = f(v).$$
+Zeigen Sie, dass f\"ur $u$
+$$\sup\limits_{v\neq 0} \frac{f(v)}{\|v\|_A} = \|u\|_A$$
+gilt. Das Supremum wird f\"ur $v=u$ angenommen.
+\vspace{15pt}
+
+
+\item Sei $V$ ein Hilbertraum und $a: V \times V \rightarrow \mathbb{R}$ eine symmetrische, elliptische (mit $\alpha_1$) und stetige (mit $\alpha_2$) Bilinearform. Des Weiteren sei $X = V \times V$, sowie
+$$
+B: \left\{
+\begin{aligned}
+ & X \times X \rightarrow \mathbb{R} \\
+ &((u_1,u_2),(v_1,v_2)) \mapsto a(u_1,v_1) + a(u_1,v_2) + a(u_2,v_2)
+\end{aligned}
+\right.
+$$
+Zeigen Sie, dass $B$ elliptisch ist und geben Sie eine Elliptizit\"atskonstante an.
+Sei $X_N \subset X$ ein linearer Teilraum. L\"asst sich die Elliptizit\"at von $B$ auf $X_N$ \"ubertragen?
+\vspace{15pt}
+
+
+\item Wie Aufgabe 2. Sei $b: V \times V \rightarrow \mathbb{R}$ eine weitere stetige (mit $\beta_2$) Bilinearform. Jetzt sei
+$$
+B: X \times X \rightarrow \mathbb{R}:\;((u_1,u_2),(v_1,v_2)) \mapsto a(u_1,v_1) + b(u_1,v_2) + a(u_2,v_2)
+$$
+Zeigen Sie die $\inf-\sup$ Stabilit\"at von $B$ (Konstante = ?).
+Geben Sie m\"ogliche Teilr\"aume $X_N\subset X$ an, sodass auch das
+diskrete Problem $\inf-\sup$-stabil ist. Geben Sie ein Beispiel an,
+f\"ur das das Variationsproblem auf $X_N \subset X$ nicht l\"osbar ist.
+\vspace{15pt}
+
+
+\item Seien $X$, $Y$ Hilbertr\"aume mit gemeinsamer Vektorraum-Struktur. Auf dem Summenraum $X+Y:= \{z = x+ y: x\in X\;y\in Y \}$ sei 
+$$\| z\|_{X+Y}:= \inf\limits_{z=x+y \atop x\in X,\; y\in Y} \sqrt{\|x\|_X^2 +\|y\|_Y^2}.$$
+Zeigen Sie, dass die Norm $\|\cdot \|_{X+Y}$ ein Skalarprodukt
+induziert. Hinweis: Parallelogrammlemma.
+\vspace{15pt}
+
+
+
+\item \label{bspfluss} Sei $\Omega =(0,1)^2$, und $\Gamma_b$, $\Gamma_r$, $\Gamma_t$ und
+  $\Gamma_l$ unterer, rechter, oberer und linker Rand. L\"osen Sie
+  $-\Delta u = f := x$ auf $\Omega$, homogene Dirichlet Randbedingungen
+  links und rechts, und homogene Neumann Randbedingungen unten und
+  oben mittels FEM ($p=1,2,3$). Berechnen Sie die W\"armefl\"usse durch linken und
+  rechten Rand
+$$
+W_l = - \int_{\Gamma_l} \frac{\partial u}{\partial n} \qquad \text{und} \qquad
+W_r = - \int_{\Gamma_r} \frac{\partial u}{\partial n}
+$$
+und $W_l+W_r$. Plotten Sie die Fehler f\"ur eine Folge von Netzen.
+
+Berechnen Sie die Integrale \"uber zwei Varianten:
+\begin{enumerate}
+\item numerische Integration, wobei Sie $\frac{\partial u}{\partial
+    x}$ in den von Ihnen gew\"ahlten Integrationspunkten auswerten
+\item \"uber die {\tt Integrate( ...., BND, domain\_wise=True) }
+  Funktion. Dazu m\"ussen Sie zuerst $\frac{\partial u}{\partial x}$ in eine weitere
+  $H^1$-gridfunction {\tt dudx} interpolieren (mittels {\tt dudx.Set(u.Deriv()[0])}. Warum wohl ?
+\end{enumerate}
+
+\vspace{15pt}
+
+
+\item Wie Bsp \ref{bspfluss}. Zeigen Sie zun\"achst f\"ur die L\"osung
+  $u$ und eine beliebige $H^1$ Funktion $w$:
+$$
+\int_\Omega \nabla u \nabla w - \int_\Omega f w = \int_{\Gamma_l \cup
+  \Gamma_r}  \frac{\partial u}{\partial n} w
+$$
+Bestimmen Sie die Fl\"usse \"uber diese Gleichung. Definieren Sie dazu
+eine {\tt GridFunction} w, und setzen Sie diese so dass sie links
+bzw. rechts die Werte 1 bzw. 0 annimmt.
+
+Berechnen Sie dann die linke Seite
+\begin{enumerate}
+\item durch Berechnung der Integrale
+\item durch Matrix-Vektor Operationen (Skalarprodukt ist {\tt InnerProduct(x,y)}).
+\end{enumerate}
+
+\end{enumerate}
+\end{document}
+

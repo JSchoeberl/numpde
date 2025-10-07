@@ -1,0 +1,84 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+% \newcommand{\det}{\text{det}}
+
+\begin{document}
+\begin{center}
+\textbf{7. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{7. Dezember 2015}
+\end{center}
+\begin{enumerate}
+
+\item
+Sch\"atzen Sie den $L_2$-Fehler bei der nicht-konformen $P^1$ Methode
+ab. \newline
+Hinweis: Verbinden Sie dazu Thm 71 (Aubin-Nitsche) und Lemma 79
+(2. Lemma von Strang). 
+
+\item
+  Sei $V_{h0}^{nc}$ der nicht-konforme $P^1$ Raum (Skript Seite 76 ff)
+ mit $0$ Randwerten in den Kantenmittelpunkten auf $\partial \Omega$.
+Beweisen Sie die diskrete Friedrichs-Ungleichung
+ $$
+ \| v_h \|_{L_2} \leq  c \, \| v_h \|_h  \quad \forall v_h \in V_{h0}^{nc}.
+ $$
+Hinweis: Definieren Sie einen Mittelungsoperator $S : V_h^{nc}
+\rightarrow V_h$ in den konformen $P^1$ Raum $V_h$ per Mittelung in
+den Eckpunkten.
+Zeigen Sie daf\"ur
+$$
+\tfrac{1}{h} \| v_h - S v_h \|_{L_2} + \| \nabla S v_h \| \leq c \, \|
+v_h \|_h
+\qquad \forall \, v_h \in V_h^{nc}
+$$
+
+
+\item {\em Goal-driven adaptivity}. Implementieren Sie einen
+  Fehlersch\"atzer  f\"ur lineare Funktionale (Skript S67). Verwenden
+  Sie als Vorlage das Tutorial {\em adaptivity.py}. 
+
+  Testen Sie folgende Beispiele: $\Omega = (0,1)^2$, $A(u,v) = \int
+  \nabla u \nabla v$, $f(v) = \int_{[0.2,0.3] \times [0.45,0.55]}  100
+  \, v$ und die Funktionale
+  \begin{itemize}
+  \item $b_1(u) = 100 \int_{[0.7,0.8] \times [0.45,0.55]}  u$
+  \item $b_2(u) = 10 \int_{\{0.75\} \times [0.45,0.55]} u$
+    \item $b_3(u) = u(0.75, 0.5)$
+  \end{itemize}
+
+Erstellen Sie Konvergenzplots f\"ur den Fehler im
+Zielfunktional. Vergleichen Sie mit adaptiver Verfeinerung f\"ur die Energienorm.
+  
+\end{enumerate}
+\end{document}

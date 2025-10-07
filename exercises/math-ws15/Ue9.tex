@@ -1,0 +1,114 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+
+
+% \newcommand{\det}{\text{det}}
+
+\begin{document}
+\begin{center}
+\textbf{9. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{15. J\"anner 2016}
+\end{center}
+
+\begin{enumerate}
+
+
+\item Auf dem Gebiet $\omega \subset \mathbb{R}^d$ gelte 
+  $\|u-\overline{u}^\omega\|_{L_2(\omega)} \leq C_P \|\nabla u \|
+  _{L_2(\omega)}\;\;\forall\, u \in H^1$.  (P nach Poincar\'e)
+Zeigen Sie, dass dann auch 
+$$\inf\limits_{q\in P^1} \|u-q \|_{L_2(\omega)} \leq C_P^2 \|\nabla^2
+u \|_{L_2(\omega)} \;\quad \forall\, u \in H^2(\omega)$$
+Hinweis: W"ahle $q$ so, dass $\int_\omega q = \int_\omega u$ und
+$\int_\omega \nabla q = \int_\omega \nabla u$.
+
+Zusatzinfo: Auf einem Vertex Patch gilt $C_P \simeq h$.
+\vspace{10pt}
+
+\item Mit den Voraussetzungen aus Beispiel 1 zeigen Sie, dass
+$$\inf\limits_{q\in P^k} \|u-q \| \leq C_P^{k+1} | u |_{H^{k+1}(\omega)}\;\quad \forall\, u\in H^{k+1}(\omega), $$
+wobei jetzt f"ur $| .  |_{H^k}$ gemischte Ableitungen mehrfach gez"ahlt werden, d.h. $|u|^2_{H^k}:=\sum\limits_{i=1}^d |\frac{\partial u}{\partial x_i}|^2_{H^{k-1}}$ \\
+Hinweis: Definiere $\Pi_k: H^k\rightarrow P^k$ so, dass f"ur alle Multiindizes $\alpha$ mit $|\alpha|\leq k$ gilt: $\int_\omega \frac{\partial^{|\alpha|}}{\partial x^{\alpha}}\Pi_ku$=$\int_\omega \frac{\partial^{|\alpha|}}{\partial x^{\alpha}}u$. Daraus folgert man, dass $\frac{\partial}{\partial x_i}(\Pi_ku) = \Pi_{k-1}(\frac{\partial}{\partial x_i}u)$ gilt.
+\vspace{10pt}
+
+\item Sei $V_h$ der Finite Elemente Teilraum 1. Ordnung von
+  $H^1(\Omega)$. Wir betrachten die folgenden Clement-artigen
+  Quasi-Interpolationsoperatoren ($\omega_V\ldots$ Vertex Patch, $\omega_T\ldots$ Element Patch):
+$$\Pi_hu = \sum\limits_{V \atop \text{Vertices}}\tilde{\Psi}_V(u) \varphi_V $$
+\begin{itemize}
+\item[a)] $\tilde{\Psi}_V(u) = \frac{1}{|\omega_V|}\int_{\omega_V}u$					
+\item[b)] $\tilde{\Psi}_V(u) = \frac{1}{\int_{\omega_V}\varphi_V}\int_{\omega_V}\varphi_V u$
+\item[c)] $\tilde{\Psi}_V(u) = (Pu)(V)$, wobei $P$ die $L_2(\omega_V)$- orthogonale Projektion von $L_2(\omega_V)\rightarrow P^1(\omega_V)$
+\item[d)] $\tilde{\Psi}_V(u) = (Pu)(V)$, wobei $P$ die $L_2(\omega_V)$- orthogonale Projektion von $L_2(\omega_V)\rightarrow \restr{V_h}{\omega_V}$
+\end{itemize}
+Zeigen Sie, dass $\|\Pi_h u \|_{L_2(T)} \leq c\|u\|_{L_2(\omega_T)}$
+gilt, wobei $c$ nur von der Form der Dreiecke abh"angt.
+Zeigen Sie au"serdem, dass $\Pi_hu = u\;\;\forall\,u\in P^0(\omega_T)$ f"ur die Operatoren aus a) bzw. b). Analog dazu zeigen Sie f"ur die Operatoren aus c) und d), dass $\Pi_hu = u\;\;\forall\,u\in P^1(\omega_T)$.
+
+\item Zeigen Sie, dass $\Pi_h$ aus dem vorigen Beispiel b)
+  selbstadjungiert ist, sowie dass $\Pi_h$ aus Aufgabe d) ein Projektor auf $V_h$ ist.
+
+
+
+\item Wiederholen Sie Bsp 3.6. Berechnen Sie zuerst einen
+  \"aquilibrierten Fluss (d.h. $\sigma_{eq}$ sodass $\operatorname{div}
+  \sigma_{eq} = -f$), und berechnen daraus die Fl\"usse durch die
+  einzelnen Randst\"ucke, und deren Summe.
+
+Verwenden Sie dazu den Code aus MyLittleNGSolve/equilibrate. 
+Eingespielt am 4. J\"anner. Programm equilibrate\_simle.cpp
+funktioniert mit \"alterem ngsolve. Alternativ ist equilibrate.cpp,
+das ben\"otigt aber ein ngsolve update.
+
+\item Sei $\Omega = (0,1)^2$, $u$ die Greensche Funktion zum Punkt
+  $(0.3, 0.5)$, d.h. $-\Delta u = \delta_{(0.3,0.5)}$ mit homogenen Dirichlet Randbedingungen. Berechnen Sie
+  $u(0.7, 0.5)$ m\"oglichst genau mittels FEM. 
+
+Stellen Sie dazu das Punktauswertefunktional als Linearform $b(\cdot)$ dar, und
+berechnen Sie $b(u)$ \"uber das Skalarprodukt der beiden Vektoren.
+
+Da  Punktauswertung (in den beiden Linearformen $f(\cdot)$ und $b(\cdot)$) nicht in $H^{-1}$
+liegt, ersetzen sie diese durch Mittelung \"uber Kreise mit $r = 0.01$.
+
+Verwenden Sie adaptive Netzverfeinerung (siehe Python-Beispiel {\em
+  adaptive.py}). Vergleichen Sie die generierten Netze und die
+erreichte Genauigkeit f\"ur einen Energie-Fehlersch\"atzer und
+einen Ziel-basierten Fehlersch\"atzer.
+\end{enumerate}
+\end{document}
+

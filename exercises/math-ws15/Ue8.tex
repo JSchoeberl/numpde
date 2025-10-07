@@ -1,0 +1,105 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+% \newcommand{\det}{\text{det}}
+
+\begin{document}
+\begin{center}
+\textbf{8. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{18. Dezember 2015}
+\end{center}
+Betrachten Sie den Timoshenko Balken aus \"U4.3. Wir zeigen in Bsp 1-3
+$t$-robuste Fehlerabsch\"atzungen f\"ur finite Elemente h\"oherer Ordnung.
+
+\begin{enumerate}
+
+\item Es sei $\eta := t^{-2} (w^\prime - \beta)$ die sogenannte
+  Scherspannung. Zeigen Sie die Regularit\"atsabsch\"atzung:
+$$
+\| w \|_{H^{3+m} + t^{-2} H^{1+m}} + \| \beta \|_{H^{2+m}} + \| \eta \|_{H^m}
+\le c \, \| f \|_{H^{-1+m}} \qquad \forall \, m \in  \mathbb{N}_0
+$$
+mit $c \neq c(t)$. Hinweis: zuerst $\eta$, dann $\beta$, zuletzt $w$.
+
+\item {\em kommutierende Interpolationsoperatoren}. Sei $I = [a,b]$,
+  und
+\begin{itemize}
+\item
+Elementraum $V_w = P^3$, Funktionale $\Psi_w = \{ v(a),
+v^\prime(a), v(b), v^\prime(b) \}$, und
+\item
+Elementraum $V_\beta = P^2$, Funktionale $\Psi_\beta = \{ v(a), v(b),
+\int_a^b v(s) ds \}$.
+\end{itemize}
+Zeigen Sie f\"ur die zugeh\"origen Interpolationsoperatoren 
+$$
+I_\beta w^\prime = (I_w w)^\prime
+$$
+
+\item Es wird nun $(w,\beta)$ mit FEM approximiert, wobei $w_h$ im $C^0$-stetigen finiten Elemente-Raum
+  3. Ordnung, und $\beta_h$ im $C^0$-stetigen finite Elemente-Raum
+  2. Ordnung liegt. Zeigen Sei folgende Fehlerabsch\"atzungen:
+$$
+\| \beta - \beta_h \|_{H^1} + \| w - w_h \|_{H^1}\leq c h^2 \| f \|_{H^1}
+$$
+mit $c \neq c(t)$.
+Hinweise: Wenden Sie Cea's Lemma in der A-Norm an ($\|(w,\beta)\|_A^2 =
+A(w,\beta; w, \beta)$). Zur Absch\"atzung
+des Infimums w\"ahlen Sie die kommutierenden Interpolationsoperatoren
+aus Bsp~2. 
+
+\item Implementieren Sie ein High-Order Viereckselement in
+  my-little-ngsolve. Gehen Sie analog zum High-Order Dreieckselement
+  vor (files myHOElement.?pp, myHOFESpace.?pp).
+
+
+\item Sei $u$ die L\"osung des Randwertproblems: Ges $u \in
+  H^1(\Omega)$ mit $u = u_D$ auf $\Gamma_D$ sodass
+$$
+\int_\Omega \lambda(x) \nabla u \, \nabla v = \int_\Omega f v +
+\int_{\Gamma_N} g v  \qquad \forall \, v \in H^1, v = 0 \text{ auf } \Gamma_D.
+$$
+Es sei $u_h$ eine Finite-Elemente N\"aherung mit $u_h = u$ auf
+$\Gamma_D$. Weiters sei $\tau \in H(\diver)$ sodass $\diver \tau = - f$
+und $\tau \cdot n = g$ auf $\Gamma_N$. Zeigen Sie:
+$$
+\int_\Omega \lambda | \nabla u - \nabla u_h |^2 \leq \int_\Omega
+\lambda | \nabla u_h - \lambda^{-1} \tau |^2 
+$$
+Zusatzinfo: Kann so ein $\tau$ tats\"achlich berechnet werden, liefert dies eine
+Fehlerabsch\"atzung ohne generische Konstante. \newline
+Hinweis: Was ergibt $\int_\Omega (\nabla u - \nabla u_h) ( \lambda
+\nabla u - \tau)$ ?
+\end{enumerate}
+\end{document}
+

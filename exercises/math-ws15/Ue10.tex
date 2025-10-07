@@ -1,0 +1,95 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+
+
+% \newcommand{\det}{\text{det}}
+
+\begin{document}
+\begin{center}
+\textbf{10. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{22. J\"anner 2016}
+\end{center}
+
+\begin{enumerate}
+
+
+
+\item Zeigen Sie f\"ur die Operatoren aus \"U 9.3 die
+  Fehlerabsch\"atzungen:
+$$
+\| u - \Pi_h u \|_{L_2(T)} \leq c h^k | u |_{H^k(\omega_T)}
+$$
+mit $k = 1$ f\"ur a) und b), bwz. $k \in \{1,2\}$ f\"ur c) und d).
+
+Hinweis: Stetigkeit in $H^1$, \"U 9.1
+
+\item Beweisen Sie f\"ur die nicht-konforme $P^1$ Methode eine $L_2$
+  Fehlerabsch\"atzung analog zu Aubin-Nitsche:
+$$
+\| u - u_h \|_{L_2} \leq c h^2 \| u \|_{H^2}
+$$
+Dazu m\"ussen wir $H^2$-Regularit\"at f\"ur das duale Problem annehmen. 
+
+Hinweis: Ein konformer $P^1$-Raum ist Teilraum sowohl von $V$ als auch
+von $V_h$.
+
+\item \"Aquilibrierte F\"usse f\"ur die nicht-konforme $P^1$-Methode
+  sind einfach zu bestimmen ($\lambda = 1$, $f$ element-weise konstant):
+$$
+\sigma_{eq} := \nabla u_h - \frac{1}{2}(x-\overline x) f \qquad \text{
+auf } T,
+$$
+mit $\overline x$ dem Schwerpunkt von $T$. Zeigen Sie
+$\operatorname{div} \sigma_{eq} = -f$ auf $\Omega$. 
+
+Hinweis: Die Normalstetigkeit von $\sigma_{eq}$ \"uber die Kante $E$ erhalten Sie aus
+der FEM-Gleichung zur Basisfunktion auf $E$.
+
+\item L\"osen Sie das Beispiel aus \"U 3.6 mit einer gemischen Methode
+  f\"ur den Fluss (Skript Kap 7.2). 
+
+Einen $H(\operatorname{div})$ FEM - Raum erhalten Sie in ngspy mit {\tt V =
+  HDiv(mesh,order=xx)}.  W\"ahlen Sie die $H(\operatorname{div})$ Ordnung 1 h\"oher
+als $L_2$ Ordnung. 
+
+Der 0-Block rechts unten macht manchen direkten L\"osern Probleme
+(Linux ohne MKL). F\"ugen Sie dann $-10^{-8} \int u v$ zur
+Bilinearform hinzu.
+\end{enumerate}
+\end{document}
+

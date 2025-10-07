@@ -1,0 +1,112 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{3. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{13. November 2015}
+\end{center}
+\begin{enumerate}
+
+
+\item Sei $\Omega = (0,\pi)$ und $u = \sum\limits_{i=1}^\infty u_i\sin(ix)$ die Zerlegung der Funktion $u$ in ihre Fourierkoeffizienten. Wir definieren f\"ur $s \in [0,\frac{3}{2})$ die $\| \cdot \|_{H_0^s}$ Norm mittels
+$$\| u \|^2_{H_0^s}:= \sum\limits_{i=1}^\infty i^{2s} u_i^2 . $$
+Bem.: Damit gilt $\| u \|_{H_0^0} \cong \| u \| _{L_2}$ sowie $\| u \|_{H_0^1} \cong \| \nabla u \|_{L_2} $.
+\begin{itemize}
+\item[a.)] Sei $0<a<\pi$. F\"ur welche $s$ liegt die Funktion $u_1$ mit $$u_1(x):=\left\{\begin{aligned} 1 & \quad x>a \\ 0 & \quad x\leq a \end{aligned}\right.$$ in $H_0^s$? Der Raum $H_0^s$ ist als Abschluss $\overline{C_0^\infty(\Omega)}^{\|\cdot\|_{H_0^s}}$ erkl\"art.
+\item[b.)] F\"ur welche $s$ liegt das Punktauswertungsfunktional $f: u\mapsto u(a)$ in $(H_0^s)^*$?
+\end{itemize}
+
+
+\item Sei $s \in(\frac{1}{2}, \frac{3}{2})$ und $u \in H_0^s$. Dann ist $u$ H\"olderstetig mit Exponent $\alpha = s-\frac{1}{2}$, d.h. es gilt
+$$|u(x)-u(y) | \leq c\,|x-y|^\alpha $$
+
+\item Finden Sie einen Fortsetzungsoperator $E : H^2(-2,0)$ nach
+  $H^2(-2,1)$. Zeigen Sie Stetigkeit bzgl. $L_2$-Norm und $H^1$ und
+  $H^2$-Seminormen.  Hinweis: Verwenden Sie den Ansatz $Eu(x) = a
+  u(-x) + b u(-2x)$ f\"ur $x \in (0,1)$. 
+
+
+
+\item $V$, $W$, Hilbertr\"aume,  $B(.,.) : V \times W \rightarrow \R{}$,
+  stetige Bilinearform, erf\"ulle die zweite $\inf-\sup$ Bedingung 
+$$
+\inf_{v \in W} \sup_{u \in V} \frac{B(u,v)}{\|u\|_V \| v\|_W} \geq \beta_1,
+$$
+Formel (2.10) aus Skript. Zeigen Sie, dass damit der Operator $B$
+surjektiv ist, d.h. das Variationsproblem
+$$
+\text{suche } u \in V: \quad B(u,v) = f(v) \quad \forall \, v \in W
+$$
+ f\"ur alle $f \in W^\ast$ l\"osbar ist. Es gibt eine L\"osung $u$
+ mit $\|u \| \leq \beta_1^{-1} \| f\|$.  
+
+Hinweis: Ein lineares Gleichungssystem $B x = y$ mit $B \in \R{n
+  \times m}$, $n < m$, vollen Rang k\"onnen Sie mittles 
+$B B^t w = y$, und $x := B^t w$ l\"osen. Definieren Sie $B^\ast : W
+\rightarrow V^\ast$ mittels $\left<B^\ast v, u\right>_{V^\ast \times V} =
+B(u,v)$, und zeigen Sie dass $(B^\ast w, B^\ast v)_{V^\ast}$ eine stetig und
+elliptische Bilinearform auf $W$ ist.
+
+
+\item Sei $\Omega = \cup_i \Omega_i$ eine Zerlegung in Teilgebiete, und
+  $\lambda : \Omega \rightarrow \R{}$ st\"uckweise konstant bez\"uglich dieser
+  Zerlegung. Betrachten Sie das Variationsproblem
+$$
+\text{suche } u \in H_0^1(\Omega): \quad
+\int_\Omega \lambda \nabla u \nabla v = \int_\Omega f v.
+$$
+Bestimmen Sie die klassische Formulierung der
+Differentialgleichung. Geben Sie die \"Ubergangsbedingungen an den
+Interfaces $\gamma_{ij} = \overline{\Omega_i} \cap
+\overline{\Omega_j}$ an.
+
+
+\item Sei $\Omega = (0,1)^2$,  $\Omega_1 = (0.3,0.5) \times
+  (0.5,0.7)$, $\Omega_2 = (\Omega \setminus \Omega_1)^\circ$.  
+Es sei $\lambda_{|\Omega_1} = 1$ und $\lambda_{|\Omega_2} = 10$,
+ $f_{|\Omega_1} = 1$ und $f_{|\Omega_2} = 0$. L\"osen Sie das
+ entsprechende
+Variationsproblem aus Beispiel 5 mittels FEM.
+Berechnen Sie die W\"armefl\"usse $\int_{\Gamma_i} \lambda
+ \frac{\partial u}{\partial n}$ durch die einzelnen  Randst\"ucke von
+ $\Omega_1$ mit einer Methode Ihrer Wahl. Die Summe sollte $0.04$ ergeben.
+
+Die Definition von Teilgebieten und st\"uckweise konstanter
+Koeffizienten entnehmen Sie dem Beispiel {\it Adaptive solution of
+  heat equation with variable coefficient}, bzw. {\it How-To: Working
+  with CoefficientFunctions, How-To: Define and Mesh 2D geometries}.
+
+\end{enumerate}
+\end{document}
+

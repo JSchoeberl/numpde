@@ -1,0 +1,94 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+% \newcommand{\det}{\text{det}}
+
+\begin{document}
+\begin{center}
+\textbf{7. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{11. Dezember 2015}
+\end{center}
+\begin{enumerate}
+
+\item
+Bestimmen Sie die Basis f\"ur das Raviart Thomas Element (niedrigster
+Ordnung) am Einheitsdreieck $[(0,0), (1,0), (0,1)]$. Es ist $V_T = \{
+(a_x, a_y) + b\, (x,y) : a_x, a_y, b \in \R{} \}$, und $\Psi = \{ \psi_E
+: v \mapsto \int_E v \cdot n \, \text{ds}  \; \forall \, \text{Kanten
+} E \}$. Visualisieren Sie die Basisfunktionen geeignet.
+
+
+\item Zeigen Sie f\"ur die integrierten Legendrepolynome aus \"U6.2:
+$$
+L_i(x) = c_i \big(  P_i(x) - P_{i-2} (x) \big)
+$$
+mit $c_i = \, ? \in \R{}$. Hinweis: Bestimmen Sie zuerst die beiden f\"uhrenden
+nicht-null Koeffizienten aus der Rodrigues  - Formel. Testen Sie dann
+mit Polynomien niedrigerer Ordnung ($\int_{-1}^1 ... q(x) \text{dx}$). 
+
+\item Berechnen Sie die Element-Massen-Matrix $(\int_T \varphi_i
+  \varphi_j )$ und die Element-Steifigkeits-Matrix $(\int_T \varphi_i^\prime
+  \varphi_j^\prime )$ am Element $T = [-1,1]$ f\"ur die Basis
+  aus \"U6.2. 
+
+
+\item 
+Geben Sie eine Basis f\"ur ein allgemeines $H^1$-Dreieck mit Elementraum $P^k$ an.
+Die Randwerte auf einer Kante $E$ sollen mit der Basis aus \"U6.2
+  \"ubereinstimmen (Sie k\"onnen die Skalierung anpassen). 
+Berechnen sie $\text{dim} V_T$.
+Wie viele Basisfunktionen sind den Eckpunkten,
+den einzelnen  Kanten, und dem Inneren des Dreiecks zugeordnet ?
+Zusatzinfo: Das sollte eine hierarchische Basis ergeben.
+
+Hinweis: vgl. Dubiner-Basis. Hilfreich sind jetzt skalierte
+integrierte Legendrepolynome $L_n\big(
+\frac{\lambda_\alpha-\lambda_\beta}{\lambda_\alpha+\lambda_\beta}\big)
+(\lambda_\alpha+\lambda_\beta)^n$. Wie sehen diese auf den 3 Kanten
+$E_{\alpha \beta}$, 
+$E_{\alpha \gamma}$, 
+$E_{\beta \gamma}$ aus ?
+
+
+\item 
+Implementieren Sie ein Dreieckselement 3. Ordnung in
+MyLittle-NGSolve. Verwenden Sie die Knotenbasis zu Punktauswertung in
+$\{ (i/3, j/3) : i \geq 0, j \geq 0, i+j \leq 3 \}$. Implementieren
+Sie auch das dazupassende Linienelement.
+L\"osen Sie damit eine Poissongleichung.
+Visualisieren Sie die Basisfunktionen.  
+Hinweis: Achten Sie auf die Nummerierung in GetDofNrs.
+
+
+\end{enumerate}
+\end{document}

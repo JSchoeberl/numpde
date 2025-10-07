@@ -1,0 +1,101 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{5. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{23. November 2018}
+\end{center}
+\begin{enumerate}
+\item
+Seien $V_1 \subset V_0$ geeignet f\"ur Banach-Raum Interpolation. Beweisen Sie
+$$
+\| u \|_{s} \leq c \|u \|_0^{1-s} \|u \|_1^s \qquad \forall \, u \in V_1
+$$
+Hinweis: Integral \"uber K-Funktional aufspalten, und die beiden
+trivialen Absch\"atzungen f\"ur $K(t,u)$ verwenden.
+
+\item
+Zeigen Sie f\"ur $\Omega$ Lipschitz: $H_0^1(\Omega) = [L_2(\Omega),
+H_0^2(\Omega)]_{1/2}$.
+
+Hinweis: \"Ahnlich zur Vorlesung, jetzt ist $E$ trivial und $R$
+nicht. Geeignete Fortsetzungsoperatoren d\"urfen Sie ohne Beweis verwenden. 
+
+\item
+Finden Sie die kanonische \glqq Knotenbasis \grqq  f\"ur folgendes 1D Element: 
+\begin{itemize}
+\item $T = [-1,1]$
+\item $V_T = P^k$
+\item $\Psi = \{ \psi_j : v \mapsto \int_{-1}^1 v(x) P_j(x)  dx,  \; j = 0, \ldots, k \}$ 
+\end {itemize}
+Hier sind $P_j$ Legendrepolynome.
+
+
+\item Finden Sie die Knotenbasis f\"ur folgendes 2D Element:
+\begin{itemize}
+\item Dreieck $T = [V_a, V_b, V_c]$
+\item $V_T = P^2$
+\item $\Psi = \{ \psi_j : v \mapsto v(V_j), j \in \{ a, b, c \} \}
+  \cup \{ \psi_E : v \mapsto \int_E \frac{\partial v}{\partial \tau} s
+  ds
+  , E \in \{ E_{ab}, E_{ac}, E_{bc} \}\}$
+\end{itemize}
+Die Kante $E_{ij}$ habe Anfangspunkt $V_i$ und Endpunkt $V_j$, und
+sei mit $s \in [-1,1]$ linear parametrisiert, $\tau$ sei der
+Einheits-Tangentialvektor.
+
+Hinweis: Kurvenintegral einsetzen und ausrechnen. Berechnen Sie
+$\nabla \lambda_i \cdot (V_i - V_j)$
+
+\item
+Die $xy$ Ebene habe elektrisches Potential 0 Volt, und eine Metallkugel
+mit Mittelpunkt $(0,0,1)$ Meter und Radius 10 cm habe Potential 1000
+Volt. Welche Energie $E$ steckt im freien Raum $\R{} \times \R{} \times
+\R{+} \setminus Kugel$ ? Das Potential $u$ ergibt sich dort aus der
+Poissongleichung mit den vorgegebenen Dirichletrandwerten. Die Energie
+ist $E = \frac12\int
+\epsilon_0 | \nabla u |^2 \, dx$, mit der Permittivit\"at von Vakuum
+$\epsilon_0 = 8.854 \cdot 10^{-12} \frac{As} {Vm}$. L\"osen Sie das Problem mit FEM. Schneiden
+Sie dazu das Gebiet mit dem Zylinder $\{ x^2 + y^2 < R^2, z < R \}$, und
+setzen am k\"unstlichen Rand a) homogene Dirichlet, oder b) homogene
+Neumann Randbedingungen, und berechnen Sie $E_D(R)$ und $E_N(R)$. 
+Zeigen Sie: $E_D$ ist monoton fallend, $E_N$ monoton wachsend, und $E$
+liegt dazwischen.
+
+\item Erweitern Sie MyLittleNGSolve um bilineare
+  Viereckselemente (aus letzter \"Uebung).
+
+\end{enumerate}
+\end{document}
+

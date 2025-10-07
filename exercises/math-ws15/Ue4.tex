@@ -1,0 +1,126 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{4. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{20. November 2015}
+\end{center}
+\begin{enumerate}
+
+\item 
+Zeigen Sie folgende Variante der Friedrichsungleichung:
+$$
+\int_0^\infty  \frac{1} {(1+x)^\alpha} u(x)^2 \, dx \leq c \, \int_0^\infty
+u^\prime(x)^2 \, dx
+$$
+f\"ur $u \in C^1(\R{+}_0)$ mit $u^\prime \in L_2$ und $u(0) = 0$,  f\"ur $\alpha > 2$. Gilt
+die Ungleichung auch f\"ur $\alpha = 2$ ?
+Hinweis: HS der Integralrechung, Cauchy Schwarz, Fubini. 
+
+
+\item Sei $I=(-1, 1)$ sowie $T$ das Dreieck mit Eckpunkten $(-1,0),\,(1,0),\,(0,1)$. Wir definieren den Fortsetzungsoperator $\mathcal{E}$:
+$$\mathcal{E}: \left\{
+							\begin{matrix}   L_2(I) \rightarrow L_2(T) \\ 
+					 									u \mapsto \frac{1}{2y}\int\limits_{x-y}^{x+y}u(s) \,ds
+					    \end{matrix}\right.$$
+Zeigen Sie, dass f"ur $y\in (0,1)$ 
+$$\int\limits_{-1+y}^{1-y} |\mathcal{E}u|^2 + |\nabla(\mathcal{E}u)|^2\,dx \leq c\, \min\{\|u\|^2_{H^1(I)}, \frac{1}{y^2}\|u\|^2_{L_2(I)}\}$$
+gilt.
+
+Zeigen Sie damit weiters
+$$
+\| \nabla \mathcal{E}u \|_{L_2([y-1,1-y] \times \{y\}) } \leq c \, \|u \|_{y^{-1}L_2 + H^1}.
+$$
+Rechts steht die Norm eines Summenraums, $s^{-1}L_2$ ist der Raum $L_2$
+versehen mit der \newline Norm $s^{-1}\| \cdot \|_{L_2}$.
+
+
+
+
+\item {\em Timoshenko Balken:} Gesucht sind $(w, \beta) \in V_0 \subset
+  [H^1(0,1)]^2$ so dass
+$$
+\int_0^1 \beta^\prime \delta ^\prime + \frac{1}{t^2}\,\int_0^1
+(w^\prime - \beta) (v^\prime - \delta) = \int_0^1 f v \qquad \forall \;
+(v,\delta) \in V_0.
+$$
+Dabei ist $t \in (0,1)$ ein gegebener kleiner Parameter, und $f \in L_2$ gegeben. Untersuchen Sie L\"osbarkeit
+mit Lax-Milgram (Stetigkeit, Elliptizit\"at \"uber Tartar, Kern der
+Bilinearform ?). Wie
+w\"achst $\frac{\alpha_2} {\alpha_1}$ mit $t \rightarrow 0$ ? Welche
+Folgen hat dies f\"ur Cea's Lemma ?
+
+Betrachten Sie f\"ur $V_0$ folgende Kombinationen von wesentlichen Randbedingungen:
+\begin{enumerate}
+\item $w(0) = \beta(0) = 0$
+\item $w(0) = w(1) = 0$
+\item $\beta(0) = \beta(1) = 0$
+\end{enumerate}
+
+Mechanische Interpretation (Zusatzinformation). $w$ beschreibt die
+vertikale Deformation eines Balken unter vertikaler Last $f$, $\beta$
+ist die linearisierte Verdrehung der Normalen. Die Energie im System
+setzt sich aus der Biegeenergie $\frac{1}{2} \int_0^1 (\beta^\prime)^2$,
+der Scherenergie $\frac{1}{t^2} \int_0^1 (w^\prime - \beta)^2$ welche die
+Abweichung der Deformation der Normalen von der Normalen der
+Deformation bestraft, und der Energie aufgrund der anliegenden
+Belastung $-\int_0^1 f w$. Minimierung dieses Energiefunktionals f\"uhrt
+auf obige Gleichung.
+
+\item L\"osen Sie eine Reissner Mindlin Plattengleichung mit NGSolve -
+  Python. Das ist das 2D Analogon zum Timoshenko-Balken.
+Gesucht sind $w, \beta \in V_0 \subset [H^1]^3$ (mit $w$
+  skalar und $\beta = (\beta_x, \beta_y)$ vektorwertig) sodass
+$$
+\int_\Omega \nabla \beta \cdot \nabla \delta + \frac{1}{t^2}
+\int_\Omega (\nabla w - \beta) \cdot (\nabla v - \delta) = 
+\int_\Omega f v  \qquad (v, \delta) \in V_0.
+$$
+Setzen Sie $\Omega = (0,1)^2$, $f = 1$ und $t = 0.1$ bzw. $t = 0.01$.
+Verwenden Sie als Randbedingungen 
+\begin{enumerate}
+\item $w = \beta_x = \beta_y = 0$ auf $\partial \Omega$
+\item $w = 0$  auf $\partial \Omega$
+\item gemischte Randbedingungen Ihrer Wahl
+\end{enumerate}
+Visualisieren Sie $w$ und die Komponenten von $\beta$. Zeigen Sie
+$\nabla w - \beta \rightarrow 0$ in $L_2$ f\"ur $t \rightarrow 0$. \newline
+Welches Variationsproblem erwarten Sie f\"ur $w^0 = \lim_{t
+    \rightarrow 0} w(t)$ ? (Konvergenz muss nicht bewiesen werden)
+
+Die Definition von Produktr\"aumen und Verwendung der Komponenten
+entnehmen Sie dem Beispiel {\it Navier Stokes Equation }.
+\end{enumerate}
+\end{document}
+
