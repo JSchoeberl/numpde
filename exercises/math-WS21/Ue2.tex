@@ -1,0 +1,90 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\setR}{\mathbb{R}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{2. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{21. Oktober 2021}
+\end{center}
+
+\setcounter{enumi}{4}
+
+\begin{enumerate}
+
+\item Experimente mit $H(\operatorname{div})$, siehe jupyter - notebook.
+
+\item Sei $V$ ein Hilbertraum, $f$ eine stetige Linearform und $A$ eine stetige, symmetrische und elliptische Bilinearform. Sei $u$ die L\"osung des Variationsproblems
+$$A(u,v) = f(v).$$
+Zeigen Sie, dass f\"ur $u$
+$$\sup\limits_{v\neq 0} \frac{f(v)}{\|v\|_A} = \|u\|_A$$
+gilt. Zeigen Sie dass das Supremum f\"ur $v=u$ angenommen wird.
+\vspace{15pt}
+
+
+
+\item Sei $V$ ein Hilbertraum sowie $A: V \rightarrow V$ ein linearer,
+  beschr\"ankter sowie selbstadjungierter Operator. Zeigen Sie:\\
+$$ \| A\| := \sup\limits_{v \in V \atop v\neq 0} \frac{\|Av \|}{\| v
+  \|} = \sup\limits_{v\in V\atop v\neq 0} \frac{|(Av,v)|}{\|v\|^2}$$
+
+Hinweis:
+\begin{enumerate}
+\item
+  Zeigen Sie zuerst das Ergebnis in $\setR^2$ mittels
+  Eigenwerten. Hier ist $A$ eine symmetrische $2 \times 2$ Matrix.
+\item
+  \"Ubertragen Sie dann das Ergebnis auf allgemeine Hilbertr\"aume
+  ohne weiter Spektraltheorie zu verwenden.
+\end{enumerate}
+
+\vspace{15pt}
+
+
+
+
+
+\item Seien $X$, $Y$ Hilbertr\"aume mit gemeinsamer
+  Vektorraum-Struktur (d.h. Sie k\"onnen Elemente von $X$ zu Elemente
+  von $Y$ addieren). Auf  dem Summenraum $X+Y:= \{z = x+ y: x\in
+  X\;y\in Y \}$ sei die Summenraumnorm
+$$\| z\|_{X+Y}:= \inf\limits_{z=x+y \atop x\in X,\; y\in Y} \sqrt{\|x\|_X^2 +\|y\|_Y^2}.$$
+definiert. Zeigen Sie, dass die Norm $\|\cdot \|_{X+Y}$ ein Skalarprodukt
+induziert. Hinweis: Parallelogrammlemma.
+\vspace{15pt}
+
+
+
+\end{enumerate}
+\end{document}
+

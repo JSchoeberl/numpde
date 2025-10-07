@@ -1,0 +1,111 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\setR}{\mathbb{R}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{5. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{11. November 2021}
+\end{center}
+
+\setcounter{enumi}{4}
+
+\begin{enumerate}
+
+
+\item
+Die $xy$ Ebene habe elektrisches Potential 0 Volt, und eine Metallkugel
+mit Mittelpunkt $(0,0,1)$ Meter und Radius 10 cm habe Potential 1000
+Volt. Welche Energie $E$ steckt im freien Raum $\R{} \times \R{} \times
+\R{+} \setminus Kugel$ ? Das Potential $u$ ergibt sich dort aus der
+Poissongleichung mit den vorgegebenen Dirichletrandwerten. Die Energie
+ist $E = \frac12\int
+\epsilon_0 | \nabla u |^2 \, dx$, mit der Permittivit\"at von Vakuum
+$\epsilon_0 = 8.854 \cdot 10^{-12} \frac{As} {Vm}$. L\"osen Sie das Problem mit FEM. Schneiden
+Sie dazu das Gebiet mit dem Zylinder $\{ x^2 + y^2 < R^2, z < R \}$, und
+setzen am k\"unstlichen Rand a) homogene Dirichlet, oder b) homogene
+Neumann Randbedingungen, und berechnen Sie $E_D(R)$ und $E_N(R)$. 
+Zeigen Sie: $E_D$ ist monoton fallend, $E_N$ monoton wachsend, und $E$
+liegt dazwischen.
+
+
+\item Obiges Beispiel hat eine zylinder-symmetrische
+  L\"osung, d.h. $u(x,y,z) = \tilde u(r,z)$.  L\"osen Sie es unter Verwendung von Zylinderkoordinaten.
+Bestimmen Sie dazu eine Variationsformulierung auf zwei Arten:
+\begin{enumerate}
+\item starten Sie vom Laplace-Operator in Zylinderkoordinaten, und
+  leiten dazu eine symmetrische VF her
+\item stellen Sie in der 3D Variationsformulierung $\nabla u$ und
+  $\nabla v$ in Zylinderkoordinaten dar, und setzen
+  rotationssymmetrische Ansatz- und Testfunktionen ein.
+\end{enumerate}
+Was ist der nat\"urliche Hilbertraum ?
+L\"osen Sie das Beispiel mit FEM, und vergleichen mit der 3D Simulation. Diskutieren Sie m\"ogliche Randbedingungen auf
+der Symmetrieachse.
+
+
+  
+ \item
+Seien $V_1 \subset V_0$ geeignet f\"ur Banach-Raum Interpolation. Beweisen Sie
+$$
+\| u \|_{s} \leq c \|u \|_0^{1-s} \|u \|_1^s \qquad \forall \, u \in V_1
+$$
+Hinweis: Integral \"uber K-Funktional aufspalten, und die beiden
+trivialen Absch\"atzungen f\"ur $K(t,u)$ verwenden.
+
+ \item Sei $I=(-1, 1)$ sowie $T$ das Dreieck mit Eckpunkten $(-1,0),\,(1,0),\,(0,1)$. Wir definieren den Fortsetzungsoperator $\mathcal{E}$:
+$$\mathcal{E}: \left\{
+							\begin{matrix}   L_2(I) \rightarrow L_2(T) \\ 
+					 									u \mapsto \frac{1}{2y}\int\limits_{x-y}^{x+y}u(s) \,ds
+					    \end{matrix}\right.$$
+Zeigen Sie, dass f"ur $y\in (0,1)$ 
+$$\int\limits_{-1+y}^{1-y} |\mathcal{E}u|^2 + |\nabla(\mathcal{E}u)|^2\,dx \leq c\, \min\{\|u\|^2_{H^1(I)}, \frac{1}{y^2}\|u\|^2_{L_2(I)}\}$$
+gilt.
+
+Zeigen Sie damit weiters
+$$
+\| \nabla \mathcal{E}u \|_{L_2([y-1,1-y] \times \{y\}) } \leq c \, \|u \|_{y^{-1}L_2(I) + H^1(I)}. 
+$$
+Rechts steht die Norm eines Summenraums, $s^{-1}L_2$ ist der Raum $L_2$
+versehen mit der \newline Norm $s^{-1}\| \cdot \|_{L_2}$.
+
+Schlie\ss{}en Sie daraus
+$$
+\| \nabla \mathcal{E}u \|_{L_2(T) } \leq c \, \|u\|_{H^{1/2)}(I)}
+  $$
+Hinweis: Integration \"uber $y$, Interpolationsraum \"uber K-Funktional.
+
+  
+\end{enumerate}
+\end{document}
+

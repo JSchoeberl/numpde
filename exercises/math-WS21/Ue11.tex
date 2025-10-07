@@ -1,0 +1,181 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\setR}{\mathbb{R}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+\newcommand{\opgrad}{\operatorname{grad}}
+\newcommand{\opdiv}{\operatorname{div}}
+\newcommand{\opcurl}{\operatorname{curl}}
+\newcommand{\opdet}{\operatorname{det}}
+\newcommand{\optr}{\operatorname{tr}}
+\newcommand{\optrn}{\operatorname{tr}_n}
+\newcommand{\sfrac}[2]{ { \textstyle \frac{#1}{#2} } }
+\newcommand{\eps}{\varepsilon}
+
+
+
+
+\begin{document}
+\begin{center}
+\textbf{11. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{20. J\"anner 2022}
+\end{center}
+
+\setcounter{enumi}{4}
+
+\begin{enumerate}
+\item (Theorem 132) Beweisen Sie die commuting diagram property
+  $$
+  I^Q \opcurl = \opcurl I^V,
+  $$
+  d.h. den mittleren Teil vom de Rham Komplex
+  
+\begin{equation}
+\begin{array}{ccccccc}
+H^1             &      \stackrel{\nabla}{\longrightarrow}          &
+H(\opcurl)      &      \stackrel{\opcurl}{\longrightarrow}   &
+H(\opdiv)       &      \stackrel{\opdiv}{\longrightarrow}    & 
+L^2                                                                                    \\[8pt]
+\Big\downarrow  \vcenter{ \rlap{$I^W$}}  &                  &
+\Big\downarrow  \vcenter{ \rlap{$I^V$}}  &                  &
+\Big\downarrow  \vcenter{ \rlap{$I^Q$}}  &                  &
+\Big\downarrow  \vcenter{ \rlap{$I^S$}}                             \\[8pt]
+ W_h                   &      
+\stackrel{\nabla}{\longrightarrow}          &
+ V_h       &     
+ \stackrel{\opcurl}{\longrightarrow}   &
+ Q_h          &      
+\stackrel{\opdiv}{\longrightarrow}    & 
+S_h  \:.                                                                               \\[8pt]
+\end{array}
+\label{equ_derham}
+\end{equation}
+
+  
+Zeigen Sie dazu dass linke und rechte Seite im gleichen FEM - Raum
+liegen, und dass die Funktionale (Freiheitsgrade) \"ubereinstimmen.
+  
+
+\item Sei $j$ eine divergenzfreie Stromdichte im Sinne von $(j, \nabla \psi)
+  _{L_2}=0  \,\forall \psi \in H^1$. Es sei $A = A^0$ die L\"osung
+  von (8.13), und $A^\eps$ die L\"osung des regularisierten Problems
+  (mit $\eps \in \setR^+$): 
+Ges.: $A^\eps \in H(\opcurl)$: 
+$$
+\int \mu^{-1} \opcurl \, A^\eps \cdot \opcurl v + \eps \, A^\eps \cdot v = \int
+j \cdot v \qquad \forall \, v \in H(\opcurl)
+$$
+Zeigen Sie: $\| A - A^\eps \|_{H(\opcurl)} = O(\eps)$
+ 
+Hinweis: Bringen Sie beide Gleichungen in gemischte Form, und
+subtrahieren diese um eine Gleichung f\"ur die Differenz zu
+bekommen. Sch\"atzen Sie dann diese Differenz mit Hilfe der stabilen
+L\"osbarkeit durch die rechte Seite ab.
+
+\item Betrachten Sie die (erweiterte) diskrete Sequenz aus Thm 131
+  $$
+  \begin{array}{ccccccccc}
+    \setR &  \stackrel{\operatorname{id}}{\longrightarrow}          &
+W_h             &      \stackrel{\opgrad}{\longrightarrow}          &
+V_h             &      \stackrel{\opcurl}{\longrightarrow}   &
+Q_h             &      \stackrel{\opdiv}{\longrightarrow}    & 
+S_h                                                                                    
+\end{array}
+$$
+wobei $W_h$, $V_h$, $Q_h$, $S_h$ FEM - R\"aume niedrigster Ordnung in
+$H^1$, $H(\opcurl)$, $H(\opdiv)$ und $L_2$ sind. Bestimmen Sie die
+Dimensionen von Bild $R(\cdot)$ und Kern $N(\cdot)$ der einzelnen
+Differentialoperatoren (siehe jupyter-Vorlag). \"Uberpr\"ufen Sie experimentell
+\begin{eqnarray*}
+    \operatorname{dim} W_h & \stackrel{?}{=}   & \operatorname{dim}
+                                               R(\operatorname{id}) +
+                                               \operatorname{dim}
+                                               R(\opgrad)  \\
+  \operatorname{dim} V_h & \stackrel{?}{=}   & \operatorname{dim}
+                                               R(\opgrad) +
+                                               \operatorname{dim}
+                                               R(\opcurl)  \\
+  \operatorname{dim} Q_h & \stackrel{?}{=}   & \operatorname{dim}
+                                               R(\opcurl) +
+                                               \operatorname{dim}
+                                               R(\opdiv)  
+\end{eqnarray*}
+
+Bestimmen Sie eine Gleichung f\"ur die Anzahl vertices \#V, edge \#E, faces \#F, und
+cells \#T f\"ur Netze auf einfach zusammenh\"angenden Gebieten. 
+
+Was \"andert sich wenn das Gebiet nicht mehr einfach zusammenh\"angend
+ist, sondern L\"ocher und Tunnel hat ? 
+
+Vgl.: Betti-numbers,  siehe  Doug Arnold, {\em Finite Element Exterior
+  Calculus}, S 14-15
+
+\item Bestimmen Sie die Induktivit\"at einer Zylinderspule.
+
+Bei einer Zylinderspule ist ein Draht mit N Windungen in Form eines
+Hohlzylinders (Radien $r_i$ und $r_o$, und L\"ange $l$)
+aufgewickelt. Durch den Draht flie\ss{}e ein Strom von $I = 1$ Ampere.
+Berechnen Sie dazu das Magnetfeld $B = \opcurl A$ durch die
+Gleichung der Magnetostatik
+$$
+\int \mu^{-1} \opcurl A \, \opcurl v = \int j v \qquad \forall \, v
+$$
+(wobei $\mu = 1.257 \cdot 10^{-6}$ die Permeabilit\"at in Luft
+ist). Setzen Sie eine Luftbox um die Spule.
+Regularisieren Sie wie in Bsp 2. Um nicht alle Dr\"ahte
+einzeln aufl\"osen zu m\"ussen, verwenden Sie die Stromdichte $j$ (ein
+Vektorfeld, Einheit $Ampere / m^2$), das in Richtung des Drahtes zeigt,
+und das Integral \"uber den Querschnitt $N I $ ergibt.
+
+Die Energie im Magnetfeld ist
+$$
+\tfrac{1}{2}  \int \mu^{-1} | B |^2.
+$$
+
+Die Induktivit\"at L ergibt sich nun so dass die magnetische Energie zugleich
+$$
+\tfrac{1}{2} L I^2
+$$
+ist. Diese Kenngr\"o\ss{}e $L$ kann dann z.B. f\"ur eine
+Netzwerksimulation verwendet werden.
+
+Ist die Dicke des Hohlzylinders sehr klein ($r_o - r_i \ll r_i$), dann
+kann die Stromdichte auch als Fl\"achenstromdichte 
+modelliert werden, d.h. durch ein Oberfl\"achenintegral am Zylindermantel.
+
+Dazu gibt es eine analytische L\"osung, siehe z.B.
+  https://de.wikipedia.org/wiki/Zylinderspule. Vergleichen Sie Ihre
+  numerisch berechnete Induktivit\"at mit dem analytischen Ergebnis.
+  
+\end{enumerate}
+
+\bigskip
+\end{document}

@@ -1,0 +1,75 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\setR}{\mathbb{R}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{6. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{18. November 2021}
+\end{center}
+
+\setcounter{enumi}{4}
+
+\begin{enumerate}
+
+\item (2 Punkte) Implementieren Sie Finite Elemente erster und zweiter
+  Ordnung in NGSolve f\"ur 
+  \begin{itemize}
+  \item Linienelemente
+  \item Viereckselemente
+  \item Tetraederelemente
+  \end{itemize}
+
+Verwenden Sie Ihre Elemente um Differentialgleichungen zu l\"osen.
+  
+\item Zeigen Sie f\"ur $\Omega$ Lipschitz: $H_0^1(\Omega) = [L_2(\Omega),
+H_0^2(\Omega)]_{1/2}$.
+
+Hinweis: \"Ahnlich zur Vorlesung Thm 59, jetzt ist $E$ trivial und $R$
+nicht. Geeignete Fortsetzungsoperatoren d\"urfen Sie ohne Beweis verwenden. 
+
+\item F\"ur welche $\alpha$ gilt folgende Variante der Spur-Absch\"atzung:
+$$
+|u(0)|^2 \leq c \, \int_0^1 x^\alpha \, u^\prime(x)^2 \, \text{dx} + \int_0^1
+x^\alpha \, u(x)^2 \, \text{dx}
+$$
+
+Zur Entscheidung beim kritischen Wert von $\alpha$ hilft die Funktion
+$u(x) = \log \log x$.
+
+Welche Auswirkung hat diese Ergebnis auf m\"ogliche Randbedingungen der schwachen Formulierung
+am Symmetrierand bei Verwendung von Zylinderkoordinaten?
+
+
+\end{enumerate}
+\end{document}

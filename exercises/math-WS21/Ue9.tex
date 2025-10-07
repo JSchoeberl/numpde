@@ -1,0 +1,106 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\setR}{\mathbb{R}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{9. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{9. Dezember 2021}
+\end{center}
+
+\setcounter{enumi}{4}
+
+\begin{enumerate}
+
+\item Wenden Sie Adaptivit\"at auf das Bsp aus \"U2.1
+  ein. Vergleichen Sie unterschiedliche Fehlersch\"atzer aus der
+  Vorgabe. Achten Sie darauf den W\"armeleitkoeffizienten $\lambda$
+  richtig einzubauen.
+
+
+ \item Goal Driven Adaptivity. Sei $\Omega = (0,3) \times (0,2)$, $u$
+   L\"osung des homogenen Dirichletproblems der Poissongleichung
+   mit Quelle $f = \tfrac{1}{|\Omega_S|}   \chi_{\Omega_S}$, wobei $\Omega_S =
+     (1-\varepsilon,1+\varepsilon)^2$.  Gesucht ist der Punktwert
+     $u(2,1)$. Dieser soll durch Mittelung \"uber eine Kreis mit
+     Radius $\varepsilon$ {\em angen\"ahert} werden. W\"ahlen Sie
+     z.B. $\varepsilon = 10^{-3}$.
+
+     Stellen Sie die Auswertung der Zielgr\"o\ss{}e \"uber ein lineares
+     Funktional dar. Bestimmen Sie einen Referenzwert \"uber eine sehr
+     genaue Rechnung.
+
+     Verwenden Sie nun Adaptivit\"at um effiziente Netzte zu
+     generieren (plotten Sie dazu Fehler \"uber Freiheitsgrade). 
+     Vergleichen Sie Fehlersch\"atzer f\"ur die Energienorm, und
+     goal-driven error estimates.
+
+
+   \item Auf dem Gebiet $\omega$ gelte die Poincar\'e-Ungleichung mit
+     Konstante $c_P$:
+     $$
+     \| u \|_{L_2(\omega)} \leq c_p \, \| \nabla u \|_{L_2(\omega)} \qquad
+       \forall \, u \in H^1 \text{ mit } \int_\omega u = 0.
+     $$
+     Wir denken an einen Vertex-Patch, mit $c_P = c h$, wobei $c$ nur
+     von der Form der Dreiecke abh\"angt.
+
+     Zeigen Sie:
+     $$
+     \inf_{q \in P^1} \| u - q \|_{L_2(\omega)} \leq c_p^2 \, \| \nabla^2
+     u \|_{L_2}
+     $$
+
+     Hinweis: \"Uberlegen Sie sich einen passenden Interpolationsoperator
+   \item
+     Sei $V_h \subset H^1$  FEM - Raum erster Ordnung. 
+     Der originale  Cl\'ement Operator ist wie folgt definiert:
+  $\omega_X$ der Vertex-patch zum Vertex $X$, und
+  $$
+  V_{h, \omega_X} = \{ v_{h|\omega_X} : v_h \in V_h \}.
+$$
+Sei $P_{\omega_X}$ der $L_2(\omega_X)$-orthogonale Projektor auf
+$V_{h,\omega_X}$, und $\phi_X$ die Hut-Basisfunktion zum Knoten $X$. Dann ist
+$$
+\Pi_h^{Cl} v = \sum_{X \in {\text Vertices}}  \big( P_{\omega_X} v \big)
+(X) \phi_X 
+$$
+
+Zeigen Sie daf\"ur:
+$$
+| u - \Pi_h^{Cl} u |_{H^k(T)} \leq c h^{m-k} | u |_{H^m(\omega_T)}
+$$
+f\"ur $k \in \{ 0,1 \}$, $m \in \{ 0, 1, 2 \}$ und $k \leq m$.
+
+\end{enumerate}
+\end{document}

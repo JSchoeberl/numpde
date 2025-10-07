@@ -1,0 +1,110 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\setR}{\mathbb{R}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{8. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{2. Dezember 2021}
+\end{center}
+
+\setcounter{enumi}{4}
+
+\begin{enumerate}
+
+\item Implementieren Sie high-order Viereckselemente in
+  NGSolve. Der HighOrderFESpace sollte Netze unterst\"utzen die
+  gemischt aus Dreiecken und Vierecken bestehen.
+  Testen Sie die Genauigkeit am L-shape-domain $(-1,1)^2 - [0,1]^2$ mit hp-Refinement.
+
+\item Die $L_2(-1,1)$-orthogonalen Legendrepolynome (siehe Vorlesung)
+  erf\"ullen eine Drei-Term-Rekursion
+  $$
+  P_{n+1}(x) = \alpha_n x P_n(x) + \beta_n P_{n-1} (x)
+  $$
+  Die {\em Integrierten Legendrepolynome} sind definiert als
+  $$
+  L_n(x) = \int_{-1}^x P_{n-1} (s) \, {ds}
+  $$
+
+  Zeigen Sie:
+  \begin{itemize}
+  \item
+    $$
+    \int_{-1}^1 L(x) q(x) \, dx = 0 \qquad \forall \, q \in \Pi_{n-3}
+    $$
+  \item
+    Auch die Integrierten Legendrepolynome erf\"ullen eine Drei-Term-Rekursion
+    $$
+    L_{n+1}(x) = \gamma_n x L_n(x) + \delta_n L_{n-1}(x)
+    $$
+    Hinweis: Koeffizientenvergleich der f\"uhrenden Koeffizienten, und
+    Orthogonalit\"at f\"ur den Rest.
+  \item 
+    $$
+    L_n(x) = c_n (P_n(x) - P_{n-2}(x))
+    $$
+  \end{itemize}
+  Implementieren Sie Python-Funktionen um $L_n$ und $P_n$ zu bestimmen und
+  plotten die Funktionen (auf einem sinnvoll gew\"ahlten Definitionsbereich).
+\item
+  Bestimmen Sie Elementmatrizen f\"ur das high order 1D Element
+  $[-1,1]$  f\"ur $\int_{-1}^1 uv$ und $\int_{-1}^1
+  u^\prime v^\prime$ per Hand. Verwenden Sie die hierarchische Basis
+  (d.h. Basisfunktionen f\"ur Ordnung 1, und Integrierte Legendrepolynome).
+
+\item Sch\"atzen Sie folgende Terme durch die $H^1$-Seminorm von $u$
+  auf dem entsprechenden Definitionsbereich ab,. d.h.  $\ldots \leq c h^? \| \nabla u \|$:
+    \begin{itemize}
+  \item 
+    $\| u - \overline{u}^T \|_{L_2(T)}$
+  \item 
+    $\| u - \overline{u}^E \|_{L_2(E)}$
+  \item
+   $| \overline{u}^T - \overline{u}^E |$  \qquad (als Zahl) 
+ \item
+   $| \overline{u}^T - \overline{u}^{\tilde T} |$  \qquad (als Zahl) 
+  \item 
+    $\| u - \overline{u}^{T \cup \tilde T} \|_{L_2(T\cup \tilde T)}$
+
+    \end{itemize}
+  Dabei ist $T$ ein Dreieck, $E$ eine Kante von $T$, und $\tilde T$
+  ein weiteres Dreick mit $T \cap \tilde T = E$. Mittelung \"uber
+  Gebiete wird mit $\overline{u}^T, \overline{u}^E, \ldots $
+  geschreiben, wobei das Symbol sowohl f\"ur den Mittelwert als auch
+  f\"ur die konstante Funktion steht.
+
+  Hinweis: Vieles geht mit Transformation und Bramble-Hilbert - aber
+  Vorsicht !
+\end{enumerate}
+\end{document}

@@ -1,0 +1,111 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\setR}{\mathbb{R}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{7. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{25. November 2021}
+\end{center}
+
+\setcounter{enumi}{4}
+
+\begin{enumerate}
+
+\item Implementieren Sie Dreieckselemente 3. Ordnung, und l\"osen Sie
+  damit Differentialgleichungen.
+
+  Hinweis: Hilfreich sind die vertex-Nummern der Entpunkte einer
+  Kante: \\  {\tt  auto [v1,v2] = ma->GetEdgePNums(edgenr); }.
+
+  
+\item Implementieren Sie eine {\tt ProjectLocally} Funktion \"ahnlich
+  zu {\tt GridFunction.Set}. Eine gegebene
+  CoefficientFunction soll in eine skalare GridFunction interpoliert
+  werden. F\"uhren Sie dazu element-weise $L_2$-Projektionen durch,
+  und mitteln arithmetisch \"uber die koppelnden
+  Freiheitsgrade. Implementieren Sie die Funktion in ein C++
+  Erweiterungsmodul zu NGSolve. \\
+  Hinweis: {\tt CalcInverse(mat); } invertiert die {\tt Matrix mat}.
+  
+\item Mass lumping. Wiederholen Sie \"U 3.1 zur
+  Diffusions-Reaktionsgleichung. Verwenden Sie Elemente 1. Ordnung,
+  und mass-lumping zur Integration vom $\int u v$ Term. Das geht in
+  NGSolve so:
+
+  \begin{verbatim}
+  ir = IntegrationRule(points = [(0,0), (1,0), (0,1)], \
+                       weights = [1/6, 1/6, 1/6] )
+  dx_lumping = dx(intrules = { TRIG : ir }) 
+  a += u*v*dx_lumping
+\end{verbatim}
+
+  Was f\"allt bei nicht aufgel\"osten Grenzschichten auf ?
+
+  Analysieren Sie den Konsistenzfehler, d.h. weisen Sie Absch\"atzung
+  (4.13) aus dem Skript nach.
+
+
+\item Nicht-konforme P1 Elemente.  Wiederholen Sie \"U 2.1
+  (notebook Uebung2Bsp5.ipynb). L\"osen Sie das Problem mit
+  nicht-konformen P1 Elementen, und interpolieren den Fluss $\lambda
+  \nabla u_h$ in einen
+  HDiv(order=0) Raum (GridFunction fluxhdiv). Berechnen Sie davon die Fl\"usse durch die einzelnen
+  Kanten vom Rechteck, und deren Summe.
+
+  Plotten Sie den Interpolationsfehler
+  $$
+  \lambda \nabla u_h - fluxhdiv,
+  $$
+  wobei $\nabla u_h$ hier element-weise zu  interpretiert ist.
+  
+  Den nicht-konformen Raum erhalten Sie \"uber 
+\begin{verbatim}
+fes = FESpace(mesh, "nonconforming")
+\end{verbatim}
+ Plotten Sie Basisfunktionen. Alternativ k\"onnen Sie ihn auch leicht selbst implementieren.
+
+
+  Zeigen Sie: Wenn $T_l$ und $T_r$ zwei Dreiecke an einer gemeinsamen
+  Kante $E$ sind, $f = 0$ auf $T_1 \cup T_2$, und $\lambda$
+  elemente-weise konstant, dann gilt:
+  $$
+  \lambda_l \frac{\partial u_h|_{T_l}}{\partial n_l} =
+  -\lambda_r \frac{\partial u_h|_{T_r}}{\partial n_r},
+  $$
+  wobei $u_h$ die FEM - L\"osung im nicht-konformen P1 Raum ist.
+  Hinweis: Setzen Sie die Basisfunktion $\varphi_E$ zur Kante $E$ in die diskrete
+  Variationsformulierung ein.
+
+\end{enumerate}
+\end{document}

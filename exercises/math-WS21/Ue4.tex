@@ -1,0 +1,71 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\setR}{\mathbb{R}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{4. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{4. November 2021}
+\end{center}
+
+\setcounter{enumi}{4}
+
+\begin{enumerate}
+
+
+\item Berechnen Sie Konstanten aus der Friedrichs - Ungleichung und
+  der Poincar\'e  - Ungleichung, in jupyter.
+
+
+\item Sei $\Omega = (0,\pi)$ und $u = \sum\limits_{i=1}^\infty u_i\sin(ix)$ die Zerlegung der Funktion $u$ in ihre Fourierkoeffizienten. Wir definieren f\"ur $s \in [0,\frac{3}{2})$ die $\| \cdot \|_{H_0^s}$ Norm mittels
+$$\| u \|^2_{H_0^s}:= \sum\limits_{i=1}^\infty i^{2s} u_i^2 . $$
+Bem.: Damit gilt $\| u \|_{H_0^0} \cong \| u \| _{L_2}$ sowie $\| u \|_{H_0^1} \cong \| \nabla u \|_{L_2} $.
+\begin{itemize}
+\item[a.)] Sei $0<a<\pi$. F\"ur welche $s$ liegt die Funktion $u_1$ mit $$u_1(x):=\left\{\begin{aligned} 1 & \quad x>a \\ 0 & \quad x\leq a \end{aligned}\right.$$ in $H_0^s$? Der Raum $H_0^s$ ist als Abschluss $\overline{C_0^\infty(\Omega)}^{\|\cdot\|_{H_0^s}}$ erkl\"art.
+\item[b.)] F\"ur welche $s$ liegt das Punktauswertungsfunktional $f: u\mapsto u(a)$ in $(H_0^s)^*$?
+\end{itemize}
+
+
+\item Sei $s \in(\frac{1}{2}, \frac{3}{2})$ und $u \in H_0^s$. Dann ist $u$ H\"olderstetig mit Exponent $\alpha = s-\frac{1}{2}$, d.h. es gilt
+$$|u(x)-u(y) | \leq c\,|x-y|^\alpha $$
+
+\item Finden Sie einen Fortsetzungsoperator $E : H^2(-2,0)$ nach
+  $H^2(-2,1)$. Zeigen Sie Stetigkeit bzgl. $L_2$-Norm und $H^1$ und
+  $H^2$-Seminormen.  Hinweis: Verwenden Sie den Ansatz $Eu(x) = a
+  u(-x) + b u(-2x)$ f\"ur $x \in (0,1)$. 
+
+
+  
+\end{enumerate}
+\end{document}
+

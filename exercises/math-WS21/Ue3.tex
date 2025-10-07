@@ -1,0 +1,77 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{exscale,times}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{german}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+\frenchspacing
+\sloppy
+\newcommand{\xvec}{\bold{x}}
+\newcommand{\vvec}{\bold{v}}
+\newcommand{\wvec}{\bold{w}}
+\newcommand{\evec}{\bold{e}}
+\newcommand{\nuvec}{\bold{\nu}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
+\newcommand{\setR}{\mathbb{R}}
+\newcommand{\p}{$p$}
+\newcommand{\norm}[2][2]{\|#2 \|_#1}
+\newcommand{\diver}{\text{div}}
+\newcommand{\refer}[1]{(\ref{#1})}
+\newcommand{\ndof}{\text{ndof}}
+\newcommand{\gauss}[2]{e^{-\frac{(\vvec #2)^2}{#1}}}
+\newcommand{\lagrange}[2]{l_i(\frac{\vvec #2}{\sqrt{#1}})}
+
+
+\begin{document}
+\begin{center}
+\textbf{3. \"Ubung Numerik von partiellen Differentialgleichungen - station\"are Probleme} \newline 
+\textbf{28. Oktober 2021}
+\end{center}
+
+\setcounter{enumi}{4}
+
+\begin{enumerate}
+
+\item Experimente mit  der Diffusions-Reaktions Gleichung, in jupyter.
+
+\item Experimente mit der Diffusions-Konvektions Gleichung, in jupyter.
+
+
+\item Es seien $V$, $W$ Hilbertr\"aume,  und $B(.,.) : V \times W
+  \rightarrow \R{}$ eine stetige Bilinearform. Sie erf\"ulle die zweite $\inf-\sup$ Bedingung 
+$$
+\inf_{v \in W \atop v \neq 0} \sup_{u \in V \atop u \neq 0} \frac{B(u,v)}{\|u\|_V \| v\|_W} \geq \beta_1,
+$$
+Formel (2.10) aus Skript. Zeigen Sie, dass damit der Operator $B$
+surjektiv ist, d.h. das Variationsproblem
+$$
+\text{suche } u \in V: \quad B(u,v) = f(v) \quad \forall \, v \in W
+$$
+ f\"ur alle $f \in W^\ast$ l\"osbar ist. Es gibt eine L\"osung $u$
+ mit $\|u \| \leq \beta_1^{-1} \| f\|$.  
+
+Hinweis: Ein lineares Gleichungssystem $B x = y$ mit $B \in \R{n
+  \times m}$, $n < m$, vollen Rang k\"onnen Sie mittels 
+$B B^t w = y$, und $x := B^t w$ l\"osen. Definieren Sie $B^\ast : W
+\rightarrow V^\ast$ mittels $\left<B^\ast v, u\right>_{V^\ast \times V} =
+B(u,v)$, und zeigen Sie dass $(B^\ast w, B^\ast v)_{V^\ast}$ eine stetige und
+elliptische Bilinearform auf $W$ ist.
+
+
+
+\item Weisen Sie von der Bilinearform aus dem Skript, Example 35, die
+  Stetigkeit und die $\inf-\sup$ Bedingung nach.
+
+\end{enumerate}
+\end{document}
+
