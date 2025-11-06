@@ -372,8 +372,8 @@ $$
 \begin{eqnarray*}
 | v - I_{\cal T} v |_{H^1(\Omega)}^2 & = & 
         \sum_{T \in {\cal T}} | (id - I_T) v_T |_{H^1(T)}^2 \\
-        & \leqc & \sum_{T \in {\cal T}} (\det B_T) \, \| B_T^{-1} \|^2 \, | (id - I_T) v_T \circ F_T |_{H^1(\widehat T)}^2  \\
-        & = & \sum_{T \in {\cal T}} (\det B_T) \| B_T^{-1}  \|^2 \| (id - I_{\widehat T}) (v_T \circ F_T) \| _{H^1 (\widehat T)}^2
+        & \leqc & \sum_{T \in {\cal T}} (\det B_T) \, \| B_T^{-1} \|^2 \, | (id - I_T) v_T \circ \Phi_T |_{H^1(\widehat T)}^2  \\
+        & = & \sum_{T \in {\cal T}} (\det B_T) \| B_T^{-1}  \|^2 \| (id - I_{\widehat T}) (v_T \circ \Phi_T) \| _{H^1 (\widehat T)}^2
 \end{eqnarray*}
 On the reference element $\widehat T$ we apply the Bramble-Hilbert lemma.
 Then, we transform back to the individual elements:
@@ -578,7 +578,7 @@ solution is bounded in the weighted Sobolev norm
 $$
 \| r^\beta D^2 u \|_{L_2} \leq C,
 $$
-with $\beta = \frac{\pi}{\omega}$. One may choose a mesh such that
+with $\beta = 1- \frac{\pi}{\omega}$. One may choose a mesh such that
 $$
 h_T \eqc \underline h r_T^\beta, \qquad \forall \, T \in {\cal T}
 $$
